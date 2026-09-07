@@ -79,8 +79,8 @@ export function HeroScene({ className }: { className?: string }) {
       <g stroke="#8CB07E" strokeWidth="2" opacity="0.28">
         {Array.from({ length: 22 }).map((_, i) => {
           const t = i / 21;
-          const topX = 200 + t * 1040;
-          const bottomX = -420 + t * 2280;
+          const topX = Math.round((200 + t * 1040) * 100) / 100;
+          const bottomX = Math.round((-420 + t * 2280) * 100) / 100;
           return <line key={i} x1={topX} y1="600" x2={bottomX} y2="760" />;
         })}
       </g>
