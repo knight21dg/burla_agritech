@@ -12,9 +12,10 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Container, Section, SectionHead } from "@/components/ui/Section";
 import { CategoryCard } from "@/components/product/CategoryCard";
 import { ProductCard } from "@/components/product/ProductCard";
+import { Hero } from "@/components/sections/Hero";
 import { HeroScene } from "@/components/sections/HeroScene";
 import { categories, featuredProducts } from "@/data/catalog";
-import { site, whatsappLink } from "@/lib/site";
+import { whatsappLink } from "@/lib/site";
 
 const pillars = [
   { Icon: Leaf, title: "Natural Ingredients", note: "One ingredient, where it should be one" },
@@ -37,51 +38,15 @@ export default function HomePage() {
 
   return (
     <>
-      {/* ---------------------------------------------------------------- Hero */}
-      <section className="relative isolate overflow-hidden bg-ivory">
-        <HeroScene className="absolute inset-0 h-full w-full" />
-        <div className="absolute inset-0 bg-gradient-to-b from-ivory/85 via-ivory/45 to-transparent" />
+      <Hero />
 
-        <Container className="relative">
-          <div className="flex min-h-[36rem] flex-col justify-center py-20 md:min-h-[40rem] lg:min-h-[44rem] lg:py-28">
-            <div className="max-w-2xl animate-rise">
-              <p className="t-label text-green-text">
-                {site.subTagline}
-              </p>
-              <h1 className="t-display mt-5 text-green-deep">
-                From Nature
-                <br />
-                to Your Table
-              </h1>
-              <p className="t-lead measure-tight mt-6 text-ink-muted">
-                Indian agricultural produce, carefully processed into everyday
-                foods — powders and flakes, pickles, podis, sun-dried crisps,
-                millets and masalas.
-              </p>
-
-              <div className="mt-9 flex flex-wrap items-center gap-3">
-                <ButtonLink href="/shop" size="lg">
-                  Explore Products
-                  <ArrowRight className="size-4" aria-hidden="true" />
-                </ButtonLink>
-                <ButtonLink href="/about" variant="secondary" size="lg">
-                  Our Story
-                </ButtonLink>
-              </div>
-            </div>
-
-            <p
-              className="t-script pointer-events-none absolute right-6 top-24 hidden max-w-[9rem] text-[2.1rem] leading-[1.05] text-green-deep/70 lg:block xl:right-12 xl:text-[2.4rem]"
-              aria-hidden="true"
-            >
-              Healthy food, happier lives
-            </p>
-          </div>
-        </Container>
-      </section>
-
-      {/* ------------------------------------------------------------- Pillars */}
-      <section className="border-y border-sand bg-paper">
+      {/* ------------------------------------------------------------- Pillars
+          The client's key visual already carries these four pillars as pixels,
+          so from `md` up this strip is visually redundant. It stays in the
+          accessibility tree (`md:sr-only`) because text baked into an image is
+          invisible to screen readers and search engines. Below `md` the hero is
+          cropped past them, so it renders normally. */}
+      <section className="border-y border-sand bg-paper md:sr-only md:border-0">
         <Container>
           <ul className="grid grid-cols-2 divide-sand md:grid-cols-4 md:divide-x">
             {pillars.map(({ Icon, title, note }) => (
@@ -234,7 +199,7 @@ export default function HomePage() {
             {process.map((step, i) => (
               <li key={step} className="relative text-center">
                 <span
-                  className="t-label block text-sand-deep"
+                  className="t-label block text-ink-faint"
                   aria-hidden="true"
                 >
                   {String(i + 1).padStart(2, "0")}
@@ -244,7 +209,7 @@ export default function HomePage() {
                 </span>
                 {i < process.length - 1 && (
                   <span
-                    className="absolute right-[-0.5rem] top-1.5 hidden text-sand-deep lg:block"
+                    className="absolute right-[-0.5rem] top-1.5 hidden text-ink-faint lg:block"
                     aria-hidden="true"
                   >
                     <ArrowRight className="size-4" />
