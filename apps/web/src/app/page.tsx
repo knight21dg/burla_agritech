@@ -41,12 +41,11 @@ export default function HomePage() {
       <Hero />
 
       {/* ------------------------------------------------------------- Pillars
-          The client's key visual already carries these four pillars as pixels,
-          so from `md` up this strip is visually redundant. It stays in the
-          accessibility tree (`md:sr-only`) because text baked into an image is
-          invisible to screen readers and search engines. Below `md` the hero is
-          cropped past them, so it renders normally. */}
-      <section className="border-y border-sand bg-paper md:sr-only md:border-0">
+          The client's key visual carries these four pillars as pixels at every
+          breakpoint, so the strip is visually redundant. It stays in the
+          accessibility tree because text baked into an image is invisible to
+          screen readers and search engines. */}
+      <section className="sr-only">
         <Container>
           <ul className="grid grid-cols-2 divide-sand md:grid-cols-4 md:divide-x">
             {pillars.map(({ Icon, title, note }) => (
