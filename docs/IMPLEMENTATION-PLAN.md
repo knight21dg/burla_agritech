@@ -3,9 +3,9 @@
 | Field | Value |
 |---|---|
 | Document | `docs/IMPLEMENTATION-PLAN.md` |
-| Version | 0.2 — re-estimated for two applications |
+| Version | 0.3 — frontend demo status |
 | Date | 2026-09-07 |
-| Current position | End of Phase 1. **No code written.** |
+| Current position | Frontend demo built (Phases 7-13, customer site, mock data). Admin app not started. |
 
 ---
 
@@ -34,8 +34,22 @@ PHOTOGRAPHY   ──────────────────────
 | 4 | Technical architecture | ✅ Complete | ADR approval |
 | 5 | Design system | 🟡 Direction proposed | Typography choice + `OQ-008` |
 | 6 | Wireframes / layout | ⬜ Not started | Phase 5 approval |
-| 7 | Application foundation | ⬜ Blocked | Phases 4–5 approved |
-| 8–22 | Build → harden → ship | ⬜ Not started | Sequential |
+| 6 | Wireframes / layout | ✅ Superseded | Client supplied an approved UI mockup |
+| 7 | Application foundation | 🟢 Demo done | Monorepo, Next.js 16, tokens, CI pending |
+| 8 | Homepage | 🟢 Demo done | Uses the client's key visual; real photography pending |
+| 9 | Shop + category pages | 🟢 Demo done | Filters, sort, SEO-safe facet URLs |
+| 10 | Product detail | 🟢 Demo done | Legal info block renders as "to be confirmed" |
+| 11 | About / Quality / Locations / Contact | 🟢 Demo done | Blocked on client content |
+| 12 | Wholesale | 🟢 Demo done | Form validates; not yet wired to a backend |
+| 13 | Search | 🟢 Demo done | In-memory; Postgres FTS on real data |
+| 14 | Authentication | ⬜ Not started | Needs database |
+| 15 | Cart / checkout / payment | ⬜ Blocked | `OQ-001` |
+| 16 | Admin application | ⬜ Not started | Needs `OQ-038` |
+| 17–22 | SEO → harden → ship | ⬜ Not started | Sequential |
+
+**"Demo done" means the UI exists and is navigable against sample data.** It
+does not mean the Definition of Done in §9 is met: there is no database, no
+tests, no CI, and the content is placeholder.
 
 ---
 
