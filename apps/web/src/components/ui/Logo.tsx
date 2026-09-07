@@ -48,7 +48,7 @@ export function Logo({
             reversed ? "text-paper/85" : "text-green",
           )}
           style={{
-            fontSize: "0.205em",
+            fontSize: "max(0.205em, 10px)",
             letterSpacing: "0.3em",
             marginTop: "0.42em",
             marginLeft: "0.3em",

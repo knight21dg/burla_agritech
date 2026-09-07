@@ -20,7 +20,7 @@ export function Footer() {
       <Container>
         <div className="grid gap-12 py-16 md:grid-cols-12 md:gap-8 lg:py-20">
           <div className="md:col-span-4 lg:col-span-3">
-            <Logo variant="reversed" className="text-[1.85rem]" />
+            <Logo variant="reversed" className="text-[2.4rem]" />
             <p className="measure-tight mt-6 text-[0.9375rem] leading-relaxed text-ivory/75">
               Indian agricultural produce, carefully processed into everyday
               foods.

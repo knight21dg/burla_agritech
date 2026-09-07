@@ -93,7 +93,7 @@ export function Header() {
               className="shrink-0"
               aria-label={`${"Burla Global Agri Products"} — home`}
             >
-              <Logo className="text-[1.75rem] lg:text-[2rem]" />
+              <Logo className="text-[1.6rem] lg:text-[1.85rem]" showSubline={false} />
             </Link>
 
             {/* Desktop nav */}

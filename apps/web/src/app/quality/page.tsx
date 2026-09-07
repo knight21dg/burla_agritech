@@ -57,7 +57,7 @@ export default function QualityPage() {
           <ol className="mt-12 grid gap-px overflow-hidden border border-sand bg-sand md:grid-cols-2 lg:grid-cols-3">
             {stages.map((s, i) => (
               <li key={s.name} className="bg-paper p-7">
-                <span className="t-label block text-sand-deep" aria-hidden="true">
+                <span className="t-label block text-ink-faint" aria-hidden="true">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <h3 className="t-h3 mt-3">{s.name}</h3>

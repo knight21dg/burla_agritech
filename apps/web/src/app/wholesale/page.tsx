@@ -62,7 +62,7 @@ export default function WholesalePage() {
                 {steps.map(([name, note], i) => (
                   <li key={name} className="flex gap-4">
                     <span
-                      className="t-label mt-1 shrink-0 text-sand-deep"
+                      className="t-label mt-1 shrink-0 text-ink-faint"
                       aria-hidden="true"
                     >
                       {String(i + 1).padStart(2, "0")}
