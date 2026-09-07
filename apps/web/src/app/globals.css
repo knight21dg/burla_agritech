@@ -54,6 +54,24 @@
 @layer base {
   :root {
     color-scheme: light;
+
+    /* Chrome above the hero, composed from the parts rather than hard-coded,
+       so it stays correct if the header height changes. Lets the hero size
+       itself to the remaining viewport with no JavaScript measurement.
+       The 2px covers the header's bottom border and sub-pixel rounding. */
+    --header-h: 4.5rem;
+    --notice-h: 3rem;
+    --site-chrome: calc(var(--header-h) + var(--notice-h) + 2px);
+  }
+
+  :root[data-notice="dismissed"] {
+    --notice-h: 0rem;
+  }
+
+  @media (width >= 1024px) {
+    :root {
+      --header-h: 5.25rem;
+    }
   }
 
   html {

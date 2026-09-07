@@ -15,11 +15,17 @@ export function DemoNotice() {
   const [hidden, setHidden] = useState(true);
 
   useEffect(() => {
+    let dismissed = false;
     try {
-      setHidden(sessionStorage.getItem("burla:demo-notice") === "1");
+      dismissed = sessionStorage.getItem("burla:demo-notice") === "1";
     } catch {
-      setHidden(false);
+      dismissed = false;
     }
+    setHidden(dismissed);
+    // Lets --site-chrome shrink so the hero reclaims the space
+    document.documentElement.dataset.notice = dismissed
+      ? "dismissed"
+      : "visible";
   }, []);
 
   if (hidden) return null;
@@ -42,6 +48,7 @@ export function DemoNotice() {
             type="button"
             onClick={() => {
               setHidden(true);
+              document.documentElement.dataset.notice = "dismissed";
               try {
                 sessionStorage.setItem("burla:demo-notice", "1");
               } catch {
