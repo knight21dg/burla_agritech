@@ -6,7 +6,7 @@ import { PageHero, PendingContent } from "@/components/sections/PageHero";
 import { HeroScene } from "@/components/sections/HeroScene";
 
 export const metadata: Metadata = {
-  title: "About Burla — Our Story",
+  title: "About Us — Our Story",
   description:
     "Burla Global Agri Products takes Indian agricultural produce and converts it into shelf-stable everyday foods, using methods the produce has always suited.",
   alternates: { canonical: "/about" },

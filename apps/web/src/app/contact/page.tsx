@@ -7,7 +7,7 @@ import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { site, whatsappLink } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Contact Burla",
+  title: "Contact Us",
   description:
     "Reach the Burla team by WhatsApp, phone or email for product enquiries, bulk orders and everything else.",
   alternates: { canonical: "/contact" },
