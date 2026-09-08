@@ -73,7 +73,8 @@ export function Hero() {
       <div
         className="relative mx-auto"
         style={{
-          width: `min(100%, calc((100svh - var(--site-chrome)) * ${ART_W} / ${ART_H}))`,
+          // -1px absorbs sub-pixel rounding in the aspect division
+          width: `min(100%, calc((100svh - var(--site-chrome) - 1px) * ${ART_W} / ${ART_H}))`,
           aspectRatio: `${ART_W} / ${ART_H}`,
         }}
       >

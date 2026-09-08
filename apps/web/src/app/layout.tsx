@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
 import { DemoNotice } from "@/components/layout/DemoNotice";
+import { ChromeMeasure } from "@/components/layout/ChromeMeasure";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -73,6 +74,7 @@ export default function RootLayout({
       className={`${fraunces.variable} ${instrument.variable} ${caveat.variable}`}
     >
       <body className="flex min-h-screen flex-col antialiased">
+        <ChromeMeasure />
         <DemoNotice />
         <Header />
         <main id="main" className="flex-1">

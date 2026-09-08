@@ -31,7 +31,7 @@ export function DemoNotice() {
   if (hidden) return null;
 
   return (
-    <div className="bg-green-deep text-ivory">
+    <div data-site-chrome className="bg-green-deep text-ivory">
       <div className="container-page">
         <div className="flex items-center justify-between gap-4 py-2.5">
           <p className="flex items-center gap-2.5 text-[0.8125rem] leading-snug">
