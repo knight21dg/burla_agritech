@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | `docs/DESIGN-SYSTEM.md` |
-| Version | **1.2 — colourful homepage, white product panels** |
+| Version | **1.3 — built to the client's mockup** |
 | Date | 2026-09-09 |
 | Status | Implemented for the design system, header, footer and homepage |
 | Supersedes | v0.2 (warm ivory / editorial direction), now withdrawn |
@@ -129,9 +129,8 @@ Colour lives here and on the header and footer — nowhere near a product grid.
 
 | Surface | Treatment |
 |---|---|
-| Header row 1 | `green-900`, white text — 11.1:1 |
-| Header row 2, category strip | `green-700`, white text — 5.33:1 |
-| **Homepage sections** | A produce tint per section, with content on a **white panel** inside |
+| Header | White. Utility strip above, logo and category row below |
+| **Homepage sections** | White, divided by rules. One `--surface` band for About |
 | Category tiles | Produce tint, ink label |
 | Footer | `green-900`, white text |
 | Buttons, links, active nav | `green-700` |

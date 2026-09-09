@@ -11,19 +11,17 @@ import { cn } from "@/lib/utils";
 import { SearchOverlay } from "./SearchOverlay";
 
 /**
- * Two-row header (DESIGN-SYSTEM §8, SITEMAP §3).
+ * Header, following the client's mockup.
  *
- * Row 1 — deep green: brand, company pages, utilities.
- * Row 2 — mid green: the product bar. All ten categories, always visible, one
- *         click from anywhere. Below md it scrolls horizontally rather than
- *         wrapping or hiding behind a menu.
+ * Row 1 — a thin utility strip: company links and the search, account and bag
+ *         icons, set small and quiet.
+ * Row 2 — the working navigation: logo, then Home and all ten categories
+ *         inline. This is where a customer spends their attention, so it gets
+ *         the space.
  *
- * The colour sits here, on the chrome, in the Amazon/Flipkart pattern — a
- * strong branded bar above content that stays white. White on green-900 is
- * 11.1:1 and on green-700 is 5.33:1, so both rows clear AA comfortably.
- *
- * The logo sits on a white plate because the supplied artwork is a JPEG on
- * white with no transparency. A reversed logo would remove the plate.
+ * Categories are never hidden behind a dropdown. Below `lg` the row scrolls
+ * horizontally on native scroll-snap rather than collapsing into a menu, so
+ * every category stays one tap away.
  */
 export function Header() {
   const pathname = usePathname();
@@ -35,7 +33,6 @@ export function Header() {
     setSearchOpen(false);
   }, [pathname]);
 
-  // "/" opens search, unless the user is typing
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement | null;
@@ -56,8 +53,7 @@ export function Header() {
     };
   }, [mobileOpen]);
 
-  const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const catActive = (slug: string) => pathname.startsWith(`/products/${slug}`);
 
   return (
     <>
@@ -68,120 +64,128 @@ export function Header() {
         Skip to content
       </a>
 
-      <header data-site-chrome className="sticky top-0 z-50">
-        {/* Row 1 — brand and company */}
-        <div className="bg-green-900 text-white">
-          <div className="container-page">
-            <div className="flex h-16 items-center justify-between gap-4">
-              <Link href="/" className="shrink-0" aria-label={`${site.name} — home`}>
-                <Logo variant="wordmark" height={30} priority alt="" plate />
-              </Link>
-
-              <nav
-                className="hidden md:flex md:items-center md:gap-1"
-                aria-label="Main"
-              >
-                {mainNav.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    aria-current={isActive(item.href) ? "page" : undefined}
-                    className={cn(
-                      "rounded-md px-3 py-2 text-[0.9375rem] transition-colors",
-                      isActive(item.href)
-                        ? "bg-white/15 font-semibold text-white"
-                        : "font-medium text-white/90 hover:bg-white/10 hover:text-white",
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+      <header data-site-chrome className="sticky top-0 z-50 bg-white">
+        {/* Row 1 — utility strip */}
+        <div className="border-b border-line/70">
+          <Container>
+            <div className="flex h-10 items-center justify-end gap-1">
+              <nav className="hidden md:flex md:items-center" aria-label="Company">
+                {mainNav
+                  .filter((i) => i.href !== "/")
+                  .map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      aria-current={
+                        pathname.startsWith(item.href) ? "page" : undefined
+                      }
+                      className={cn(
+                        "px-3 py-1.5 text-[0.8125rem] transition-colors",
+                        pathname.startsWith(item.href)
+                          ? "font-semibold text-green-700"
+                          : "text-ink-2 hover:text-green-700",
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
               </nav>
 
               <div className="flex items-center gap-0.5">
                 <button
                   type="button"
                   onClick={() => setSearchOpen(true)}
-                  className="rounded-md p-2.5 text-white/90 transition-colors hover:bg-white/10 hover:text-white"
+                  className="rounded-md p-2 text-ink-2 transition-colors hover:bg-surface hover:text-green-700"
                   aria-label="Search products"
                 >
-                  <Search className="size-[1.15rem]" aria-hidden="true" />
+                  <Search className="size-[1.05rem]" aria-hidden="true" />
                 </button>
                 <Link
                   href="/account"
-                  className="hidden rounded-md p-2.5 text-white/90 transition-colors hover:bg-white/10 hover:text-white sm:block"
+                  className="rounded-md p-2 text-ink-2 transition-colors hover:bg-surface hover:text-green-700"
                   aria-label="Your account"
                 >
-                  <User className="size-[1.15rem]" aria-hidden="true" />
+                  <User className="size-[1.05rem]" aria-hidden="true" />
                 </Link>
                 <Link
                   href="/cart"
-                  className="rounded-md p-2.5 text-white/90 transition-colors hover:bg-white/10 hover:text-white"
+                  className="rounded-md p-2 text-ink-2 transition-colors hover:bg-surface hover:text-green-700"
                   aria-label="Your bag"
                 >
-                  <ShoppingBag className="size-[1.15rem]" aria-hidden="true" />
+                  <ShoppingBag className="size-[1.05rem]" aria-hidden="true" />
                 </Link>
-                <button
-                  type="button"
-                  onClick={() => setMobileOpen(true)}
-                  className="rounded-md p-2.5 text-white/90 transition-colors hover:bg-white/10 md:hidden"
-                  aria-label="Open menu"
-                  aria-expanded={mobileOpen}
-                >
-                  <Menu className="size-[1.35rem]" aria-hidden="true" />
-                </button>
               </div>
             </div>
-          </div>
+          </Container>
         </div>
 
-        {/* Row 2 — the product bar. Hidden on mobile, where the drawer carries it. */}
-        <div className="hidden bg-green-700 text-white md:block">
-          <div className="container-page">
-            <nav aria-label="Product categories">
-              <ul className="rail -mx-1 gap-0.5 py-0.5">
-                <li className="rail-item">
-                  <Link
-                    href="/products"
-                    aria-current={pathname === "/products" ? "page" : undefined}
-                    className={cn(
-                      "block whitespace-nowrap border-b-2 px-3 py-2.5 text-[0.875rem] transition-colors",
-                      pathname === "/products"
-                        ? "border-white font-semibold text-white"
-                        : "border-transparent text-white/85 hover:border-white/40 hover:text-white",
-                    )}
-                  >
-                    All products
-                  </Link>
-                </li>
-                {categories.map((c) => {
-                  const active = pathname.startsWith(`/products/${c.slug}`);
-                  return (
+        {/* Row 2 — logo and the product navigation */}
+        <div className="border-b border-line">
+          <Container>
+            <div className="flex items-center gap-6 py-2.5">
+              <Link
+                href="/"
+                className="shrink-0"
+                aria-label={`${site.name} — home`}
+              >
+                <Logo variant="full" height={44} priority alt="" />
+              </Link>
+
+              <nav
+                className="hidden min-w-0 flex-1 lg:block"
+                aria-label="Product categories"
+              >
+                <ul className="rail gap-0.5">
+                  <li className="rail-item">
+                    <Link
+                      href="/"
+                      aria-current={pathname === "/" ? "page" : undefined}
+                      className={cn(
+                        "block whitespace-nowrap border-b-2 px-2.5 py-2 text-[0.8125rem] transition-colors",
+                        pathname === "/"
+                          ? "border-green-700 font-semibold text-green-700"
+                          : "border-transparent text-ink hover:text-green-700",
+                      )}
+                    >
+                      Home
+                    </Link>
+                  </li>
+                  {categories.map((c) => (
                     <li key={c.slug} className="rail-item">
                       <Link
                         href={`/products/${c.slug}`}
-                        aria-current={active ? "page" : undefined}
+                        aria-current={catActive(c.slug) ? "page" : undefined}
                         className={cn(
-                          "block whitespace-nowrap border-b-2 px-3 py-2.5 text-[0.875rem] transition-colors",
-                          active
-                            ? "border-white font-semibold text-white"
-                            : "border-transparent text-white/85 hover:border-white/40 hover:text-white",
+                          "block whitespace-nowrap border-b-2 px-2.5 py-2 text-[0.8125rem] transition-colors",
+                          catActive(c.slug)
+                            ? "border-green-700 font-semibold text-green-700"
+                            : "border-transparent text-ink hover:text-green-700",
                         )}
                       >
                         {c.shortName}
                       </Link>
                     </li>
-                  );
-                })}
-              </ul>
-            </nav>
-          </div>
+                  ))}
+                </ul>
+              </nav>
+
+              <button
+                type="button"
+                onClick={() => setMobileOpen(true)}
+                className="ml-auto rounded-md p-2 text-ink transition-colors hover:bg-surface lg:hidden"
+                aria-label="Open menu"
+                aria-expanded={mobileOpen}
+              >
+                <Menu className="size-[1.35rem]" aria-hidden="true" />
+              </button>
+            </div>
+          </Container>
         </div>
       </header>
 
-      {/* Mobile drawer — products first, listed flat, no accordion */}
+      {/* Mobile drawer — products first, flat, no accordion */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-[70] md:hidden">
+        <div className="fixed inset-0 z-[70] lg:hidden">
           <div
             className="absolute inset-0 bg-ink/40"
             onClick={() => setMobileOpen(false)}
@@ -194,7 +198,7 @@ export function Header() {
             className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-white"
           >
             <div className="flex h-16 shrink-0 items-center justify-between border-b border-line px-4">
-              <Logo variant="wordmark" height={30} alt="" />
+              <Logo variant="wordmark" height={28} alt="" />
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
@@ -230,18 +234,20 @@ export function Header() {
               </ul>
 
               <ul className="mt-6">
-                {[...mainNav, { label: "Locations", href: "/locations" }].map(
-                  (item) => (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className="block border-b border-line px-1 py-3 text-[0.9375rem] text-ink"
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  ),
-                )}
+                {[
+                  { label: "Home", href: "/" },
+                  ...mainNav.filter((i) => i.href !== "/"),
+                  { label: "Locations", href: "/locations" },
+                ].map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="block border-b border-line px-1 py-3 text-[0.9375rem] text-ink"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
                 <li>
                   <Link
                     href="/account"
@@ -259,4 +265,8 @@ export function Header() {
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
+}
+
+function Container({ children }: { children: React.ReactNode }) {
+  return <div className="container-page">{children}</div>;
 }

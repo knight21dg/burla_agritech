@@ -72,13 +72,13 @@ export function ProductCarousel({
   return (
     <div className="relative">
       {overflows && (
-        <div className="absolute -top-12 right-0 hidden gap-2 md:flex">
+        <>
           <button
             type="button"
             onClick={() => scrollBy(-1)}
             disabled={atStart}
             aria-label="Scroll products left"
-            className="grid size-9 place-items-center rounded-md border border-line text-ink transition-colors hover:border-ink disabled:opacity-35 disabled:hover:border-line"
+            className="absolute -left-4 top-1/2 z-10 hidden size-9 -translate-y-1/2 place-items-center rounded-full border border-line bg-white text-ink shadow-[0_2px_10px_-3px_rgba(23,23,23,0.3)] transition-opacity hover:border-green-700 hover:text-green-700 disabled:pointer-events-none disabled:opacity-0 lg:grid"
           >
             <ChevronLeft className="size-4" aria-hidden="true" />
           </button>
@@ -87,11 +87,11 @@ export function ProductCarousel({
             onClick={() => scrollBy(1)}
             disabled={atEnd}
             aria-label="Scroll products right"
-            className="grid size-9 place-items-center rounded-md border border-line text-ink transition-colors hover:border-ink disabled:opacity-35 disabled:hover:border-line"
+            className="absolute -right-4 top-1/2 z-10 hidden size-9 -translate-y-1/2 place-items-center rounded-full border border-line bg-white text-ink shadow-[0_2px_10px_-3px_rgba(23,23,23,0.3)] transition-opacity hover:border-green-700 hover:text-green-700 disabled:pointer-events-none disabled:opacity-0 lg:grid"
           >
             <ChevronRight className="size-4" aria-hidden="true" />
           </button>
-        </div>
+        </>
       )}
 
       <ul
@@ -99,15 +99,15 @@ export function ProductCarousel({
         // Focusable so keyboard users can scroll the rail with arrow keys
         tabIndex={0}
         aria-label={label}
-        className="rail gap-5 pb-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+        className="rail items-stretch gap-4 py-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
       >
         {products.map((p) => (
           <li
             key={p.id}
             // Widths leave a partial next card visible at every breakpoint
-            className="rail-item w-[42vw] max-w-[15rem] sm:w-[30vw] md:w-[26vw] lg:w-[19rem]"
+            className="rail-item flex w-[46vw] max-w-[14rem] sm:w-[32vw] md:w-[24vw] lg:w-[15.5rem]"
           >
-            <ProductCard product={p} />
+            <div className="flex w-full"><ProductCard product={p} /></div>
           </li>
         ))}
       </ul>

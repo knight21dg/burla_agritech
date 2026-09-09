@@ -35,21 +35,21 @@ export function CategoryCard({ category }: { category: Category }) {
     >
       <div
         className={cn(
-          "overflow-hidden rounded-md transition-transform duration-200 group-hover:-translate-y-0.5",
+          "overflow-hidden rounded-md border border-line transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-green-700",
           TINTS[category.tone],
         )}
       >
         <ProductImage
           name={category.name}
-          ratio="landscape"
+          showLabel={false}
           className="bg-transparent"
         />
       </div>
-      <h3 className="mt-3 text-[0.9375rem] font-semibold leading-snug text-ink transition-colors group-hover:text-green-700">
+      <h3 className="mt-2.5 text-center text-[0.8125rem] font-medium leading-snug text-ink transition-colors group-hover:text-green-700">
         {category.name}
       </h3>
       {count > 0 && (
-        <p className="mt-0.5 text-[0.8125rem] text-ink-3">
+        <p className="mt-0.5 text-center text-[0.75rem] text-ink-3">
           {count} {count === 1 ? "product" : "products"}
         </p>
       )}

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Instrument_Sans } from "next/font/google";
+import { Caveat, Instrument_Sans } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
@@ -17,6 +17,18 @@ import "./globals.css";
 const instrument = Instrument_Sans({
   subsets: ["latin"],
   variable: "--font-instrument",
+  display: "swap",
+});
+
+/**
+ * Script accent, used exactly twice on the homepage — "Good Food Better
+ * Living" beside the hero and "From Our Farms To Your Family" over the about
+ * image, both of which appear in the client's mockups. It never carries
+ * information, so it is decorative and marked aria-hidden at each use.
+ */
+const caveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-caveat",
   display: "swap",
 });
 
@@ -59,7 +71,7 @@ export default function RootLayout({
   return (
     <html
       lang="en-IN"
-      className={instrument.variable}
+      className={`${instrument.variable} ${caveat.variable}`}
     >
       <body className="flex min-h-screen flex-col antialiased">
         <ChromeMeasure />

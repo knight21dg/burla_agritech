@@ -48,8 +48,9 @@
   --color-warning: #8a5a00;
   --color-danger: #a32b1e;
 
-  /* Type — one family (DESIGN-SYSTEM §4.1) */
+  /* Type. One working family; the script is a decorative accent only. */
   --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-caveat), ui-serif, cursive;
 
   /* Radius — small by design */
   --radius-sm: 3px;
@@ -161,6 +162,11 @@
     font-size: 1.0625rem;
     line-height: 1.6;
     color: var(--color-ink-2);
+  }
+  .t-script {
+    font-family: var(--font-script);
+    font-weight: 600;
+    line-height: 1.1;
   }
   .t-label {
     font-size: 0.75rem;
