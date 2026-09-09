@@ -4,7 +4,17 @@
  * Every business value lives here, never in a component (NFR-094).
  * Values marked PLACEHOLDER are tracked in docs/CONTENT-INVENTORY.md and
  * must be replaced with client-supplied facts before launch.
+ *
+ * Environment-dependent values come from `env.client.ts`, which validates
+ * them. This file does not read `process.env` — only the two env modules do,
+ * so a typo is a startup failure rather than a silent `undefined`.
+ * docs/ENVIRONMENT.md §2.
+ *
+ * Business identity below (address, GSTIN, partners) moves to the
+ * `site_settings` table at Phase 8, so the client can edit it without a
+ * deploy. docs/DATA-OWNERSHIP.md §3.
  */
+import { clientEnv } from "./env.client";
 
 export const site = {
   name: "Burla Global Agri Products",
@@ -13,14 +23,14 @@ export const site = {
   subTagline: "Pure Products · Healthy People · A Greener Tomorrow",
   description:
     "Indian agricultural produce carefully processed into everyday foods — dehydrated powders and flakes, pickles, spiced dal powders, sun-dried crisps, dry fruits, millets, herbal infusions and masalas.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.burla.co.in",
+  url: clientEnv.NEXT_PUBLIC_SITE_URL,
 
   /**
    * From the client's business card, 2026-09-09.
    * The same number as the published phone line — CONFIRM this is the number
    * that actually receives WhatsApp before launch (OQ-004).
    */
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "919704032555",
+  whatsapp: clientEnv.NEXT_PUBLIC_WHATSAPP_NUMBER,
 
   contact: {
     phone: "+91 97040 32555",
