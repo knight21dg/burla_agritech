@@ -61,6 +61,7 @@ push
      merge to main
         │
  ├─ migrate          expand-only, direct connection, advisory-locked
+ ├─ db:verify        refuses to continue if production holds is_sample rows
  ├─ deploy
  ├─ smoke            /api/health, /, one product page
  └─ notify
@@ -156,7 +157,7 @@ Canonical host must match `NEXT_PUBLIC_SITE_URL` exactly, or every canonical tag
 - [ ] Policies reviewed by someone qualified
 - [ ] `robots.txt` allows indexing
 - [ ] `DemoNotice` component removed
-- [ ] Demo seed proven unable to run in production
+- [ ] `npm run db:verify` passes against production — no `is_sample` rows
 - [ ] Every environment variable set and validated at boot
 - [ ] Enquiry form verified end to end — submits, persists, emails
 - [ ] Backups verified by an actual restore (`DATABASE-RECOVERY.md`)

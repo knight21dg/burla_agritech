@@ -122,7 +122,28 @@ That found one real defect before it reached a database: `array_to_string` is `S
 
 Two honest limits: PGlite is not Neon, so it proves the DDL is valid and the logic is right, not that Neon behaves identically; and it says nothing about performance, locking or concurrency. **A Neon preview branch is still the gate before production** (§2, rule 6).
 
-The harness is a scratch script, not part of the repository. Worth promoting to a real Vitest suite in Phase 19 — the assertions are already written, and "the schema enforces what it claims" is the sort of test that stays valuable.
+The harness is a scratch script, not part of the repository. Worth promoting to a real Vitest suite in Phase 19 — the assertions are already written, and "the schema enforces what it claims" is the sort of test that stays valuable. It has already earned its keep twice: it caught the `array_to_string` immutability defect, and it caught a stale expectation the moment migration `0003` changed an error message.
+
+### The seed was verified against a real cluster
+
+For Phase 5, an isolated PostgreSQL 17 cluster was created on a spare port with trust authentication, entirely separate from anything already on the machine, and torn down afterwards. That allowed `npm run db:migrate`, `db:seed` and `db:verify` to be run as written, rather than a reimplementation of them.
+
+It found a defect a schema review would not have: see `DATABASE-DESIGN.md` §0, finding 7. The purge command the production boot guard recommends could not actually run.
+
+```bash
+# Recreating it, if you want a local database without Neon:
+initdb -D /tmp/burla/data -U postgres --auth=trust
+pg_ctl -D /tmp/burla/data -l /tmp/burla/log -o "-p 55432" start
+createdb -h localhost -p 55432 -U postgres burla_dev
+# then in apps/web/.env.local:
+#   DATABASE_URL=postgresql://postgres@localhost:55432/burla_dev
+```
+
+Trust authentication is acceptable **only** for a throwaway cluster bound to localhost on a non-default port. Never for anything that outlives the check.
+
+### Running the scripts outside Next.js
+
+`db/index.ts` and `db/guards.ts` import `server-only`, which throws by design when Node resolves it without the `react-server` condition. The `db:*` scripts therefore run as `tsx --conditions=react-server`. Keeping the import is worth the flag: it is what makes a client component that reaches for the database fail the build rather than shipping a connection string to the browser.
 
 ---
 

@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | `docs/DATABASE-DESIGN.md` |
-| Version | 1.1 — reconciled with the schema as built |
+| Version | 1.2 — adds the seed as built |
 | Date | 2026-09-09 |
 | Engine | PostgreSQL 16 (Neon) · Drizzle ORM 0.45 |
 | Supersedes | `DATABASE.md` v0.2 |
@@ -25,6 +25,12 @@ Five differences from v1.0 of this document, each with a reason:
 | 3 | `enquiries.notified_at` added | Distinguishes "lead saved" from "somebody was told". A partial index finds leads that were saved and never emailed — the failure mode `OBSERVABILITY.md` §5 is most worried about |
 | 4 | `search_vector` excludes category and type names | A generated column can only see its own row, and those live in `categories`. The search query matches them through the join instead — `API-DESIGN.md` §4 |
 | 5 | The five `roles` rows are inserted by migration `0001`, not by the seed | They are reference data the permission model depends on, not sample data. They must exist in production before anyone can be granted one |
+| 6 | `tone` and `is_sample` added to `categories` and `products` (migration `0002`) | `tone` drives the card tint and placeholder treatment, and the cutover cannot render identical output without it. `is_sample` replaces the `[SAMPLE]` prefix — see §10 |
+| 7 | `inventory_movements` allows `DELETE` for sample products only (migration `0003`) | Found by running the purge, not by reading the schema — see below |
+
+**The defect worth recording**, because the schema looked correct: `inventory_movements.variant_id` is `ON DELETE RESTRICT` *and* the table refuses `DELETE` outright. Both rules are right on their own. Together they made demonstration data impossible to remove — so the production boot guard was telling an operator to run a purge command that could only fail. A guard whose own remediation does not work is worse than no guard.
+
+The append-only rule protects the *business* ledger, since stock is its running total. Rows belonging to an `is_sample` product are not business records. `DELETE` is now permitted for exactly those; `UPDATE` is still refused for every row, which was verified against a real ledger row rather than assumed.
 
 **One implementation detail worth recording**, because it will look odd otherwise: `products.search_vector` calls a helper function `burla_keywords_text(text[])` rather than `array_to_string`. A `GENERATED ALWAYS` column may only call `IMMUTABLE` functions, and `array_to_string` is marked `STABLE` — because for arrays of arbitrary element type the output function can depend on session settings. For `text[]` the result is the identity, so the wrapper is genuinely immutable rather than conveniently mislabelled. It must never be widened to `anyarray`.
 
@@ -356,7 +362,41 @@ Per `CURRENT-ARCHITECTURE.md` §11:
 | `seed/real.ts` | 10 category names and order; `site_settings` from the business card | ✅ yes |
 | `seed/demo.ts` | 10 types, 28 products, prices, SKUs, availability | ❌ **never** |
 
-Demo product names are prefixed `[SAMPLE]` in non-production environments, and the seed refuses to run when `NODE_ENV=production`. The existing `IS_SAMPLE_DATA` flag becomes a boot guard.
+### As built
+
+The `[SAMPLE]` name prefix proposed above was **not** implemented. It is cosmetic, trivially stripped, and it would change every rendered product name — which would make the Phase 8 cutover diff (`MIGRATIONS.md` §13) useless at exactly the moment it matters.
+
+Instead, `categories.is_sample` and `products.is_sample` mark the rows, and three independent guards stand between them and a live site:
+
+| # | Guard | Where |
+|---|---|---|
+| 1 | `assertNotProduction()` — the demo seed refuses to run | `seed/demo.ts` |
+| 2 | Every demo row is written with `is_sample = true` | `seed/demo.ts` |
+| 3 | `assertNoSampleData()` fails a production boot while any survive | `db/guards.ts`, run by `npm run db:verify` |
+
+**Purging is deliberately not guarded.** Seeding demo data into production is forbidden; *removing* it is the remediation the boot guard tells you to run, and a guard that blocked its own fix would be worse than none.
+
+Two commands:
+
+```bash
+npm run db:seed                  # real data only — the default, safe in production
+npm run db:seed -- --demo        # adds the demonstration catalogue
+```
+
+Getting invented products into a live catalogue requires typing `--demo`. It cannot happen by forgetting a flag.
+
+### What each seed contains
+
+| | `seed/real.ts` | `seed/demo.ts` |
+|---|---|---|
+| Rows | 10 categories, 1 `site_settings` | 10 types, 28 products, 34 variants, 34 movements |
+| Source | Handwritten sheet, business card | Invented by us |
+| Production | ✅ | ❌ refused |
+| Re-run behaviour | Upsert by slug; never overwrites a field an admin filled in | Rebuilds from scratch |
+
+The demo seed **rebuilds rather than upserts**, because stock is the running total of an append-only ledger: an upsert would have to reconcile movements to avoid doubling quantities. Verified — running it three times leaves 28 products and stock at 24, not 72.
+
+**Demo products are seeded `published` with no `product_details` row.** That is a state the publish guard will refuse to create, and rightly: a published food product legally requires ingredients, allergens, shelf life, manufacturer details and an FSSAI number. We have none of them and will not invent them — an invented allergen declaration is a safety issue, not a content gap. So the seed writes what the site currently shows, which is those fields rendered as "to be confirmed", and bypasses the service layer to do it. That is precisely why this data may not reach production.
 
 ---
 
