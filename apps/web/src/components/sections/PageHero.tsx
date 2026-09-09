@@ -19,15 +19,15 @@ export function PageHero({
   children?: ReactNode;
 }) {
   return (
-    <Section tone="warm" size="sm">
+    <Section tone="surface" size="sm">
       <Container>
         <Breadcrumbs items={crumbs} />
         <div className="mt-7 grid gap-8 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            {eyebrow && <p className="t-label mb-4 text-ink-faint">{eyebrow}</p>}
+            {eyebrow && <p className="t-label mb-4 text-ink-3">{eyebrow}</p>}
             <h1 className="t-h1">{title}</h1>
             {subtitle && (
-              <p className="t-h3 mt-3 font-normal text-green-mid">{subtitle}</p>
+              <p className="t-h3 mt-3 font-normal text-green-700">{subtitle}</p>
             )}
             {lead && <p className="t-lead measure mt-5">{lead}</p>}
           </div>
@@ -52,12 +52,12 @@ export function PendingContent({
   question: string;
 }) {
   return (
-    <div className="border-l-2 border-sand-deep bg-ivory-warm/60 px-5 py-4">
-      <p className="t-label text-ink-faint">Awaiting client content</p>
-      <p className="measure mt-2 text-[0.9375rem] leading-relaxed text-ink-muted">
+    <div className="border-l-2 border-line-strong bg-surface/60 px-5 py-4">
+      <p className="t-label text-ink-3">Awaiting client content</p>
+      <p className="measure mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
         {children}
       </p>
-      <p className="mt-2 text-[0.8125rem] text-ink-faint">
+      <p className="mt-2 text-[0.8125rem] text-ink-3">
         Tracked as <code className="font-semibold">{question}</code> in
         docs/OPEN-QUESTIONS.md
       </p>

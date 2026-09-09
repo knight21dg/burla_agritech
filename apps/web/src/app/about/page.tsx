@@ -3,7 +3,7 @@ import { Compass, Eye, HeartHandshake, Sprout } from "lucide-react";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container, Section, SectionHead } from "@/components/ui/Section";
 import { PageHero, PendingContent } from "@/components/sections/PageHero";
-import { HeroScene } from "@/components/sections/HeroScene";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 export const metadata: Metadata = {
   title: "About Us — Our Story",
@@ -48,26 +48,24 @@ export default function AboutPage() {
         title="Rooted in values. Growing for tomorrow."
         lead="Burla works with produce India has always grown, and with the methods that have always suited it — drying, curing, roasting and milling. What we bring to those methods is consistency: careful grading, controlled processing and honest packing."
       >
-        <div className="aspect-4/5 overflow-hidden border border-sand">
-          <HeroScene className="h-full w-full" />
-        </div>
+        <ProductImage name="Company photograph" ratio="landscape" />
       </PageHero>
 
-      <Section tone="ivory">
+      <Section >
         <Container>
           <div className="grid gap-8 md:grid-cols-2 lg:gap-10">
             {pillars.map(({ Icon, title, body, q }) => (
-              <div key={title} className="border-t border-sand pt-6">
+              <div key={title} className="border-t border-line pt-6">
                 <Icon
                   className="size-6 text-green"
                   strokeWidth={1.5}
                   aria-hidden="true"
                 />
                 <h2 className="t-h3 mt-4">{title}</h2>
-                <p className="measure mt-3 text-[0.9375rem] leading-relaxed text-ink-muted">
+                <p className="measure mt-3 text-[0.9375rem] leading-relaxed text-ink-2">
                   {body}
                 </p>
-                <p className="mt-2 text-[0.8125rem] text-ink-faint">
+                <p className="mt-2 text-[0.8125rem] text-ink-3">
                   <code className="font-semibold">{q}</code>
                 </p>
               </div>
@@ -76,7 +74,7 @@ export default function AboutPage() {
         </Container>
       </Section>
 
-      <Section tone="warm">
+      <Section >
         <Container>
           <SectionHead
             eyebrow="What we produce"
@@ -95,11 +93,11 @@ export default function AboutPage() {
         </Container>
       </Section>
 
-      <Section tone="deep">
+      <Section >
         <Container>
           <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
             <SectionHead
-              tone="light"
+              
               title="See how we work"
               lead="Sourcing through dispatch — the sequence every batch moves through."
             />
@@ -108,9 +106,9 @@ export default function AboutPage() {
                 Quality &amp; Standards
               </ButtonLink>
               <ButtonLink
-                href="/shop"
+                href="/products"
                 variant="secondary"
-                className="border-ivory/35 text-ivory hover:border-ivory hover:bg-ivory/10"
+                className="border-white/35 text-white hover:border-white hover:bg-white/10"
               >
                 Browse products
               </ButtonLink>

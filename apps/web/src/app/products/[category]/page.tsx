@@ -40,7 +40,7 @@ export async function generateMetadata({
   return {
     title: c.name,
     description: c.description.slice(0, 155),
-    alternates: { canonical: `/shop/${c.slug}` },
+    alternates: { canonical: `/products/${c.slug}` },
     // Faceted URLs are excluded from the index (SEO.md §5)
     robots: filtered ? { index: false, follow: true } : undefined,
     openGraph: { title: `${c.name} — ${site.shortName}`, description: c.description },
@@ -94,31 +94,31 @@ export default async function CategoryPage({
   return (
     <>
       {/* Category hero */}
-      <Section tone="warm" size="sm">
+      <Section tone="surface" size="sm">
         <Container>
           <Breadcrumbs
-            items={[{ label: "Shop", href: "/shop" }, { label: c.name }]}
+            items={[{ label: "Products", href: "/products" }, { label: c.name }]}
           />
           <div className="mt-6 grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
             <div className="lg:col-span-7">
               <h1 className="t-h1">{c.name}</h1>
-              <p className="t-h3 mt-3 font-normal text-green-mid">
+              <p className="t-h3 mt-3 font-normal text-green-700">
                 {c.heroHeadline}
               </p>
               <p className="t-lead measure mt-5">{c.description}</p>
             </div>
             <div className="lg:col-span-5">
-              <ProductImage tone={c.tone} seed={c.order} ratio="wide" />
+              <ProductImage name={c.name} ratio="landscape" />
             </div>
           </div>
         </Container>
       </Section>
 
       {/* Grid */}
-      <Section tone="ivory" size="sm">
+      <Section tone="white" size="sm">
         <Container>
           <Suspense
-            fallback={<div className="h-[3.75rem] border-y border-sand" />}
+            fallback={<div className="h-[3.75rem] border-y border-line" />}
           >
             <CategoryToolbar resultCount={list.length} />
           </Suspense>
@@ -126,14 +126,14 @@ export default async function CategoryPage({
           {list.length === 0 ? (
             <div className="py-20 text-center">
               <h2 className="t-h3">No products match these filters</h2>
-              <p className="mx-auto mt-3 max-w-md text-ink-muted">
+              <p className="mx-auto mt-3 max-w-md text-ink-2">
                 Try clearing the filters, or browse another range.
               </p>
               <div className="mt-6 flex justify-center gap-3">
-                <ButtonLink href={`/shop/${c.slug}`} variant="secondary">
+                <ButtonLink href={`/products/${c.slug}`} variant="secondary">
                   Clear filters
                 </ButtonLink>
-                <ButtonLink href="/shop">All categories</ButtonLink>
+                <ButtonLink href="/products">All categories</ButtonLink>
               </div>
             </div>
           ) : (
@@ -142,8 +142,6 @@ export default async function CategoryPage({
                 <ProductCard
                   key={p.id}
                   product={p}
-                  seed={i}
-                  showCategory={false}
                 />
               ))}
             </div>
@@ -152,15 +150,15 @@ export default async function CategoryPage({
       </Section>
 
       {/* Cross-links keep every category reachable from every category */}
-      <Section tone="paper" size="sm">
+      <Section tone="white" size="sm">
         <Container>
-          <h2 className="t-label text-ink-faint">Other ranges</h2>
+          <h2 className="t-label text-ink-3">Other ranges</h2>
           <ul className="mt-5 flex flex-wrap gap-2">
             {others.map((o) => (
               <li key={o.slug}>
                 <Link
-                  href={`/shop/${o.slug}`}
-                  className="inline-block rounded-sm border border-sand bg-ivory px-4 py-2 text-[0.875rem] text-ink transition-colors hover:border-green hover:text-green-text"
+                  href={`/products/${o.slug}`}
+                  className="inline-block rounded-sm border border-line bg-white px-4 py-2 text-[0.875rem] text-ink transition-colors hover:border-green hover:text-green-700"
                 >
                   {o.name}
                 </Link>

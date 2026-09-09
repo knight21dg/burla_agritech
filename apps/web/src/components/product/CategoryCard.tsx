@@ -1,58 +1,36 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { ProductImage } from "@/components/ui/ProductImage";
 import { productsByCategory, type Category } from "@/data/catalog";
-import { cn } from "@/lib/utils";
 
 /**
- * Category card — a category is a destination, so the card is sized
- * generously and image-led (DESIGN-SYSTEM §7.3).
+ * Category card — DESIGN-SYSTEM §7.3.
+ *
+ * Authentic photography, name, product count. No icons, no illustrations,
+ * no abstract tiles. A category is a destination, so the image is generous.
  */
-export function CategoryCard({
-  category,
-  seed = 0,
-  size = "md",
-}: {
-  category: Category;
-  seed?: number;
-  size?: "md" | "lg";
-}) {
+export function CategoryCard({ category }: { category: Category }) {
   const count = productsByCategory(category.slug).length;
 
   return (
     <Link
-      href={`/shop/${category.slug}`}
+      href={`/products/${category.slug}`}
       className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
     >
-      <div className="overflow-hidden bg-ivory-warm">
+      <div className="overflow-hidden">
         <ProductImage
-          tone={category.tone}
-          seed={seed}
-          ratio={size === "lg" ? "portrait" : "square"}
-          className="transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+          name={category.name}
+          ratio="landscape"
+          className="transition-transform duration-300 ease-out group-hover:scale-[1.02]"
         />
       </div>
-      <div className="flex items-start justify-between gap-3 pt-3.5">
-        <div className="min-w-0">
-          <h3
-            className={cn(
-              "font-semibold leading-snug text-ink transition-colors group-hover:text-green-text",
-              size === "lg" ? "text-[1.125rem]" : "text-[0.9375rem]",
-            )}
-          >
-            {category.name}
-          </h3>
-          {count > 0 && (
-            <p className="mt-0.5 text-[0.8125rem] text-ink-faint">
-              {count} {count === 1 ? "product" : "products"}
-            </p>
-          )}
-        </div>
-        <ArrowRight
-          className="mt-1 size-4 shrink-0 text-ink-faint transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-green-text"
-          aria-hidden="true"
-        />
-      </div>
+      <h3 className="mt-3 text-[0.9375rem] font-semibold leading-snug text-ink transition-colors group-hover:text-green-700">
+        {category.name}
+      </h3>
+      {count > 0 && (
+        <p className="mt-0.5 text-[0.8125rem] text-ink-3">
+          {count} {count === 1 ? "product" : "products"}
+        </p>
+      )}
     </Link>
   );
 }

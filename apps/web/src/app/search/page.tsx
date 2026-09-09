@@ -24,8 +24,8 @@ async function Results({ q }: { q: string }) {
           {categories.map((c) => (
             <li key={c.slug}>
               <Link
-                href={`/shop/${c.slug}`}
-                className="inline-block rounded-sm border border-sand bg-paper px-4 py-2 text-[0.875rem] text-ink hover:border-green hover:text-green-text"
+                href={`/products/${c.slug}`}
+                className="inline-block rounded-sm border border-line bg-white px-4 py-2 text-[0.875rem] text-ink hover:border-green hover:text-green-700"
               >
                 {c.name}
               </Link>
@@ -40,7 +40,7 @@ async function Results({ q }: { q: string }) {
     return (
       <div className="max-w-xl">
         <h2 className="t-h3">No products match &ldquo;{q}&rdquo;</h2>
-        <p className="mt-3 text-ink-muted">
+        <p className="mt-3 text-ink-2">
           We may still be able to help — some ranges are seasonal, and bulk
           formats are not all listed. Ask us directly.
         </p>
@@ -52,7 +52,7 @@ async function Results({ q }: { q: string }) {
           >
             Ask on WhatsApp
           </ButtonLink>
-          <ButtonLink href="/shop" variant="secondary">
+          <ButtonLink href="/products" variant="secondary">
             Browse all products
           </ButtonLink>
         </div>
@@ -62,13 +62,13 @@ async function Results({ q }: { q: string }) {
 
   return (
     <>
-      <p className="text-[0.9375rem] text-ink-muted" aria-live="polite">
+      <p className="text-[0.9375rem] text-ink-2" aria-live="polite">
         {results.length} {results.length === 1 ? "result" : "results"} for
         &ldquo;{q}&rdquo;
       </p>
       <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
         {results.map((p, i) => (
-          <ProductCard key={p.id} product={p} seed={i} />
+          <ProductCard key={p.id} product={p} />
         ))}
       </div>
     </>
@@ -83,11 +83,11 @@ export default async function SearchPage({
   const { q = "" } = await searchParams;
 
   return (
-    <Section tone="ivory">
+    <Section >
       <Container>
         <h1 className="t-h1">Search</h1>
         <div className="mt-8">
-          <Suspense fallback={<p className="text-ink-muted">Searching…</p>}>
+          <Suspense fallback={<p className="text-ink-2">Searching…</p>}>
             <Results q={q.trim()} />
           </Suspense>
         </div>

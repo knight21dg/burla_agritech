@@ -42,21 +42,21 @@ export default function LocationsPage() {
         lead="Burla is an Indian business with international ambition. This page shows where we actually are — offices, facilities and distribution — and nothing we cannot verify."
       />
 
-      <Section tone="ivory">
+      <Section >
         <Container>
           <div className="grid gap-8 md:grid-cols-3">
             {presence.map(({ Icon, title, note, q }) => (
-              <div key={title} className="border-t border-sand pt-6">
+              <div key={title} className="border-t border-line pt-6">
                 <Icon
                   className="size-6 text-green"
                   strokeWidth={1.5}
                   aria-hidden="true"
                 />
                 <h2 className="t-h3 mt-4">{title}</h2>
-                <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-ink-muted">
+                <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-ink-2">
                   {note}
                 </p>
-                <p className="mt-3 text-[0.8125rem] text-ink-faint">
+                <p className="mt-3 text-[0.8125rem] text-ink-3">
                   Addresses pending — <code className="font-semibold">{q}</code>
                 </p>
               </div>
@@ -65,7 +65,7 @@ export default function LocationsPage() {
         </Container>
       </Section>
 
-      <Section tone="warm">
+      <Section >
         <Container>
           <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-5">
@@ -84,8 +84,8 @@ export default function LocationsPage() {
               </PendingContent>
 
               {/* Map placeholder — a real embed appears once addresses are verified */}
-              <div className="mt-8 grid aspect-video place-items-center border border-dashed border-sand-deep bg-ivory">
-                <p className="px-6 text-center text-[0.875rem] text-ink-faint">
+              <div className="mt-8 grid aspect-video place-items-center border border-dashed border-line-strong bg-white">
+                <p className="px-6 text-center text-[0.875rem] text-ink-3">
                   Map embed — enabled once addresses are confirmed
                 </p>
               </div>
@@ -94,11 +94,11 @@ export default function LocationsPage() {
         </Container>
       </Section>
 
-      <Section tone="deep" size="sm">
+      <Section tone="white" size="sm">
         <Container>
           <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
             <SectionHead
-              tone="light"
+              
               title="Looking for a distributor near you?"
               lead="Tell us where you are and we will point you in the right direction."
             />

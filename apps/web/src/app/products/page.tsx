@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function ShopPage() {
   return (
     <>
-      <Section tone="warm" size="sm">
+      <Section tone="surface" size="sm">
         <Container>
           <Breadcrumbs items={[{ label: "Shop" }]} />
           <h1 className="t-h1 mt-6">Our full range</h1>
@@ -25,27 +25,27 @@ export default function ShopPage() {
         </Container>
       </Section>
 
-      <Section tone="ivory">
+      <Section >
         <Container>
           <div className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-5">
             {categories.map((c, i) => (
-              <CategoryCard key={c.slug} category={c} seed={i} />
+              <CategoryCard key={c.slug} category={c} />
             ))}
           </div>
         </Container>
       </Section>
 
-      <Section tone="paper">
+      <Section >
         <Container>
           <div className="flex items-baseline justify-between gap-4">
             <h2 className="t-h2">Every product</h2>
-            <p className="text-[0.875rem] text-ink-muted">
+            <p className="text-[0.875rem] text-ink-2">
               {products.length} products
             </p>
           </div>
           <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
             {products.map((p, i) => (
-              <ProductCard key={p.id} product={p} seed={i} />
+              <ProductCard key={p.id} product={p} />
             ))}
           </div>
         </Container>

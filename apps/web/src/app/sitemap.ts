@@ -8,7 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticRoutes = [
     { path: "", priority: 1 },
-    { path: "/shop", priority: 0.9 },
+    { path: "/products", priority: 0.9 },
     { path: "/about", priority: 0.8 },
     { path: "/quality", priority: 0.8 },
     { path: "/locations", priority: 0.6 },
@@ -28,13 +28,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: r.priority,
     })),
     ...categories.map((c) => ({
-      url: `${site.url}/shop/${c.slug}`,
+      url: `${site.url}/products/${c.slug}`,
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.8,
     })),
     ...products.map((p) => ({
-      url: `${site.url}/products/${p.slug}`,
+      url: `${site.url}/products/p/${p.slug}`,
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.7,

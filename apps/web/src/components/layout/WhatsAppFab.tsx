@@ -47,7 +47,7 @@ export function WhatsAppFab() {
         type="button"
         onClick={dismiss}
         aria-label="Hide WhatsApp button"
-        className="rounded-full border border-sand bg-paper p-1.5 text-ink-faint shadow-sm transition-colors hover:text-ink sm:hidden"
+        className="rounded-full border border-line bg-white p-1.5 text-ink-3 shadow-sm transition-colors hover:text-ink sm:hidden"
       >
         <X className="size-3.5" aria-hidden="true" />
       </button>

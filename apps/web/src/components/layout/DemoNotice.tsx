@@ -31,14 +31,14 @@ export function DemoNotice() {
   if (hidden) return null;
 
   return (
-    <div data-site-chrome className="bg-green-deep text-ivory">
+    <div data-site-chrome className="bg-green-900 text-white">
       <div className="container-page">
         <div className="flex items-center justify-between gap-4 py-2.5">
           <p className="flex items-center gap-2.5 text-[0.8125rem] leading-snug">
-            <Info className="size-4 shrink-0 text-ivory/70" aria-hidden="true" />
+            <Info className="size-4 shrink-0 text-white/70" aria-hidden="true" />
             <span>
               <span className="font-semibold">Demo build.</span>{" "}
-              <span className="text-ivory/80">
+              <span className="text-white/80">
                 Product details and imagery are placeholders pending client
                 content and photography.
               </span>
@@ -56,7 +56,7 @@ export function DemoNotice() {
               }
             }}
             aria-label="Dismiss demo notice"
-            className="shrink-0 rounded-md p-1.5 text-ivory/70 transition-colors hover:bg-ivory/10 hover:text-ivory"
+            className="shrink-0 rounded-md p-1.5 text-white/70 transition-colors hover:bg-white/10 hover:text-white"
           >
             <X className="size-4" aria-hidden="true" />
           </button>

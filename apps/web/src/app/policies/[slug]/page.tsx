@@ -108,7 +108,7 @@ export default async function PolicyPage({
         lead={policy.lead}
       />
 
-      <Section tone="ivory">
+      <Section >
         <Container>
           <div className="max-w-2xl">
             <PendingContent question={policy.question}>
@@ -123,7 +123,7 @@ export default async function PolicyPage({
               {policy.must.map((item) => (
                 <li
                   key={item}
-                  className="flex gap-3 border-b border-sand pb-3 text-[0.9375rem] leading-relaxed text-ink-muted"
+                  className="flex gap-3 border-b border-line pb-3 text-[0.9375rem] leading-relaxed text-ink-2"
                 >
                   <span className="mt-2 size-1.5 shrink-0 rounded-full bg-green" aria-hidden="true" />
                   {item}
@@ -131,7 +131,7 @@ export default async function PolicyPage({
               ))}
             </ul>
 
-            <p className="mt-8 text-[0.875rem] leading-relaxed text-ink-faint">
+            <p className="mt-8 text-[0.875rem] leading-relaxed text-ink-3">
               Requirements reflect our reading of the Consumer Protection
               (E-Commerce) Rules 2020, the Legal Metrology (Packaged Commodities)
               Rules 2011 and the DPDP Act 2023. This is not legal advice — see

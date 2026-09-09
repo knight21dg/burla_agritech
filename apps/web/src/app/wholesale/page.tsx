@@ -38,19 +38,19 @@ export default function WholesalePage() {
         lead="Burla is built for volume as well as for the shelf. Tell us what you need and we will come back with specifics rather than a brochure."
       />
 
-      <Section tone="ivory">
+      <Section >
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-5">
               <h2 className="t-h3">Who we supply</h2>
-              <ul className="mt-6 space-y-px overflow-hidden rounded-md border border-sand">
+              <ul className="mt-6 space-y-px overflow-hidden rounded-md border border-line">
                 {buyers.map(([title, note]) => (
                   <li
                     key={title}
-                    className="border-b border-sand bg-paper px-5 py-4 last:border-b-0"
+                    className="border-b border-line bg-white px-5 py-4 last:border-b-0"
                   >
                     <p className="font-semibold text-ink">{title}</p>
-                    <p className="mt-0.5 text-[0.875rem] text-ink-muted">
+                    <p className="mt-0.5 text-[0.875rem] text-ink-2">
                       {note}
                     </p>
                   </li>
@@ -62,14 +62,14 @@ export default function WholesalePage() {
                 {steps.map(([name, note], i) => (
                   <li key={name} className="flex gap-4">
                     <span
-                      className="t-label mt-1 shrink-0 text-ink-faint"
+                      className="t-label mt-1 shrink-0 text-ink-3"
                       aria-hidden="true"
                     >
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <span>
                       <span className="block font-semibold text-ink">{name}</span>
-                      <span className="mt-0.5 block text-[0.875rem] text-ink-muted">
+                      <span className="mt-0.5 block text-[0.875rem] text-ink-2">
                         {note}
                       </span>
                     </span>

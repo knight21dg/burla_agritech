@@ -51,11 +51,11 @@ export function CategoryToolbar({ resultCount }: { resultCount: number }) {
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center gap-x-6 gap-y-4 border-y border-sand py-4 transition-opacity",
+        "flex flex-wrap items-center gap-x-6 gap-y-4 border-y border-line py-4 transition-opacity",
         pending && "opacity-60",
       )}
     >
-      <span className="inline-flex items-center gap-2 text-[0.8125rem] font-medium text-ink-muted">
+      <span className="inline-flex items-center gap-2 text-[0.8125rem] font-medium text-ink-2">
         <SlidersHorizontal className="size-4" aria-hidden="true" />
         Refine
       </span>
@@ -71,8 +71,8 @@ export function CategoryToolbar({ resultCount }: { resultCount: number }) {
             className={cn(
               "rounded-sm border px-3 py-1.5 text-[0.8125rem] transition-colors",
               availability === o.value
-                ? "border-green-deep bg-green-deep text-paper"
-                : "border-sand bg-paper text-ink hover:border-ink-faint",
+                ? "border-green-900 bg-green-900 text-white"
+                : "border-line bg-white text-ink hover:border-ink-3",
             )}
           >
             {o.label}
@@ -83,7 +83,7 @@ export function CategoryToolbar({ resultCount }: { resultCount: number }) {
       <div className="flex items-center gap-2">
         <label
           htmlFor="sort"
-          className="text-[0.8125rem] font-medium text-ink-muted"
+          className="text-[0.8125rem] font-medium text-ink-2"
         >
           Sort
         </label>
@@ -91,7 +91,7 @@ export function CategoryToolbar({ resultCount }: { resultCount: number }) {
           id="sort"
           value={sort}
           onChange={(e) => update("sort", e.target.value)}
-          className="rounded-sm border border-sand bg-paper px-3 py-1.5 text-[0.875rem] text-ink"
+          className="rounded-sm border border-line bg-white px-3 py-1.5 text-[0.875rem] text-ink"
         >
           {sortOptions.map((o) => (
             <option key={o.value} value={o.value}>
@@ -105,13 +105,13 @@ export function CategoryToolbar({ resultCount }: { resultCount: number }) {
         <button
           type="button"
           onClick={reset}
-          className="text-[0.8125rem] text-green-text underline underline-offset-4"
+          className="text-[0.8125rem] text-green-700 underline underline-offset-4"
         >
           Clear all
         </button>
       )}
 
-      <p className="ml-auto text-[0.875rem] text-ink-muted" aria-live="polite">
+      <p className="ml-auto text-[0.875rem] text-ink-2" aria-live="polite">
         {resultCount} {resultCount === 1 ? "product" : "products"}
       </p>
     </div>

@@ -47,24 +47,24 @@ export default function QualityPage() {
         lead="Food is a category where credibility matters more than presentation. This page exists to say exactly how Burla works — and, where a stage has not yet been confirmed, to say that instead of guessing."
       />
 
-      <Section tone="ivory">
+      <Section >
         <Container>
           <SectionHead
             eyebrow="The sequence"
             title="Six stages, and nothing skips one"
           />
 
-          <ol className="mt-12 grid gap-px overflow-hidden border border-sand bg-sand md:grid-cols-2 lg:grid-cols-3">
+          <ol className="mt-12 grid gap-px overflow-hidden border border-line bg-line md:grid-cols-2 lg:grid-cols-3">
             {stages.map((s, i) => (
-              <li key={s.name} className="bg-paper p-7">
-                <span className="t-label block text-ink-faint" aria-hidden="true">
+              <li key={s.name} className="bg-white p-7">
+                <span className="t-label block text-ink-3" aria-hidden="true">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <h3 className="t-h3 mt-3">{s.name}</h3>
-                <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-ink-muted">
+                <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-ink-2">
                   {s.summary}
                 </p>
-                <p className="mt-4 text-[0.8125rem] text-ink-faint">
+                <p className="mt-4 text-[0.8125rem] text-ink-3">
                   Detail pending confirmation
                 </p>
               </li>
@@ -73,7 +73,7 @@ export default function QualityPage() {
         </Container>
       </Section>
 
-      <Section tone="warm">
+      <Section >
         <Container>
           <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-5">
@@ -103,11 +103,11 @@ export default function QualityPage() {
         </Container>
       </Section>
 
-      <Section tone="deep">
+      <Section >
         <Container>
           <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
             <SectionHead
-              tone="light"
+              
               title="Buying in bulk?"
               lead="Specification sheets and documentation are available to trade buyers on request."
             />

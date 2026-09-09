@@ -32,7 +32,7 @@ export async function generateMetadata({
   return {
     title: `${p.name} ${variant.label}`,
     description: p.shortDescriptor,
-    alternates: { canonical: `/products/${p.slug}` },
+    alternates: { canonical: `/products/p/${p.slug}` },
     openGraph: {
       title: `${p.name} — ${site.shortName}`,
       description: p.shortDescriptor,
@@ -73,13 +73,13 @@ export default async function ProductPage({
 
   return (
     <>
-      <Section tone="ivory" size="sm">
+      <Section tone="white" size="sm">
         <Container>
           <Breadcrumbs
             items={[
-              { label: "Shop", href: "/shop" },
+              { label: "Products", href: "/products" },
               ...(category
-                ? [{ label: category.name, href: `/shop/${category.slug}` }]
+                ? [{ label: category.name, href: `/products/${category.slug}` }]
                 : []),
               { label: product.name },
             ]}
@@ -91,7 +91,7 @@ export default async function ProductPage({
       </Section>
 
       {related.length > 0 && (
-        <Section tone="warm">
+        <Section >
           <Container>
             <h2 className="t-h2">More from {category?.name}</h2>
             <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
@@ -99,8 +99,6 @@ export default async function ProductPage({
                 <ProductCard
                   key={p.id}
                   product={p}
-                  seed={i + 2}
-                  showCategory={false}
                 />
               ))}
             </div>

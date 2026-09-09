@@ -54,20 +54,19 @@ export function ProductDetail({ product }: { product: Product }) {
                   className={cn(
                     "block size-16 overflow-hidden border transition-colors sm:size-20",
                     image === g
-                      ? "border-green-deep"
-                      : "border-sand hover:border-ink-faint",
+                      ? "border-green-900"
+                      : "border-line hover:border-ink-3",
                   )}
                 >
-                  <ProductImage tone={product.tone} seed={g + 1} />
+                  <ProductImage name={product.name} />
                 </button>
               </li>
             ))}
           </ul>
 
-          <div className="min-w-0 flex-1 border border-sand bg-paper">
+          <div className="min-w-0 flex-1 border border-line bg-white">
             <ProductImage
-              tone={product.tone}
-              seed={image + 1}
+              name={product.name}
               className="w-full"
             />
           </div>
@@ -85,17 +84,17 @@ export function ProductDetail({ product }: { product: Product }) {
             both a policy violation and a consumer-law problem. */}
 
         <div className="mt-6 flex items-baseline gap-3">
-          <p className="text-[1.75rem] font-semibold tabular-nums text-green-deep">
+          <p className="text-[1.75rem] font-semibold tabular-nums text-green-900">
             {formatPrice(variant.priceMinor)}
           </p>
-          <p className="text-[0.875rem] text-ink-muted">
+          <p className="text-[0.875rem] text-ink-2">
             {variant.label} · inclusive of all taxes
           </p>
         </div>
 
         {product.variants.length > 1 && (
           <fieldset className="mt-7">
-            <legend className="t-label mb-3 text-ink-faint">Pack size</legend>
+            <legend className="t-label mb-3 text-ink-3">Pack size</legend>
             <div className="flex flex-wrap gap-2">
               {product.variants.map((v) => (
                 <button
@@ -107,8 +106,8 @@ export function ProductDetail({ product }: { product: Product }) {
                   className={cn(
                     "rounded-sm border px-4 py-2 text-[0.875rem] font-medium transition-colors",
                     v.id === variant.id
-                      ? "border-green-deep bg-green-deep text-paper"
-                      : "border-sand bg-paper text-ink hover:border-ink-faint",
+                      ? "border-green-900 bg-green-900 text-white"
+                      : "border-line bg-white text-ink hover:border-ink-3",
                     v.availability === "out_of_stock" &&
                       "cursor-not-allowed opacity-40",
                   )}
@@ -125,22 +124,22 @@ export function ProductDetail({ product }: { product: Product }) {
             className={cn(
               "size-2 rounded-full",
               soldOut
-                ? "bg-ink-faint"
+                ? "bg-ink-3"
                 : variant.availability === "low_stock"
                   ? "bg-warning"
                   : "bg-success",
             )}
             aria-hidden="true"
           />
-          <span className={soldOut ? "text-ink-muted" : "text-ink"}>
+          <span className={soldOut ? "text-ink-2" : "text-ink"}>
             {availabilityLabel[variant.availability]}
           </span>
-          <span className="text-ink-faint">· SKU {variant.sku}</span>
+          <span className="text-ink-3">· SKU {variant.sku}</span>
         </p>
 
         {/* Quantity + actions */}
         <div className="mt-7 flex flex-wrap items-center gap-3">
-          <div className="flex h-11 items-center rounded-md border border-sand bg-paper">
+          <div className="flex h-11 items-center rounded-md border border-line bg-white">
             <button
               type="button"
               onClick={() => setQty((q) => Math.max(1, q - 1))}
@@ -189,13 +188,13 @@ export function ProductDetail({ product }: { product: Product }) {
           Ask about this product
         </ButtonLink>
 
-        <p className="mt-4 text-[0.8125rem] leading-relaxed text-ink-faint">
+        <p className="mt-4 text-[0.8125rem] leading-relaxed text-ink-3">
           Checkout is not enabled in this demo. Ordering currently runs through
-          WhatsApp — see <code className="text-ink-muted">OQ-001</code>.
+          WhatsApp — see <code className="text-ink-2">OQ-001</code>.
         </p>
 
         {/* ------------------------------------------------------------- Tabs */}
-        <div className="mt-10 border-t border-sand pt-6">
+        <div className="mt-10 border-t border-line pt-6">
           <div
             role="tablist"
             aria-label="Product details"
@@ -212,8 +211,8 @@ export function ProductDetail({ product }: { product: Product }) {
                 className={cn(
                   "border-b-2 pb-2 text-[0.9375rem] font-medium transition-colors",
                   tab === t
-                    ? "border-green-deep text-green-deep"
-                    : "border-transparent text-ink-muted hover:text-ink",
+                    ? "border-green-900 text-green-900"
+                    : "border-transparent text-ink-2 hover:text-ink",
                 )}
               >
                 {t}
@@ -225,20 +224,20 @@ export function ProductDetail({ product }: { product: Product }) {
             role="tabpanel"
             id={`panel-${tab}`}
             aria-labelledby={`tab-${tab}`}
-            className="pt-5 text-[0.9375rem] leading-relaxed text-ink-muted"
+            className="pt-5 text-[0.9375rem] leading-relaxed text-ink-2"
           >
             {tab === "About" && <p className="measure">{product.description}</p>}
 
             {tab === "Product information" && (
               <div>
-                <dl className="divide-y divide-sand border-y border-sand">
+                <dl className="divide-y divide-line border-y border-line">
                   {INFO_FIELDS.map((f) => (
                     <div
                       key={f}
                       className="flex items-baseline justify-between gap-4 py-2.5"
                     >
                       <dt className="text-ink">{f}</dt>
-                      <dd className="text-right text-[0.875rem] text-ink-faint">
+                      <dd className="text-right text-[0.875rem] text-ink-3">
                         To be confirmed
                       </dd>
                     </div>

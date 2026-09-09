@@ -23,15 +23,15 @@ export default function ContactPage() {
         lead="Product enquiries, bulk orders, partnerships, or anything else — reach us through the form or directly on WhatsApp."
       />
 
-      <Section tone="ivory">
+      <Section >
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-5">
               <h2 className="t-h3">Direct channels</h2>
 
-              <ul className="mt-6 space-y-px overflow-hidden rounded-md border border-sand">
-                <li className="bg-paper px-5 py-4">
-                  <p className="t-label text-ink-faint">WhatsApp</p>
+              <ul className="mt-6 space-y-px overflow-hidden rounded-md border border-line">
+                <li className="bg-white px-5 py-4">
+                  <p className="t-label text-ink-3">WhatsApp</p>
                   <a
                     href={whatsappLink(
                       "Hi Burla, I'd like to know more about your products.",
@@ -40,34 +40,34 @@ export default function ContactPage() {
                     rel="noopener noreferrer"
                     data-analytics="whatsapp_click"
                     data-source="contact"
-                    className="mt-1 inline-flex items-center gap-2 font-medium text-ink hover:text-green-text"
+                    className="mt-1 inline-flex items-center gap-2 font-medium text-ink hover:text-green-700"
                   >
                     <MessageCircle className="size-4" aria-hidden="true" />
                     Message us — usually the quickest
                   </a>
                 </li>
-                <li className="border-t border-sand bg-paper px-5 py-4">
-                  <p className="t-label text-ink-faint">Phone</p>
+                <li className="border-t border-line bg-white px-5 py-4">
+                  <p className="t-label text-ink-3">Phone</p>
                   <a
                     href={`tel:${site.contact.phone.replace(/\s/g, "")}`}
-                    className="mt-1 inline-flex items-center gap-2 font-medium text-ink hover:text-green-text"
+                    className="mt-1 inline-flex items-center gap-2 font-medium text-ink hover:text-green-700"
                   >
                     <Phone className="size-4" aria-hidden="true" />
                     {site.contact.phone}
                   </a>
                 </li>
-                <li className="border-t border-sand bg-paper px-5 py-4">
-                  <p className="t-label text-ink-faint">Email</p>
+                <li className="border-t border-line bg-white px-5 py-4">
+                  <p className="t-label text-ink-3">Email</p>
                   <a
                     href={`mailto:${site.contact.email}`}
-                    className="mt-1 inline-flex items-center gap-2 font-medium text-ink hover:text-green-text"
+                    className="mt-1 inline-flex items-center gap-2 font-medium text-ink hover:text-green-700"
                   >
                     <Mail className="size-4" aria-hidden="true" />
                     {site.contact.email}
                   </a>
                 </li>
-                <li className="border-t border-sand bg-paper px-5 py-4">
-                  <p className="t-label text-ink-faint">Hours</p>
+                <li className="border-t border-line bg-white px-5 py-4">
+                  <p className="t-label text-ink-3">Hours</p>
                   <p className="mt-1 inline-flex items-center gap-2 text-ink">
                     <Clock className="size-4" aria-hidden="true" />
                     {site.contact.hours}
@@ -75,14 +75,14 @@ export default function ContactPage() {
                 </li>
               </ul>
 
-              <div className="mt-6 border-l-2 border-sand-deep bg-ivory-warm/60 px-5 py-4">
-                <p className="t-label text-ink-faint">Awaiting client content</p>
-                <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-muted">
+              <div className="mt-6 border-l-2 border-line-strong bg-surface/60 px-5 py-4">
+                <p className="t-label text-ink-3">Awaiting client content</p>
+                <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
                   Phone number, email address, business hours and whether a
                   physical address should be published are pending
                   confirmation.
                 </p>
-                <p className="mt-2 text-[0.8125rem] text-ink-faint">
+                <p className="mt-2 text-[0.8125rem] text-ink-3">
                   Tracked as <code className="font-semibold">OQ-024</code> and{" "}
                   <code className="font-semibold">OQ-004</code>
                 </p>

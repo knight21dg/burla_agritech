@@ -27,7 +27,7 @@ export function Logo({
     <span
       className={cn(
         "inline-flex flex-col items-center leading-none",
-        reversed ? "text-paper" : "text-green",
+        reversed ? "text-white" : "text-green",
         className,
       )}
     >
@@ -45,7 +45,7 @@ export function Logo({
         <span
           className={cn(
             "font-sans font-semibold uppercase",
-            reversed ? "text-paper/85" : "text-green",
+            reversed ? "text-white/85" : "text-green",
           )}
           style={{
             fontSize: "max(0.205em, 10px)",
@@ -82,7 +82,7 @@ export function LeafMark({
       role="img"
       aria-hidden="true"
       focusable="false"
-      className={cn(reversed ? "text-paper" : "text-green", className)}
+      className={cn(reversed ? "text-white" : "text-green", className)}
       fill="none"
     >
       <g transform="translate(46 55)">

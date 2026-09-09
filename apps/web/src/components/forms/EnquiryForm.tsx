@@ -65,7 +65,7 @@ export function EnquiryForm({ kind }: { kind: Kind }) {
     return (
       <div
         role="status"
-        className="border border-green/40 bg-paper px-6 py-8 text-center"
+        className="border border-green/40 bg-white px-6 py-8 text-center"
       >
         <CheckCircle2
           className="mx-auto size-8 text-green"
@@ -73,11 +73,11 @@ export function EnquiryForm({ kind }: { kind: Kind }) {
           aria-hidden="true"
         />
         <h3 className="t-h3 mt-4">Thank you — we have your enquiry</h3>
-        <p className="mx-auto mt-2 max-w-sm text-[0.9375rem] text-ink-muted">
+        <p className="mx-auto mt-2 max-w-sm text-[0.9375rem] text-ink-2">
           Someone from the team will come back to you. If it is urgent, WhatsApp
           is faster.
         </p>
-        <p className="mt-4 text-[0.8125rem] text-ink-faint">
+        <p className="mt-4 text-[0.8125rem] text-ink-3">
           Demo build — nothing was actually sent.
         </p>
       </div>
@@ -149,7 +149,7 @@ export function EnquiryForm({ kind }: { kind: Kind }) {
               id={`${id}-quantity`}
               name="quantity"
               placeholder="e.g. 500 kg per month"
-              className="mt-1.5 h-11 w-full rounded-sm border border-sand bg-paper px-3 text-ink outline-none focus:border-green-mid"
+              className="mt-1.5 h-11 w-full rounded-sm border border-line bg-white px-3 text-ink outline-none focus:border-green-700"
             />
           </div>
         </div>
@@ -166,7 +166,7 @@ export function EnquiryForm({ kind }: { kind: Kind }) {
           <select
             id={`${id}-interest`}
             name="interest"
-            className="mt-1.5 h-11 w-full rounded-sm border border-sand bg-paper px-3 text-ink outline-none focus:border-green-mid"
+            className="mt-1.5 h-11 w-full rounded-sm border border-line bg-white px-3 text-ink outline-none focus:border-green-700"
             defaultValue=""
           >
             <option value="">Select a range</option>
@@ -195,10 +195,10 @@ export function EnquiryForm({ kind }: { kind: Kind }) {
           aria-invalid={Boolean(errors.message)}
           aria-describedby={errors.message ? `${id}-message-error` : undefined}
           className={cn(
-            "mt-1.5 w-full rounded-sm border bg-paper px-3 py-2.5 text-ink outline-none",
+            "mt-1.5 w-full rounded-sm border bg-white px-3 py-2.5 text-ink outline-none",
             errors.message
               ? "border-danger focus:border-danger"
-              : "border-sand focus:border-green-mid",
+              : "border-line focus:border-green-700",
           )}
         />
         {errors.message && (
@@ -213,7 +213,7 @@ export function EnquiryForm({ kind }: { kind: Kind }) {
         {status === "submitting" ? "Sending…" : "Send message"}
       </Button>
 
-      <p className="text-[0.8125rem] leading-relaxed text-ink-faint">
+      <p className="text-[0.8125rem] leading-relaxed text-ink-3">
         We use your details only to answer this enquiry. Demo build — this form
         does not yet send anything.
       </p>
@@ -249,10 +249,10 @@ function Field({
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}
         className={cn(
-          "mt-1.5 h-11 w-full rounded-sm border bg-paper px-3 text-ink outline-none",
+          "mt-1.5 h-11 w-full rounded-sm border bg-white px-3 text-ink outline-none",
           error
             ? "border-danger focus:border-danger"
-            : "border-sand focus:border-green-mid",
+            : "border-line focus:border-green-700",
         )}
       />
       {error && <FieldError id={`${id}-error`}>{error}</FieldError>}
