@@ -12,8 +12,10 @@
     "lint": "npm run lint --workspace=@burla/web",
     "typecheck": "npm run typecheck --workspace=@burla/web",
     "db:generate": "npm run db:generate --workspace=@burla/web",
-    "db:migrate": "npm run db:migrate --workspace=@burla/web",
-    "db:check": "npm run db:check --workspace=@burla/web"
+    "db:migrate": "npm run db:migrate --workspace=@burla/web --",
+    "db:check": "npm run db:check --workspace=@burla/web",
+    "db:seed": "npm run db:seed --workspace=@burla/web --",
+    "db:verify": "npm run db:verify --workspace=@burla/web --"
   },
   "engines": {
     "node": ">=20.9.0"
