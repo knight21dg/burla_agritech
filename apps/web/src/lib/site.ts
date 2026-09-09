@@ -13,25 +13,46 @@ export const site = {
   subTagline: "Pure Products · Healthy People · A Greener Tomorrow",
   description:
     "Indian agricultural produce carefully processed into everyday foods — dehydrated powders and flakes, pickles, spiced dal powders, sun-dried crisps, dry fruits, millets, herbal infusions and masalas.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.burla.co.in",
 
-  /** PLACEHOLDER — OQ-004. Read from env in production, never hard-coded. */
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "919876543210",
+  /**
+   * From the client's business card, 2026-09-09.
+   * The same number as the published phone line — CONFIRM this is the number
+   * that actually receives WhatsApp before launch (OQ-004).
+   */
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "919704032555",
 
   contact: {
-    phone: "+91 98765 43210", // PLACEHOLDER — OQ-024
-    email: "hello@burlaagri.com", // PLACEHOLDER — OQ-024
-    exportEmail: "export@burlaagri.com", // PLACEHOLDER — OQ-043
-    hours: "Monday to Saturday, 9:00 AM – 6:00 PM IST", // PLACEHOLDER
+    phone: "+91 97040 32555",
+    phoneRaw: "+919704032555",
+    email: "burlaglobalagriproducts@gmail.com",
+    hours: "[Business hours to be confirmed]", // OQ-024
   },
 
-  /** PLACEHOLDER — OQ-002, OQ-003, OQ-005. Legally required in the footer. */
+  /**
+   * Legal identity. GSTIN, address and partners come from the business card.
+   *
+   * Still outstanding and legally required before a food business can trade
+   * online in India:
+   *   - FSSAI licence number (OQ-003) — blocking
+   *   - The registered firm name as it appears on the GST certificate (OQ-002)
+   *   - A named grievance officer (OQ-005)
+   */
   legal: {
-    entityName: "[Legal entity name to be confirmed]",
-    address: "[Registered address to be confirmed]",
+    entityName: "[Registered firm name to be confirmed]",
+    address:
+      "Nellore, Iskoncity, SPSR Nellore District, Andhra Pradesh 524003, India",
+    city: "Nellore",
+    state: "Andhra Pradesh",
+    postalCode: "524003",
+    country: "IN",
     fssai: "[FSSAI licence number to be confirmed]",
-    gstin: "[GSTIN to be confirmed]",
+    gstin: "37ABHFB2458F1ZH",
     grievanceOfficer: "[Grievance officer to be confirmed]",
+    partners: [
+      { name: "Burla Krishna Reddy", role: "Managing Partner" },
+      { name: "Burla Jeevan Reddy", role: "Partner" },
+    ],
   },
 
   social: {

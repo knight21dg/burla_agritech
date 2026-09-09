@@ -78,9 +78,8 @@ export default function ContactPage() {
               <div className="mt-6 border-l-2 border-line-strong bg-surface/60 px-5 py-4">
                 <p className="t-label text-ink-3">Awaiting client content</p>
                 <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
-                  Phone number, email address, business hours and whether a
-                  physical address should be published are pending
-                  confirmation.
+                  Business hours are still to be confirmed, and we need to check
+                  that the published number is the one that receives WhatsApp.
                 </p>
                 <p className="mt-2 text-[0.8125rem] text-ink-3">
                   Tracked as <code className="font-semibold">OQ-024</code> and{" "}

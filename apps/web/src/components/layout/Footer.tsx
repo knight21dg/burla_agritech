@@ -136,9 +136,8 @@ export function Footer() {
         <div className="border-t border-white/15 py-8">
           <div className="flex flex-col gap-4 text-[0.8125rem] leading-relaxed text-white/60 lg:flex-row lg:items-start lg:justify-between">
             <div className="space-y-1">
-              <p>
-                {site.legal.entityName} · {site.legal.address}
-              </p>
+              <p>{site.legal.entityName}</p>
+              <p>{site.legal.address}</p>
               <p>
                 FSSAI Licence No. {site.legal.fssai} · GSTIN{" "}
                 {site.legal.gstin}
