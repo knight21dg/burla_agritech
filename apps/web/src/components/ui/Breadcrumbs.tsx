@@ -28,7 +28,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
   return (
     <>
       <nav aria-label="Breadcrumb">
-        <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[0.8125rem] text-ink-muted">
+        <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[0.8125rem] text-ink-2">
           {trail.map((c, i) => {
             const last = i === trail.length - 1;
             return (
@@ -36,7 +36,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
                 {c.href && !last ? (
                   <Link
                     href={c.href}
-                    className="hover:text-green-text hover:underline underline-offset-4"
+                    className="hover:text-green-700 hover:underline underline-offset-4"
                   >
                     {c.label}
                   </Link>
@@ -47,7 +47,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
                 )}
                 {!last && (
                   <ChevronRight
-                    className="size-3.5 text-ink-faint"
+                    className="size-3.5 text-ink-3"
                     aria-hidden="true"
                   />
                 )}

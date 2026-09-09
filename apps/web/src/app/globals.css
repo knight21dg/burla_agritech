@@ -1,118 +1,95 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   Burla Design System — tokens
+   Burla Design System v1.0 — white canvas, product-first
    Source of truth: docs/DESIGN-SYSTEM.md
+
+   The interface is a white frame around photographs of food. Colour comes from
+   the products; green marks the brand and the primary action, nothing else.
+
    Brand green is PROVISIONAL until the vector logo arrives (OQ-008).
    ========================================================================== */
 
 @theme {
+  /* Surface — white is the default, not a choice */
+  --color-surface: #fafafa;
+  --color-surface-2: #f5f5f5;
+  --color-line: #e5e5e5;
+  --color-line-strong: #d4d4d4;
+
+  /* Ink — all verified against white in DESIGN-SYSTEM §3.2 */
+  --color-ink: #171717; /* 17.4:1 */
+  --color-ink-2: #4a4a4a; /*  8.9:1 */
+  --color-ink-3: #6b6b6b; /*  5.3:1 */
+
   /* Brand */
-  --color-green: #2e9e5b;
-  --color-green-deep: #14472b;
-  --color-green-mid: #1b6b3f;
-  --color-green-text: #1b6b3f;
-
-  /* Surface */
-  --color-ivory: #faf6ec;
-  --color-ivory-warm: #f3ecdd;
-  --color-paper: #fffdf8;
-  --color-sand: #e4dbc7;
-  --color-sand-deep: #cfc2a6;
-
-  /* Ink */
-  --color-ink: #1f211c;
-  --color-ink-muted: #5e584c;
-  --color-ink-faint: #6e6656;
-
-  /* Accent */
-  --color-terracotta: #b3542e;
-  --color-turmeric: #c8901f;
+  --color-green: #2e9e5b; /* logo green — 3.4:1, NEVER for text */
+  --color-green-700: #157a3f; /* 5.4:1 — buttons, links, active nav */
+  --color-green-900: #0e4a27; /* footer ground */
+  --color-green-50: #f1f8f3; /* selected chip background */
 
   /* Functional */
-  --color-success: #1b6b3f;
-  --color-warning: #a66a12;
+  --color-success: #157a3f;
+  --color-warning: #8a5a00;
   --color-danger: #a32b1e;
 
-  /* Type */
-  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  /* Type — one family (DESIGN-SYSTEM §4.1) */
   --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
-  --font-script: var(--font-caveat), cursive;
 
-  /* Radius — deliberately small (DESIGN-SYSTEM §5.5) */
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 8px;
+  /* Radius — small by design */
+  --radius-sm: 3px;
+  --radius-md: 6px;
 
   /* Layout */
-  --container-page: 1320px;
+  --container-page: 1280px;
 
-  /* Motion */
-  --ease-entrance: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @layer base {
   :root {
     color-scheme: light;
 
-    /* Height of everything above the hero, so the hero can size itself to the
-       remaining viewport. This is the server-rendered fallback only:
-       ChromeMeasure replaces it with the measured height before first paint,
-       because a fixed figure drifts when the notice wraps or fonts swap.
-       Generous by design — better a small gap than an overshoot. */
-    --header-h: 4.5rem;
-    --notice-h: 3.75rem;
-    --site-chrome: calc(var(--header-h) + var(--notice-h) + 2px);
-  }
-
-  :root[data-notice="dismissed"] {
-    --notice-h: 0rem;
-  }
-
-  @media (width >= 1024px) {
-    :root {
-      --header-h: 5.25rem;
-    }
+    /* Height of everything above the hero. ChromeMeasure replaces this with
+       the measured value before first paint; this is the SSR fallback. */
+    --header-h: 4rem;
+    --catbar-h: 3rem;
+    --site-chrome: calc(var(--header-h) + var(--catbar-h) + 2px);
   }
 
   html {
-    scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
     *,
     *::before,
     *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
   }
 
   body {
-    background-color: var(--color-ivory);
+    background-color: #ffffff;
     color: var(--color-ink);
     font-family: var(--font-sans);
     font-size: 16px;
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
   }
 
   h1,
   h2,
   h3,
   h4 {
-    font-family: var(--font-display);
-    color: var(--color-green-deep);
+    color: var(--color-ink);
+    font-weight: 600;
     text-wrap: balance;
   }
 
-  /* Focus: visible, 3:1 against both surface and control */
   :focus-visible {
     outline: 2px solid var(--color-ink);
     outline-offset: 2px;
@@ -120,11 +97,11 @@
   }
 
   ::selection {
-    background: var(--color-green);
+    background: var(--color-green-700);
     color: #fff;
   }
 
-  /* Inputs never below 16px — prevents iOS zoom-on-focus */
+  /* 16px minimum prevents iOS zoom-on-focus */
   input,
   select,
   textarea {
@@ -134,63 +111,49 @@
 }
 
 @layer components {
-  /* Fluid type scale — DESIGN-SYSTEM §4.2 */
+  /* Type scale — DESIGN-SYSTEM §4.2. Deliberately flatter than v0.2:
+     a 5rem headline on a product catalogue is the frame shouting. */
   .t-display {
-    font-family: var(--font-display);
-    font-size: clamp(2.75rem, 1.6rem + 4.6vw, 5.5rem);
-    line-height: 0.98;
-    letter-spacing: -0.03em;
-    font-weight: 500;
+    font-size: clamp(2.25rem, 1.6rem + 2.6vw, 3.25rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    font-weight: 600;
   }
   .t-h1 {
-    font-family: var(--font-display);
-    font-size: clamp(2.125rem, 1.4rem + 2.9vw, 3.5rem);
-    line-height: 1.06;
-    letter-spacing: -0.02em;
-    font-weight: 500;
+    font-size: clamp(1.875rem, 1.5rem + 1.5vw, 2.5rem);
+    line-height: 1.15;
+    letter-spacing: -0.018em;
+    font-weight: 600;
   }
   .t-h2 {
-    font-family: var(--font-display);
-    font-size: clamp(1.625rem, 1.2rem + 1.7vw, 2.375rem);
-    line-height: 1.15;
-    letter-spacing: -0.015em;
-    font-weight: 500;
+    font-size: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
+    line-height: 1.25;
+    letter-spacing: -0.012em;
+    font-weight: 600;
   }
   .t-h3 {
-    font-family: var(--font-display);
-    font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
-    line-height: 1.25;
+    font-size: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem);
+    line-height: 1.35;
     font-weight: 600;
   }
   .t-lead {
-    font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+    font-size: 1.0625rem;
     line-height: 1.6;
-    color: var(--color-ink-muted);
+    color: var(--color-ink-2);
   }
   .t-label {
     font-size: 0.75rem;
     line-height: 1.4;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     font-weight: 600;
   }
-  .t-script {
-    font-family: var(--font-script);
-    font-weight: 600;
-    line-height: 1.15;
-  }
 
-  /* Measure — enforced, not hoped for */
   .measure {
     max-width: 68ch;
   }
   .measure-tight {
-    max-width: 52ch;
-  }
-
-  .rule {
-    border: 0;
-    border-top: 1px solid var(--color-sand);
+    max-width: 46ch;
   }
 }
 
@@ -198,42 +161,31 @@
   width: 100%;
   max-width: var(--container-page);
   margin-inline: auto;
-  padding-inline: 1.25rem;
+  padding-inline: 1rem;
   @media (width >= 768px) {
-    padding-inline: 2rem;
+    padding-inline: 1.5rem;
   }
   @media (width >= 1280px) {
-    padding-inline: 3rem;
+    padding-inline: 2rem;
   }
 }
 
-/* Entrance motion — used sparingly, once, on major sections only */
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.animate-rise {
-  animation: rise 0.5s var(--ease-entrance) both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-rise {
-    animation: none;
-  }
-}
-
-/* Hide scrollbar on horizontal rails while keeping them scrollable */
-.no-scrollbar {
+/* Horizontal rails: category bar and product carousel.
+   Native CSS scroll-snap — no carousel library, no JS for the scrolling. */
+@utility rail {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  overscroll-behavior-x: contain;
 }
-.no-scrollbar::-webkit-scrollbar {
+
+.rail::-webkit-scrollbar {
   display: none;
+}
+
+@utility rail-item {
+  scroll-snap-align: start;
+  flex: none;
 }

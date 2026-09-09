@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Caveat, Fraunces, Instrument_Sans } from "next/font/google";
+import { Instrument_Sans } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
@@ -9,26 +9,14 @@ import { site } from "@/lib/site";
 import "./globals.css";
 
 /**
- * Typography Direction A (DESIGN-SYSTEM §4.1): Fraunces for display,
- * Instrument Sans for body and UI, with Caveat as a sparing editorial accent.
- * Self-hosted through next/font — no third-party request, no FOUT, no CLS.
+ * One family (DESIGN-SYSTEM §4.1). The v0.2 pairing — Fraunces display serif
+ * plus a Caveat script accent — is withdrawn: it was editorial, and the client
+ * asked for typography that never competes with the product photography.
+ * Self-hosted through next/font: no third-party request, no FOUT, no CLS.
  */
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-fraunces",
-  display: "swap",
-  axes: ["SOFT", "WONK", "opsz"],
-});
-
 const instrument = Instrument_Sans({
   subsets: ["latin"],
   variable: "--font-instrument",
-  display: "swap",
-});
-
-const caveat = Caveat({
-  subsets: ["latin"],
-  variable: "--font-caveat",
   display: "swap",
 });
 
@@ -71,7 +59,7 @@ export default function RootLayout({
   return (
     <html
       lang="en-IN"
-      className={`${fraunces.variable} ${instrument.variable} ${caveat.variable}`}
+      className={instrument.variable}
     >
       <body className="flex min-h-screen flex-col antialiased">
         <ChromeMeasure />

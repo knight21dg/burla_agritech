@@ -8,14 +8,14 @@ import { cn } from "@/lib/utils";
 export function Section({
   children,
   className,
-  tone = "ivory",
+  tone = "white",
   size = "md",
   as: Tag = "section",
   id,
 }: {
   children: ReactNode;
   className?: string;
-  tone?: "ivory" | "warm" | "paper" | "deep";
+  tone?: "white" | "surface" | "dark";
   size?: "sm" | "md" | "lg";
   as?: ElementType;
   id?: string;
@@ -25,15 +25,15 @@ export function Section({
       id={id}
       className={cn(
         {
-          ivory: "bg-ivory",
-          warm: "bg-ivory-warm",
-          paper: "bg-paper",
-          deep: "bg-green-deep text-ivory",
+          white: "bg-white",
+          surface: "bg-surface",
+          dark: "bg-green-900 text-white",
         }[tone],
+        // Tighter than v0.2 — products should arrive sooner
         {
-          sm: "py-12 md:py-16",
-          md: "py-16 md:py-20 lg:py-24",
-          lg: "py-20 md:py-28 lg:py-32",
+          sm: "py-10 md:py-12",
+          md: "py-12 md:py-14 lg:py-16",
+          lg: "py-14 md:py-16 lg:py-20",
         }[size],
         className,
       )}
@@ -66,7 +66,7 @@ export function Eyebrow({
     <p
       className={cn(
         "t-label",
-        tone === "light" ? "text-ivory/70" : "text-ink-faint",
+        tone === "light" ? "text-white/70" : "text-ink-3",
         className,
       )}
     >
@@ -106,12 +106,12 @@ export function SectionHead({
           {eyebrow}
         </Eyebrow>
       )}
-      <h2 className={cn("t-h2", tone === "light" && "text-ivory")}>{title}</h2>
+      <h2 className={cn("t-h2", tone === "light" && "text-white")}>{title}</h2>
       {lead && (
         <p
           className={cn(
             "t-lead measure mt-4",
-            tone === "light" && "text-ivory/80",
+            tone === "light" && "text-white/80",
             align === "center" && "mx-auto",
           )}
         >

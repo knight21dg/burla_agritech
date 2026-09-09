@@ -11,19 +11,20 @@ const base =
   "disabled:opacity-50 disabled:pointer-events-none";
 
 const variants: Record<Variant, string> = {
-  // Fill uses green-deep, not the logo green — white on #2E9E5B is only 3.4:1
-  primary: "bg-green-deep text-paper hover:bg-green-mid",
+  // green-700 gives white text 5.4:1. The logo green is only 3.4:1 and is
+  // never used as a fill behind text (DESIGN-SYSTEM §3.2).
+  primary: "bg-green-700 text-white hover:bg-green-900",
   secondary:
-    "border border-ink/25 text-ink hover:border-ink hover:bg-ink/[0.04]",
-  tertiary: "text-green-text underline-offset-4 hover:underline px-0",
+    "border border-line-strong text-ink hover:border-ink hover:bg-surface",
+  tertiary: "text-green-700 underline-offset-4 hover:underline px-0",
   whatsapp: "bg-[#25D366] text-[#0B2E13] hover:bg-[#1FBE5A]",
-  onDark: "bg-paper text-green-deep hover:bg-ivory-warm",
+  onDark: "bg-white text-green-900 hover:bg-surface",
 };
 
 const sizes: Record<Size, string> = {
   sm: "h-9 px-4 text-[0.8125rem]",
-  md: "h-11 px-6 text-[0.9375rem]",
-  lg: "h-[3.25rem] px-8 text-[0.9375rem]",
+  md: "h-11 px-5 text-[0.9375rem]",
+  lg: "h-[3.25rem] px-7 text-[0.9375rem]",
 };
 
 interface CommonProps {
