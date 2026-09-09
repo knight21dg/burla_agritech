@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | `docs/OPEN-QUESTIONS.md` |
-| Version | 1.0 — adds OQ-047 to OQ-057 and the design-direction conflicts |
+| Version | 1.1 — business card resolves OQ-012, OQ-015, OQ-032 and part of OQ-002/024 |
 | Date | 2026-09-09 |
 | Owner | Client (Burla Global Agri Products) unless stated |
 
@@ -91,11 +91,21 @@ The handwritten sheet writes it as an inserted sub-line under "Dehydrated powder
 **Affects:** navigation, URL structure (permanent), FR-050.
 **Answer:**
 
-### 🟠 OQ-012 — "Vadiyalu" or "Sandige"?
+### ✅ OQ-012 — ~~"Vadiyalu" or "Sandige"?~~ **Resolved by evidence, 2026-09-09**
+The business card places Burla in **Nellore, SPSR Nellore District, Andhra
+Pradesh**, and the GSTIN prefix 37 confirms Andhra Pradesh registration. That
+is a **Telugu-speaking** region, so **Vadiyalu** is the correct regional term.
+"Sandige" is the Kannada equivalent and would be wrong for this business.
+
+Slug set to `sun-dried-crisps` with "Vadiyalu" leading in the display name and
+both terms in the search keywords — the neutral-English-lead option we
+recommended, which serves search intent in both languages.
+
+<details><summary>Original question</summary>
 You wrote **vadiyalu** (Telugu). The brief also offers **Sandige** (Kannada). These are regional names for the same product family. This is a branding and SEO decision — whichever leads becomes the permanent URL slug and the primary search keyword.
 Options: (a) "Vadiyalu" leads, (b) "Sandige" leads, (c) a neutral English lead — "Sun-Dried Crisps" — with both regional names in the description and metadata (our recommendation, best for both audiences).
 **Supporting evidence:** hillpureorganic.com keeps regional names throughout (Munsyari Rajma, Gahat Dal, Kala Bhatt) and it works well for them — `REFERENCE-ANALYSIS.md` §2.1.
-**Answer:**
+</details>
 
 ### 🟠 OQ-013 — Final display name for every category
 Please confirm exact spelling, capitalisation and singular/plural for all ten. These become permanent URLs.
@@ -121,9 +131,13 @@ nested behind a Shop mega-menu. All ten sit in a persistent bar under the
 header, visible from every page. The client's original handwritten intent —
 every category reachable at the top — is now met directly. See `SITEMAP.md` §3.
 
-### 🟡 OQ-015 — Regional and linguistic identity
-"Vadiyalu" suggests Andhra/Telangana; "sandige" suggests Karnataka. Which region is Burla actually from? This affects copy voice, product naming, SEO keywords and any future language support.
-**Answer:**
+### ✅ OQ-015 — ~~Regional and linguistic identity~~ **Resolved 2026-09-09**
+Nellore, Andhra Pradesh — Telugu-speaking. Confirmed by the business card
+address and the GSTIN state code 37.
+
+Consequences: Telugu regional product names are correct and should be kept;
+Telugu is the natural second language if localisation is ever added; local SEO
+should target Nellore and Andhra Pradesh.
 
 ---
 
@@ -213,9 +227,9 @@ Who receives an order, and how? Email, dashboard, WhatsApp? What is the packing 
 
 ## G. Technical and operational
 
-### 🔴 OQ-032 — Domain
-Which domain? Is it registered, and who controls the registrar account? A `.com` or `.in` decision affects SEO and brand perception. If not registered, secure it before anything else.
-**Answer:**
+### ✅ OQ-032 — ~~Domain~~ **Resolved 2026-09-09**
+**www.burla.co.in**, from the business card. Still needed: registrar access, and
+confirmation the domain is actually under the firm's control.
 
 ### 🟠 OQ-033 — Email
 Business email domain and provider (Google Workspace, Zoho, Microsoft 365). Needed for transactional email deliverability (SPF, DKIM, DMARC).

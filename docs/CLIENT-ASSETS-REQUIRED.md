@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | `docs/CLIENT-ASSETS-REQUIRED.md` |
-| Version | 1.0 |
+| Version | 1.1 — business card received |
 | Date | 2026-09-09 |
 | Owner | Client |
 
@@ -25,7 +25,7 @@ relevant page · 🟢 nice to have
 | 3 | **Product list** with categories, types, sizes, prices | The catalogue cannot exist without it |
 | 4 | **Product photography** — or a decision to commission it | The site is product-first; this *is* the site |
 | 5 | **FSSAI licence number** | Legally required on a food business website in India |
-| 6 | **Domain name** | Deployment, email, SEO setup |
+| 6 | ~~Domain name~~ | ✅ www.burla.co.in |
 
 ---
 
@@ -47,22 +47,24 @@ relevant page · 🟢 nice to have
 
 ---
 
-## 2. Business identity 🔴
+## 2. Business identity 🟠 — mostly received
 
-Legally required in the footer of an Indian food business website.
+Received on the business card, 2026-09-09, and now live in the site config.
 
-| Item | Status |
-|---|---|
-| Registered legal entity name | ⬜ |
-| Registered address | ⬜ |
-| GSTIN | ⬜ |
-| **FSSAI licence number and type** | ⬜ |
-| Grievance officer — name, email, phone, response time | ⬜ |
-| Public phone number(s) | ⬜ |
-| Public email address(es) | ⬜ |
-| **WhatsApp business number** | ⬜ |
-| Business hours | ⬜ |
-| Domain name | ⬜ |
+| Item | Status | Value |
+|---|---|---|
+| Registered address | ✅ | Nellore, Iskoncity, SPSR Nellore District, AP 524003 |
+| GSTIN | ✅ | 37ABHFB2458F1ZH |
+| Public phone | ✅ | +91 97040 32555 |
+| Public email | ✅ | burlaglobalagriproducts@gmail.com |
+| Domain name | ✅ | www.burla.co.in |
+| Partners | ✅ | Burla Krishna Reddy (Managing Partner), Burla Jeevan Reddy (Partner) |
+| **FSSAI licence number and type** | 🔴 ⬜ | **Blocking — legally required** |
+| Registered firm name, as on the GST certificate | 🟠 ⬜ | The card shows the trading name, not necessarily the registered one |
+| Grievance officer — name, email, phone, response time | 🟠 ⬜ | Required by the E-Commerce Rules |
+| **Is +91 97040 32555 the WhatsApp number?** | 🟠 ⬜ | Currently assumed; it is the main conversion channel |
+| Business hours | 🟡 ⬜ | |
+| Registrar access for burla.co.in | 🟡 ⬜ | |
 
 ---
 
@@ -77,7 +79,7 @@ The largest single input. Please supply as a spreadsheet — one row per pack si
 | Confirmed display name for each of the ten categories | ⬜ |
 | Display order of categories | ⬜ |
 | **Types within each category** (e.g. Pickles → Mango, Lemon…), or confirmation a category has none | ⬜ |
-| "Vadiyalu" or "Sandige" — which name leads? | ⬜ |
+| ~~"Vadiyalu" or "Sandige"~~ | ✅ **Vadiyalu** — resolved by the Nellore, AP address and GSTIN state code 37 |
 
 ### 3.2 Then products
 

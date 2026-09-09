@@ -108,10 +108,10 @@ export const categories: Category[] = [
   },
   {
     slug: "sun-dried-crisps",
-    name: "Sun-Dried Crisps",
-    shortName: "Sun-Dried Crisps",
+    name: "Sun-Dried Crisps (Vadiyalu)",
+    shortName: "Vadiyalu",
     order: 5,
-    heroHeadline: "Vadiyalu. Sandige. Sun and patience.",
+    heroHeadline: "Vadiyalu — sun and patience.",
     description:
       "Shaped by hand, dried in open sun over several days, ready to fry. A regional staple that no machine has improved on.",
     tone: "cream",
