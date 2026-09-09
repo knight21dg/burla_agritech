@@ -224,6 +224,21 @@ Not "similar". Identical, for the same data. The frontend is not being redesigne
 
 Verified by capturing the rendered output of every route against the seed data before starting, and diffing after each commit. Modulo the parts that legitimately vary — nothing on these pages does.
 
+### The data-level half, already in place
+
+`npm run db:parity --workspace=@burla/web` (added in Phase 6) asks the same question one layer down: **for the same seeded data, does the service layer return exactly what `catalog.ts` returns?** 92 assertions across taxonomy, products, listings, breadcrumbs, related products, availability, search, category counts and the sitemap rule.
+
+Doing it at the data level first is worth a step, because a mismatch there names the field. The same mismatch found as an HTML diff names a line number in rendered markup and leaves you to work backwards.
+
+It found two bugs that review had not:
+
+| Bug | Why review missed it |
+|---|---|
+| `ORDER BY 1` is a **positional** reference in Postgres, not a literal. A constant sort key made "related products" order by UUID | The SQL is valid, the page renders, and the wrong order is stable enough between runs to look deliberate |
+| Variants omitted `isDefault` when false, so a non-default variant compared unequal to the same variant from `catalog.ts` | Both render identically; only a structural comparison sees it |
+
+The script is deleted with `catalog.ts` at the end of Phase 8 — it has nothing to compare against afterwards, and keeping it would freeze the service layer against sample data it no longer serves.
+
 ## 14. Rollback
 
 Each cutover commit is independently revertible while `catalog.ts` still exists. That is the reason it is deleted last and in its own commit, rather than being removed alongside the first page that stops importing it.

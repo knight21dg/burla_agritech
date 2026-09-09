@@ -3,9 +3,9 @@
 | Field | Value |
 |---|---|
 | Document | `docs/SYSTEM-DESIGN.md` |
-| Version | 1.0 |
+| Version | 1.1 — phases 3-6 built |
 | Date | 2026-09-09 |
-| Status | Proposed — awaiting approval before implementation |
+| Status | Approved. Phases 3-6 implemented; 7 onward proposed |
 | Builds on | `CURRENT-ARCHITECTURE.md` |
 | Supersedes | `ARCHITECTURE.md` v0.2 for the backend sections |
 
@@ -161,6 +161,29 @@ type Result<T> =
 
 ---
 
+### As built (Phase 6)
+
+Four modules, and the layering holds — no Drizzle import above a repository, no `server/` import in a client component.
+
+| Module | Role |
+|---|---|
+| `types/catalog.ts` | Read models. **No imports at all**, so client components can use them |
+| `lib/catalog.ts` | Pure helpers — `productHref`, `defaultVariant`, `deriveAvailability` |
+| `server/repositories/` | Every SQL query for the catalogue |
+| `server/services/` | What pages call |
+
+**Measured query counts**, against a real cluster with `log_statement=all`, excluding the driver's one-time type bootstrap:
+
+| Surface | Queries |
+|---|---|
+| Category listing (4 products) | **2** |
+| Homepage (10 categories with counts, 8 featured) | **3** |
+| Product page (product, breadcrumb trail, 4 related) | **6** |
+
+Constant, not proportional to the number of products. A naive port of `catalog.ts` would have been 1 + N per surface, and `CategoryCard` alone would have added one query per card.
+
+---
+
 ## 6. Product read flow
 
 ```
@@ -283,9 +306,9 @@ Following the client's §97, adjusted for one coupling found in the audit.
 |---|---|---|
 | 1 | Repository audit | ✅ done |
 | 2 | Architecture documentation | ✅ this pass |
-| 3–4 | Schema + migrations | 3 |
-| 5 | Seed, clearly marked demo | 1 |
-| 6 | Repositories + services | 4 |
+| 3–4 | Schema + migrations | ✅ done |
+| 5 | Seed, clearly marked demo | ✅ done |
+| 6 | Repositories + services | ✅ done |
 | 7 | **Search endpoint** — moved earlier, see below | 2 |
 | 8 | Frontend cutover, page by page | 4 |
 | 9 | Enquiries: Server Actions, persistence, email | 3 |
