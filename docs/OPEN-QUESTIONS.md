@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | `docs/OPEN-QUESTIONS.md` |
-| Version | 1.1 — business card resolves OQ-012, OQ-015, OQ-032 and part of OQ-002/024 |
+| Version | 1.2 — logo received; OQ-008 largely resolved |
 | Date | 2026-09-09 |
 | Owner | Client (Burla Global Agri Products) unless stated |
 
@@ -69,10 +69,28 @@ See OQ-032 and OQ-033.
 
 ## B. Brand and identity
 
-### 🔴 OQ-008 — Vector logo and exact brand colour
+### 🟡 OQ-008 — ~~Vector logo~~ **Mostly resolved 2026-09-09** — raster received, vector still wanted
+Logo artwork received as JPEGs and now live on the site, replacing the
+approximation we were drawing.
+
+**Brand green sampled from the artwork: `#26985C`** — the dominant fill across
+89,558 pixels. Our provisional guess was `#2E9E5B`, close but wrong. At 3.67:1
+on white it is still too light for body text, so `--color-green-700 #187B44`
+(5.33:1) carries links, buttons and active states.
+
+Still wanted:
+- **Vector original** (`.svg` / `.ai` / `.eps`) — JPEGs cannot scale cleanly for
+  print, favicons or large display
+- **Transparent PNG or SVG** — the current files have a white background, which
+  is why the footer is light rather than dark green (see D-09)
+- **Reversed / white variant** for any dark surface
+- Confirmation that `#26985C` is the intended brand colour and not a JPEG
+  compression artefact
+
+<details><summary>Original question</summary>
 We need the original vector file (`.svg`, `.ai` or `.eps`) and the **exact hex/Pantone of the green**. The supplied image is a raster file; sampling it gives an approximation, which is not an acceptable foundation for a design system.
 Also required: reversed (white) and single-colour variants, and any minimum clear-space / minimum-size rules.
-**Answer:**
+</details>
 
 ### 🟠 OQ-009 — Is there an existing brand guideline, packaging design or print collateral?
 Packaging artwork is the strongest signal of the intended visual language. If packaging exists, the website should extend it rather than invent a parallel identity.
@@ -326,6 +344,7 @@ Places where we are recommending something different from what was written. Each
 | D-06 | **No headless CMS — content managed in the custom admin** | You asked for one admin for stock "and everything". Keeping a CMS too would mean two logins and product data split across two databases — ADR-010, `OQ-038` | |
 | D-07 | Admin as a separate application on `admin.burla.com` rather than an `/admin` section | Admin code never ships to customers; independent security and caching — ADR-009 | |
 | D-08 | No permanent discount badging | Credibility and Legal Metrology — `OQ-044` | |
+| D-09 | **Footer is light grey rather than dark green** | The supplied logo is a JPEG on white with no transparency, so it cannot sit on a dark field without a white box around it. A light footer also suits the "mostly plain white" brief. Reversible once a transparent or reversed logo arrives | |
 
 ---
 

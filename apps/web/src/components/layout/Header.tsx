@@ -69,8 +69,8 @@ export function Header() {
         <div className="border-b border-line">
           <div className="container-page">
             <div className="flex h-16 items-center justify-between gap-4">
-              <Link href="/" aria-label={`${site.name} — home`} className="shrink-0">
-                <Logo className="text-[1.5rem]" showSubline={false} />
+              <Link href="/" className="shrink-0" aria-label={`${site.name} — home`}>
+                <Logo variant="wordmark" height={34} priority alt="" />
               </Link>
 
               <nav
@@ -190,7 +190,7 @@ export function Header() {
             className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-white"
           >
             <div className="flex h-16 shrink-0 items-center justify-between border-b border-line px-4">
-              <Logo className="text-[1.35rem]" showSubline={false} />
+              <Logo variant="wordmark" height={30} alt="" />
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}

@@ -5,7 +5,7 @@
 | Document | `docs/DESIGN-SYSTEM.md` |
 | Version | **1.0 — white canvas, product-first** |
 | Date | 2026-09-09 |
-| Status | Proposed — awaiting approval before implementation |
+| Status | Implemented for the design system, header, footer and homepage |
 | Supersedes | v0.2 (warm ivory / editorial direction), now withdrawn |
 
 > **This is a full replacement, not an edit.** The client has clarified that they
@@ -74,11 +74,11 @@ INK
   --ink-3            #6B6B6B   metadata, captions, disabled labels
 
 BRAND
-  --green            #2E9E5B   logo green (PROVISIONAL — OQ-008)
+  --green            #26985C   logo green, SAMPLED from the supplied artwork
                                graphics, icons, borders. NOT for text.
-  --green-700        #157A3F   primary buttons, links, active nav
-  --green-900        #0E4A27   footer ground, dark surfaces
-  --green-50         #F1F8F3   selected chip / active pill background
+  --green-700        #187B44   primary buttons, links, active nav
+  --green-900        #0D4526   dark surfaces
+  --green-50         #F0F8F3   selected chip / active pill background
 
 FUNCTIONAL
   --success          #157A3F
@@ -96,15 +96,15 @@ There is no fifth colour. Terracotta, turmeric, sand and ivory are gone.
 | `--ink-2` #4A4A4A | white | **8.9:1** | ✅ AAA |
 | `--ink-3` #6B6B6B | white | **5.3:1** | ✅ AA at any size |
 | `--ink-3` | `--surface` #FAFAFA | **5.1:1** | ✅ AA |
-| `--green-700` #157A3F | white | **5.4:1** | ✅ AA — links and buttons |
-| white | `--green-700` | **5.4:1** | ✅ AA — button label on fill |
-| white | `--green-900` #0E4A27 | **10.5:1** | ✅ AAA — footer |
-| `--green` #2E9E5B | white | **3.4:1** | ⚠️ **Never for text.** Icons, borders, graphics only |
+| `--green-700` #187B44 | white | **5.33:1** | ✅ AA — links and buttons |
+| white | `--green-700` | **5.33:1** | ✅ AA — button label on fill |
+| white | `--green-900` #0D4526 | **11.1:1** | ✅ AAA — dark surfaces |
+| `--green` #26985C | white | **3.67:1** | ⚠️ **Never for text.** Icons, borders, graphics only |
 
-Every value above is computed, not estimated. The one deliberate constraint:
-the logo green is too light for text on white, which is normal for a brand
-green — `--green-700` exists for that. It must be re-verified once the real
-brand colour arrives (`OQ-008`).
+Every value above is computed, not estimated, and the brand green is now
+sampled from the client's actual logo artwork rather than guessed. The one
+deliberate constraint: the logo green is too light for text on white, which is
+normal for a brand green — `--green-700` exists for that.
 
 ### 3.3 Colour proportion
 
@@ -326,7 +326,7 @@ No autoplay. Ever.
 | Skeleton | Matches final dimensions exactly. `--surface-2` fill, no shimmer under reduced motion |
 | Empty state | One line of explanation, one action |
 | Error state | Plain language, retry, plus a WhatsApp fallback |
-| Footer | `--green-900` ground, white text. The one place the brand colour dominates |
+| Footer | `--surface` ground with a 2px green top rule. **Changed from the planned dark-green ground** because the supplied logo is a JPEG on white with no transparency and cannot sit on a dark field. Revisit if a transparent or reversed logo arrives — deviation `D-09` |
 
 ---
 

@@ -1,129 +1,85 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * Burla lockup — a faithful reconstruction for the demo build.
+ * The real Burla logo (supplied 2026-09-09), replacing the hand-built
+ * approximation we were drawing while waiting for it.
  *
- * Matches the supplied logo's stacked arrangement: the two-leaf sprout sits
- * above the wordmark, with "GLOBAL AGRI PRODUCTS" letterspaced beneath.
+ * The supplied files are JPEGs on a white ground with generous surrounding
+ * padding, which would otherwise make the mark render small and visually
+ * off-centre. The padding was measured from the pixels, so each variant is
+ * cropped to its actual artwork rather than eyeballed:
  *
- * ⚠️ PLACEHOLDER (OQ-008): replace with the client's original vector file.
- * The green is sampled from a raster image and the wordmark uses a substitute
- * geometric sans, so neither is exact.
+ *   full      content at 11.25% / 15.56%, 78.75% x 60.15%  -> aspect 1.850
+ *   wordmark  content at 15.16% / 11.23%, 71.17% x 68.69%  -> aspect 2.442
  *
- * Sized in `em` throughout — set the size with a font-size on the parent.
+ * Because the source has a white background rather than transparency, the
+ * logo can only sit on a white or near-white surface. That is why the footer
+ * is light rather than dark green — see the note in Footer.tsx. A transparent
+ * PNG or SVG would let us revisit that.
+ *
+ * Still outstanding: vector original, transparent version, and a reversed
+ * (white) variant — `docs/CLIENT-ASSETS-REQUIRED.md` §1.
  */
+
+const VARIANTS = {
+  /** Sprout + BURLA + GLOBAL AGRI PRODUCTS. The primary lockup. */
+  full: {
+    src: "/brand/logo-full.jpg",
+    // Not the file's true 1280x906. next/image builds its srcset from the
+    // width prop, so declaring the full size made it fetch a 3840px image for
+    // a logo rendered at ~100px. These keep the source aspect ratio while
+    // capping the largest candidate at a sane size for a logo.
+    intrinsic: { w: 420, h: 297 },
+    aspect: 1.85,
+    scale: { w: 126.98, h: 166.25, left: -14.29, top: -25.87 },
+  },
+  /** Sprout + BURLA(tm). Wider, better where vertical space is tight. */
+  wordmark: {
+    src: "/brand/logo-wordmark.jpg",
+    intrinsic: { w: 420, h: 178 },
+    aspect: 2.442,
+    scale: { w: 140.51, h: 145.58, left: -21.3, top: -16.35 },
+  },
+} as const;
+
 export function Logo({
+  variant = "wordmark",
+  height = 36,
   className,
-  variant = "default",
-  showSubline = true,
+  priority = false,
+  alt = "Burla Global Agri Products",
 }: {
+  variant?: keyof typeof VARIANTS;
+  /** Rendered height in px. Width follows the artwork's aspect ratio. */
+  height?: number;
   className?: string;
-  variant?: "default" | "reversed";
-  showSubline?: boolean;
+  priority?: boolean;
+  /** Pass "" where an ancestor link already carries the accessible name. */
+  alt?: string;
 }) {
-  const reversed = variant === "reversed";
+  const v = VARIANTS[variant];
 
   return (
     <span
-      className={cn(
-        "inline-flex flex-col items-center leading-none",
-        reversed ? "text-white" : "text-green",
-        className,
-      )}
+      className={cn("relative block overflow-hidden", className)}
+      style={{ height, width: Math.round(height * v.aspect) }}
     >
-      <LeafMark
-        className="h-[0.82em] w-auto -mb-[0.02em]"
-        reversed={reversed}
+      <Image
+        src={v.src}
+        alt={alt}
+        width={v.intrinsic.w}
+        height={v.intrinsic.h}
+        priority={priority}
+        sizes="(min-width: 768px) 220px, 180px"
+        className="absolute max-w-none"
+        style={{
+          width: `${v.scale.w}%`,
+          height: `${v.scale.h}%`,
+          left: `${v.scale.left}%`,
+          top: `${v.scale.top}%`,
+        }}
       />
-      <span
-        className="font-sans font-extrabold tracking-[-0.012em]"
-        style={{ fontSize: "1em" }}
-      >
-        BURLA
-      </span>
-      {showSubline && (
-        <span
-          className={cn(
-            "font-sans font-semibold uppercase",
-            reversed ? "text-white/85" : "text-green",
-          )}
-          style={{
-            fontSize: "max(0.205em, 10px)",
-            letterSpacing: "0.3em",
-            marginTop: "0.42em",
-            marginLeft: "0.3em",
-          }}
-        >
-          Global Agri Products
-        </span>
-      )}
     </span>
-  );
-}
-
-/** The two-leaf sprout. One leaf path, placed twice with transforms. */
-export function LeafMark({
-  className,
-  reversed = false,
-}: {
-  className?: string;
-  reversed?: boolean;
-}) {
-  const fill = "currentColor";
-  const cut = reversed ? "#14472B" : "#FAF6EC";
-
-  // Leaf with its base at the origin and its tip up and to the right.
-  const leaf = "M0 0C1 -19 11 -36 32 -45C37 -21 25 -6 0 0Z";
-  const vein = "M2 -3C8 -17 16 -29 28 -38";
-
-  return (
-    <svg
-      viewBox="0 0 96 62"
-      role="img"
-      aria-hidden="true"
-      focusable="false"
-      className={cn(reversed ? "text-white" : "text-green", className)}
-      fill="none"
-    >
-      <g transform="translate(46 55)">
-        {/* Left leaf — larger, mirrored so the tip sweeps up and to the left */}
-        <g transform="rotate(-7) scale(-1.02 1.02)">
-          <path d={leaf} fill={fill} />
-          <path
-            d={vein}
-            stroke={cut}
-            strokeWidth="2.6"
-            strokeLinecap="round"
-            opacity="0.92"
-          />
-        </g>
-
-        {/* Right leaf — smaller */}
-        <g transform="rotate(5) scale(0.76)">
-          <path d={leaf} fill={fill} />
-          <path
-            d={vein}
-            stroke={cut}
-            strokeWidth="3.2"
-            strokeLinecap="round"
-            opacity="0.92"
-          />
-        </g>
-
-        {/* Stems */}
-        <path
-          d="M-1.5 6C-1.5 0 -1.5 -3 -2.5 -7"
-          stroke={fill}
-          strokeWidth="2.7"
-          strokeLinecap="round"
-        />
-        <path
-          d="M2 6C2 1 2.5 -2 3.5 -6"
-          stroke={fill}
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-      </g>
-    </svg>
   );
 }

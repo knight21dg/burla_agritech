@@ -7,7 +7,7 @@
    The interface is a white frame around photographs of food. Colour comes from
    the products; green marks the brand and the primary action, nothing else.
 
-   Brand green is PROVISIONAL until the vector logo arrives (OQ-008).
+   Brand green sampled from the supplied logo artwork (OQ-008 resolved).
    ========================================================================== */
 
 @theme {
@@ -22,14 +22,15 @@
   --color-ink-2: #4a4a4a; /*  8.9:1 */
   --color-ink-3: #6b6b6b; /*  5.3:1 */
 
-  /* Brand */
-  --color-green: #2e9e5b; /* logo green — 3.4:1, NEVER for text */
-  --color-green-700: #157a3f; /* 5.4:1 — buttons, links, active nav */
-  --color-green-900: #0e4a27; /* footer ground */
-  --color-green-50: #f1f8f3; /* selected chip background */
+  /* Brand — sampled from the supplied logo, not estimated.
+     #26985C is the dominant fill across 89,558 pixels of the artwork. */
+  --color-green: #26985c; /* logo green — 3.67:1, NEVER behind text */
+  --color-green-700: #187b44; /* 5.33:1 on white — buttons, links, active nav */
+  --color-green-900: #0d4526; /* 11.1:1 with white — dark surfaces */
+  --color-green-50: #f0f8f3; /* selected chip background */
 
   /* Functional */
-  --color-success: #157a3f;
+  --color-success: #187b44;
   --color-warning: #8a5a00;
   --color-danger: #a32b1e;
 
