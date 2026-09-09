@@ -13,13 +13,17 @@ import { SearchOverlay } from "./SearchOverlay";
 /**
  * Two-row header (DESIGN-SYSTEM §8, SITEMAP §3).
  *
- * Row 1 — brand, company pages, utilities.
- * Row 2 — the product bar: all ten categories, always visible, one click from
- *         anywhere. Below 1280px it scrolls horizontally rather than wrapping
- *         or hiding behind a menu.
+ * Row 1 — deep green: brand, company pages, utilities.
+ * Row 2 — mid green: the product bar. All ten categories, always visible, one
+ *         click from anywhere. Below md it scrolls horizontally rather than
+ *         wrapping or hiding behind a menu.
  *
- * The v0.2 "Shop" mega-menu is withdrawn. It hid the categories behind a
- * hover, which is the opposite of what the client asked for.
+ * The colour sits here, on the chrome, in the Amazon/Flipkart pattern — a
+ * strong branded bar above content that stays white. White on green-900 is
+ * 11.1:1 and on green-700 is 5.33:1, so both rows clear AA comfortably.
+ *
+ * The logo sits on a white plate because the supplied artwork is a JPEG on
+ * white with no transparency. A reversed logo would remove the plate.
  */
 export function Header() {
   const pathname = usePathname();
@@ -64,13 +68,13 @@ export function Header() {
         Skip to content
       </a>
 
-      <header data-site-chrome className="sticky top-0 z-50 bg-white">
+      <header data-site-chrome className="sticky top-0 z-50">
         {/* Row 1 — brand and company */}
-        <div className="border-b border-line">
+        <div className="bg-green-900 text-white">
           <div className="container-page">
             <div className="flex h-16 items-center justify-between gap-4">
               <Link href="/" className="shrink-0" aria-label={`${site.name} — home`}>
-                <Logo variant="wordmark" height={34} priority alt="" />
+                <Logo variant="wordmark" height={30} priority alt="" plate />
               </Link>
 
               <nav
@@ -85,8 +89,8 @@ export function Header() {
                     className={cn(
                       "rounded-md px-3 py-2 text-[0.9375rem] transition-colors",
                       isActive(item.href)
-                        ? "font-semibold text-green-700"
-                        : "font-medium text-ink hover:text-green-700",
+                        ? "bg-white/15 font-semibold text-white"
+                        : "font-medium text-white/90 hover:bg-white/10 hover:text-white",
                     )}
                   >
                     {item.label}
@@ -98,21 +102,21 @@ export function Header() {
                 <button
                   type="button"
                   onClick={() => setSearchOpen(true)}
-                  className="rounded-md p-2.5 text-ink transition-colors hover:bg-surface hover:text-green-700"
+                  className="rounded-md p-2.5 text-white/90 transition-colors hover:bg-white/10 hover:text-white"
                   aria-label="Search products"
                 >
                   <Search className="size-[1.15rem]" aria-hidden="true" />
                 </button>
                 <Link
                   href="/account"
-                  className="hidden rounded-md p-2.5 text-ink transition-colors hover:bg-surface hover:text-green-700 sm:block"
+                  className="hidden rounded-md p-2.5 text-white/90 transition-colors hover:bg-white/10 hover:text-white sm:block"
                   aria-label="Your account"
                 >
                   <User className="size-[1.15rem]" aria-hidden="true" />
                 </Link>
                 <Link
                   href="/cart"
-                  className="rounded-md p-2.5 text-ink transition-colors hover:bg-surface hover:text-green-700"
+                  className="rounded-md p-2.5 text-white/90 transition-colors hover:bg-white/10 hover:text-white"
                   aria-label="Your bag"
                 >
                   <ShoppingBag className="size-[1.15rem]" aria-hidden="true" />
@@ -120,7 +124,7 @@ export function Header() {
                 <button
                   type="button"
                   onClick={() => setMobileOpen(true)}
-                  className="rounded-md p-2.5 text-ink transition-colors hover:bg-surface md:hidden"
+                  className="rounded-md p-2.5 text-white/90 transition-colors hover:bg-white/10 md:hidden"
                   aria-label="Open menu"
                   aria-expanded={mobileOpen}
                 >
@@ -132,7 +136,7 @@ export function Header() {
         </div>
 
         {/* Row 2 — the product bar. Hidden on mobile, where the drawer carries it. */}
-        <div className="hidden border-b border-line md:block">
+        <div className="hidden bg-green-700 text-white md:block">
           <div className="container-page">
             <nav aria-label="Product categories">
               <ul className="rail -mx-1 gap-0.5 py-0.5">
@@ -143,8 +147,8 @@ export function Header() {
                     className={cn(
                       "block whitespace-nowrap border-b-2 px-3 py-2.5 text-[0.875rem] transition-colors",
                       pathname === "/products"
-                        ? "border-green-700 font-semibold text-green-700"
-                        : "border-transparent text-ink hover:text-green-700",
+                        ? "border-white font-semibold text-white"
+                        : "border-transparent text-white/85 hover:border-white/40 hover:text-white",
                     )}
                   >
                     All products
@@ -160,8 +164,8 @@ export function Header() {
                         className={cn(
                           "block whitespace-nowrap border-b-2 px-3 py-2.5 text-[0.875rem] transition-colors",
                           active
-                            ? "border-green-700 font-semibold text-green-700"
-                            : "border-transparent text-ink hover:text-green-700",
+                            ? "border-white font-semibold text-white"
+                            : "border-transparent text-white/85 hover:border-white/40 hover:text-white",
                         )}
                       >
                         {c.shortName}

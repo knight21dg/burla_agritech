@@ -49,6 +49,7 @@ export function Logo({
   className,
   priority = false,
   alt = "Burla Global Agri Products",
+  plate = false,
 }: {
   variant?: keyof typeof VARIANTS;
   /** Rendered height in px. Width follows the artwork's aspect ratio. */
@@ -57,12 +58,19 @@ export function Logo({
   priority?: boolean;
   /** Pass "" where an ancestor link already carries the accessible name. */
   alt?: string;
+  /**
+   * Wraps the mark in a white panel so it can sit on a coloured surface.
+   * The supplied artwork is a JPEG on white with no transparency, so it
+   * cannot be placed directly on a green bar. A reversed or transparent
+   * logo would remove the need for this — `CLIENT-ASSETS-REQUIRED.md` §1.
+   */
+  plate?: boolean;
 }) {
   const v = VARIANTS[variant];
 
-  return (
+  const mark = (
     <span
-      className={cn("relative block overflow-hidden", className)}
+      className="relative block overflow-hidden"
       style={{ height, width: Math.round(height * v.aspect) }}
     >
       <Image
@@ -80,6 +88,19 @@ export function Logo({
           top: `${v.scale.top}%`,
         }}
       />
+    </span>
+  );
+
+  if (!plate) return <span className={className}>{mark}</span>;
+
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-md bg-white px-2.5 py-1.5",
+        className,
+      )}
+    >
+      {mark}
     </span>
   );
 }

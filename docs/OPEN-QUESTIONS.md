@@ -344,7 +344,7 @@ Places where we are recommending something different from what was written. Each
 | D-06 | **No headless CMS — content managed in the custom admin** | You asked for one admin for stock "and everything". Keeping a CMS too would mean two logins and product data split across two databases — ADR-010, `OQ-038` | |
 | D-07 | Admin as a separate application on `admin.burla.com` rather than an `/admin` section | Admin code never ships to customers; independent security and caching — ADR-009 | |
 | D-08 | No permanent discount badging | Credibility and Legal Metrology — `OQ-044` | |
-| D-09 | **Footer is light grey rather than dark green** | The supplied logo is a JPEG on white with no transparency, so it cannot sit on a dark field without a white box around it. A light footer also suits the "mostly plain white" brief. Reversible once a transparent or reversed logo arrives | |
+| D-09 | ~~Footer light grey~~ **Reverted 2026-09-09** — footer is dark green again. The logo sits on a white plate, which the coloured-chrome direction makes consistent rather than odd. A reversed logo would remove the plate | |
 
 ---
 

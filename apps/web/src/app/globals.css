@@ -4,8 +4,9 @@
    Burla Design System v1.0 — white canvas, product-first
    Source of truth: docs/DESIGN-SYSTEM.md
 
-   The interface is a white frame around photographs of food. Colour comes from
-   the products; green marks the brand and the primary action, nothing else.
+   Colour lives on the chrome: header, category strip, category tiles, footer.
+   Product listings stay white, the way Amazon and Flipkart do it — a coloured
+   ground behind a grid of food photographs fights the products.
 
    Brand green sampled from the supplied logo artwork (OQ-008 resolved).
    ========================================================================== */
@@ -28,6 +29,19 @@
   --color-green-700: #187b44; /* 5.33:1 on white — buttons, links, active nav */
   --color-green-900: #0d4526; /* 11.1:1 with white — dark surfaces */
   --color-green-50: #f0f8f3; /* selected chip background */
+
+  /* Category tile tints.
+     Colour lives on the chrome — header, category tiles, footer — never behind
+     a product grid. Each is light enough that --color-ink stays above 12:1 on
+     it, so tile labels never become the weak link (DESIGN-SYSTEM §3.5). */
+  --color-tint-turmeric: #fdf3d9;
+  --color-tint-mango: #fdebd6;
+  --color-tint-chilli: #fbe4dd;
+  --color-tint-leaf: #e4f2e4;
+  --color-tint-grain: #f5eedc;
+  --color-tint-berry: #f8e4ea;
+  --color-tint-earth: #f0e8de;
+  --color-tint-cream: #f5f1e8;
 
   /* Functional */
   --color-success: #187b44;

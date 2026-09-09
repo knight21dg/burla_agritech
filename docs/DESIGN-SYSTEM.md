@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | `docs/DESIGN-SYSTEM.md` |
-| Version | **1.0 — white canvas, product-first** |
+| Version | **1.1 — colourful chrome, white content** |
 | Date | 2026-09-09 |
 | Status | Implemented for the design system, header, footer and homepage |
 | Supersedes | v0.2 (warm ivory / editorial direction), now withdrawn |
@@ -18,21 +18,25 @@
 
 ## 1. The one rule
 
-**Let the products speak.**
+**Colour on the chrome. White under the products.**
 
-The interface is a white frame around photographs of food. Anything that draws
-attention to the frame is working against the brief. If a design decision makes
-the page more interesting but the product less prominent, it is the wrong
-decision.
+This is the Amazon and Flipkart pattern, and the client asked for it directly:
+a strong branded header, colourful category tiles, a deep footer — with product
+listings on plain white in between. A coloured ground behind a grid of food
+photographs fights the products; a coloured header does not.
 
 Three practical consequences:
 
-1. **White is the default, not a choice.** A section needs a reason to be
-   anything else.
-2. **Colour comes from the food.** Turmeric yellow, chilli red, millet gold —
-   these belong in the photographs, not in the CSS.
-3. **Green is identity, not decoration.** It marks the brand, the primary
-   action and the active state. Nothing else.
+1. **Colour belongs to the frame.** Header, category strip, category tiles,
+   footer, promotional bands. Never behind a product grid.
+2. **Product surfaces are white.** `/products`, category pages, type pages,
+   the product page, search results, and every product card.
+3. **Green is the brand.** Deep green header and footer, mid green category
+   strip, `green-700` for buttons, links and active states.
+
+The category tile tints are produce-derived — turmeric, chilli, leaf, grain —
+and deliberately light: `--color-ink` sits above 14:1 on every one, so a tile
+label is never the weak link.
 
 ---
 
@@ -40,7 +44,7 @@ Three practical consequences:
 
 | v0.2 (withdrawn) | v1.0 | Reason |
 |---|---|---|
-| Ivory `#FAF6EC` page background | **White `#FFFFFF`** | Client: "mostly plain white background" |
+| Ivory `#FAF6EC` page background | **White `#FFFFFF`** under products; green chrome | Client: white listings "like Amazon, Flipkart", colourful elsewhere |
 | Warm sand borders, cream cards | Neutral grey `#E5E5E5` lines | Client: no excessive beige/brown |
 | Terracotta + turmeric accents | **Removed** | Colour comes from product photography |
 | Fraunces display serif | **Single sans family** | Client: typography must not distract |
@@ -106,15 +110,34 @@ sampled from the client's actual logo artwork rather than guessed. The one
 deliberate constraint: the logo green is too light for text on white, which is
 normal for a brand green — `--green-700` exists for that.
 
-### 3.3 Colour proportion
+### 3.3 Category tile tints
 
-Per viewport, roughly: **white 75% · product photography 20% · ink 4% ·
-green 1%.**
+Colour lives here and on the header and footer — nowhere near a product grid.
 
-Green appears as: the logo, the primary button, link text, the active nav
-underline, and the footer ground. Nowhere else.
+| Token | Value | Ink contrast |
+|---|---|---|
+| `--tint-turmeric` | `#FDF3D9` | 16.2:1 |
+| `--tint-mango` | `#FDEBD6` | 15.4:1 |
+| `--tint-chilli` | `#FBE4DD` | 14.7:1 |
+| `--tint-leaf` | `#E4F2E4` | 15.5:1 |
+| `--tint-grain` | `#F5EEDC` | 15.5:1 |
+| `--tint-berry` | `#F8E4EA` | 14.8:1 |
+| `--tint-earth` | `#F0E8DE` | 14.8:1 |
+| `--tint-cream` | `#F5F1E8` | 15.9:1 |
 
-### 3.4 Dark mode
+### 3.4 Where colour is allowed
+
+| Surface | Treatment |
+|---|---|
+| Header row 1 | `green-900`, white text — 11.1:1 |
+| Header row 2, category strip | `green-700`, white text — 5.33:1 |
+| Category tiles | Produce tint, ink label |
+| Footer | `green-900`, white text |
+| Buttons, links, active nav | `green-700` |
+| **Product grids and cards** | **White. Always.** |
+| **Product page** | **White. Always.** |
+
+### 3.5 Dark mode
 
 Not in V1. Tokens are CSS custom properties so it stays possible. The page
 declares `color-scheme: light`.
@@ -226,9 +249,9 @@ A pull request containing any of these does not merge.
 
 | ❌ Never | ✅ Instead |
 |---|---|
-| Coloured or gradient page backgrounds | White |
+| Colour behind a product grid or product card | White — colour belongs on the chrome |
 | Beige, cream, tan, sand surfaces | White or `--surface` |
-| Green section backgrounds | Green on buttons, links, footer only |
+| Green behind product content | Green on header, footer, buttons, links |
 | Card shadows | 1px `--line` border |
 | `rounded-2xl` / `rounded-3xl` | 6px max on cards |
 | Decorative icons beside every heading | No icon, or one meaningful icon |
@@ -315,8 +338,8 @@ No autoplay. Ever.
 
 | Component | Notes |
 |---|---|
-| Header | White, 1px bottom line, sticky. Category bar beneath on desktop — see §8 |
-| Category bar | Horizontal row of category links; active item gets a 2px green underline |
+| Header | Two green bars, sticky: `green-900` above, `green-700` category strip beneath. Logo on a white plate until a reversed logo arrives |
+| Category bar | Horizontal row on `green-700`; active item gets a 2px white underline |
 | Mobile drawer | Full-height sheet, Products list first, focus trapped, `Esc` to close |
 | Input | 44px, 1px `--line`, white fill, visible label always, 16px text |
 | Search overlay | Dialog, instant suggestions, keyboard operable, focus restored on close |
@@ -326,7 +349,7 @@ No autoplay. Ever.
 | Skeleton | Matches final dimensions exactly. `--surface-2` fill, no shimmer under reduced motion |
 | Empty state | One line of explanation, one action |
 | Error state | Plain language, retry, plus a WhatsApp fallback |
-| Footer | `--surface` ground with a 2px green top rule. **Changed from the planned dark-green ground** because the supplied logo is a JPEG on white with no transparency and cannot sit on a dark field. Revisit if a transparent or reversed logo arrives — deviation `D-09` |
+| Footer | `green-900` ground, white text. Logo on a white plate, since the supplied artwork is a JPEG on white with no transparency |
 
 ---
 
@@ -460,8 +483,9 @@ component files.
 
 Every page passes before merge:
 
-- [ ] Background is white unless there is a stated reason
-- [ ] Green appears only on logo, primary action, link, active nav, footer
+- [ ] Product listings and product pages are on white
+- [ ] Colour appears only on header, category strip, category tiles and footer
+- [ ] No colour behind any product grid or card
 - [ ] No shadow on any card
 - [ ] Products are visible without scrolling past company copy
 - [ ] Product image is the largest element in every product card
