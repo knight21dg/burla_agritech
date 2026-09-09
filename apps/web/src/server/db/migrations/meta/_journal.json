@@ -15,6 +15,20 @@
       "when": 1788972435434,
       "tag": "0001_triggers_and_integrity",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788973063116,
+      "tag": "0002_add_tone_and_sample_marker",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788973795367,
+      "tag": "0003_allow_purging_sample_ledger",
+      "breakpoints": true
     }
   ]
 }

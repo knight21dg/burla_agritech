@@ -31,6 +31,28 @@ export const vegNonVegEnum = pgEnum("veg_non_veg", [
   "not_applicable",
 ]);
 
+/**
+ * The tint a category or product card uses.
+ *
+ * Presentational, and in the database rather than derived, because it is an
+ * editorial choice the admin makes per row — not something a colour algorithm
+ * can pick. It maps to the `--color-tint-*` tokens in globals.css.
+ *
+ * It also carries the placeholder image treatment, which is what the site
+ * shows until real photography exists (OQ-017). It stays useful afterwards:
+ * category cards are tinted whether or not a product has a photograph.
+ */
+export const toneEnum = pgEnum("tone", [
+  "turmeric",
+  "mango",
+  "chilli",
+  "leaf",
+  "grain",
+  "berry",
+  "earth",
+  "cream",
+]);
+
 /** What a photograph is of. Drives which image a surface picks. */
 export const productImageRoleEnum = pgEnum("product_image_role", [
   "pack",

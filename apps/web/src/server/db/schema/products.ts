@@ -22,6 +22,7 @@ import { primaryId, timestamps, tsvector } from "./_shared";
 import {
   productImageRoleEnum,
   productStatusEnum,
+  toneEnum,
   variantStatusEnum,
   vegNonVegEnum,
 } from "./enums";
@@ -63,6 +64,17 @@ export const products = pgTable(
     status: productStatusEnum("status").notNull().default("draft"),
     featured: boolean("featured").notNull().default(false),
     sortOrder: integer("sort_order").notNull().default(0),
+
+    /** Card tint and placeholder treatment, until real photography exists. */
+    tone: toneEnum("tone").notNull().default("cream"),
+
+    /**
+     * True for the 28 demonstration products. Every one of them — the names,
+     * prices, SKUs and descriptions — was invented by us to show the interface
+     * (OQ-016). None of it is client-supplied, and none of it may reach
+     * production. `assertNoSampleData()` refuses to let it.
+     */
+    isSample: boolean("is_sample").notNull().default(false),
 
     seoTitle: text("seo_title"),
     seoDescription: text("seo_description"),

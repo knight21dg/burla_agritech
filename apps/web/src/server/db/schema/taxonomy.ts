@@ -20,6 +20,7 @@
 import { relations, sql } from "drizzle-orm";
 import {
   type AnyPgColumn,
+  boolean,
   check,
   index,
   integer,
@@ -30,7 +31,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { primaryId, timestamps } from "./_shared";
-import { categoryStatusEnum } from "./enums";
+import { categoryStatusEnum, toneEnum } from "./enums";
 import { media } from "./media";
 
 export const categories = pgTable(
@@ -60,6 +61,20 @@ export const categories = pgTable(
 
     sortOrder: integer("sort_order").notNull().default(0),
     status: categoryStatusEnum("status").notNull().default("draft"),
+
+    /** Card tint and placeholder treatment. See the enum for why it is stored. */
+    tone: toneEnum("tone").notNull().default("cream"),
+
+    /**
+     * True for rows the demo seed created.
+     *
+     * The ten top-level categories come from the client's handwritten sheet
+     * and are NOT sample data. The type layer beneath them is invented by us
+     * to demonstrate the browsing pattern (OQ-049), and must never reach
+     * production. A boot guard refuses to serve production with any of these
+     * present — docs/DATABASE-DESIGN.md §10.
+     */
+    isSample: boolean("is_sample").notNull().default(false),
 
     seoTitle: text("seo_title"),
     seoDescription: text("seo_description"),
