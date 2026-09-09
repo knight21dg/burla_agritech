@@ -1,19 +1,34 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { Breadcrumbs, type Crumb } from "@/components/ui/Breadcrumbs";
 import { Container, Section } from "@/components/ui/Section";
 import { ProductCard } from "@/components/product/ProductCard";
-import { ProductDetail } from "@/components/product/ProductDetail";
+import { ProductBuyPanel } from "@/components/product/ProductBuyPanel";
 import {
-  categoryBySlug,
   defaultVariant,
   productBySlug,
+  productHref,
   products,
   relatedProducts,
+  trailFor,
 } from "@/data/catalog";
 import { site } from "@/lib/site";
 
 type Params = { slug: string };
+
+/** Legally required for online food sale in India — SECURITY.md §8. */
+const INFO_FIELDS = [
+  "Ingredients",
+  "Allergens",
+  "Net quantity",
+  "Shelf life",
+  "Storage instructions",
+  "Country of origin",
+  "Manufacturer / packer",
+  "FSSAI licence number",
+  "Consumer care",
+  "Veg / Non-veg",
+];
 
 export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -27,20 +42,26 @@ export async function generateMetadata({
   const { slug } = await params;
   const p = productBySlug(slug);
   if (!p) return {};
-
   const variant = defaultVariant(p);
   return {
     title: `${p.name} ${variant.label}`,
     description: p.shortDescriptor,
-    alternates: { canonical: `/products/p/${p.slug}` },
+    alternates: { canonical: productHref(p) },
     openGraph: {
       title: `${p.name} — ${site.shortName}`,
       description: p.shortDescriptor,
-      type: "website",
     },
   };
 }
 
+/**
+ * Product page — flat sections rather than the v0.2 tabs.
+ *
+ * Tabs hid most of the page behind a click, which is worse for search engines
+ * (all of it is in the DOM either way, but only the visible panel reads as
+ * primary content) and worse for a customer trying to check an ingredient on a
+ * phone. The client asked for simple and useful; a single scroll is both.
+ */
 export default async function ProductPage({
   params,
 }: {
@@ -50,56 +71,104 @@ export default async function ProductPage({
   const product = productBySlug(slug);
   if (!product) notFound();
 
-  const category = categoryBySlug(product.categorySlug);
+  const { category, type } = trailFor(product);
   const related = relatedProducts(product);
+
+  const crumbs: Crumb[] = [
+    { label: "Products", href: "/products" },
+    ...(category
+      ? [{ label: category.name, href: `/products/${category.slug}` }]
+      : []),
+    ...(category && type
+      ? [
+          {
+            label: type.name,
+            href: `/products/${category.slug}/${type.slug}`,
+          },
+        ]
+      : []),
+    { label: product.name },
+  ];
 
   /**
    * Product JSON-LD without `offers`.
    *
-   * An Offer requires a real price, availability and price validity, and this
-   * demo catalogue is sample data. Emitting offers here would misrepresent the
-   * page to search engines (SEO.md §4). No AggregateRating or Review either —
-   * no reviews exist.
+   * An Offer needs a real price, availability and price validity, and this
+   * catalogue is sample data. Emitting one would misrepresent the page. No
+   * AggregateRating or Review either — no reviews exist.
    */
-  const productJsonLd = {
+  const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
     description: product.shortDescriptor,
     category: category?.name,
     brand: { "@type": "Brand", name: site.shortName },
-    url: `${site.url}/products/${product.slug}`,
+    url: `${site.url}${productHref(product)}`,
   };
 
   return (
     <>
       <Section tone="white" size="sm">
         <Container>
-          <Breadcrumbs
-            items={[
-              { label: "Products", href: "/products" },
-              ...(category
-                ? [{ label: category.name, href: `/products/${category.slug}` }]
-                : []),
-              { label: product.name },
-            ]}
-          />
+          <Breadcrumbs items={crumbs} />
           <div className="mt-8">
-            <ProductDetail product={product} />
+            <ProductBuyPanel product={product} />
+          </div>
+        </Container>
+      </Section>
+
+      <Section tone="white" size="sm">
+        <Container>
+          <div className="grid gap-10 border-t border-line pt-10 lg:grid-cols-12 lg:gap-12">
+            <div className="lg:col-span-7">
+              <h2 className="t-h2">About this product</h2>
+              <p className="measure mt-4 text-[0.9375rem] leading-relaxed text-ink-2">
+                {product.description}
+              </p>
+
+              <h2 className="t-h2 mt-10">Quality</h2>
+              <p className="measure mt-4 text-[0.9375rem] leading-relaxed text-ink-2">
+                Every batch moves through the same sequence — sourcing,
+                inspection, processing, quality control, packaging and dispatch.
+                The detail of each stage is published once verified.
+              </p>
+            </div>
+
+            <div className="lg:col-span-5">
+              <h2 className="t-h2">Product information</h2>
+              <dl className="mt-4 divide-y divide-line border-y border-line">
+                {INFO_FIELDS.map((f) => (
+                  <div
+                    key={f}
+                    className="flex items-baseline justify-between gap-4 py-2.5"
+                  >
+                    <dt className="text-[0.9375rem] text-ink">{f}</dt>
+                    <dd className="text-right text-[0.875rem] text-ink-3">
+                      To be confirmed
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-4 text-[0.8125rem] leading-relaxed text-ink-3">
+                These fields are legally required for online food sale in India.
+                The admin blocks publishing a product until every one is
+                populated, so no incomplete product page can go live.
+              </p>
+            </div>
           </div>
         </Container>
       </Section>
 
       {related.length > 0 && (
-        <Section >
+        <Section tone="surface" size="sm">
           <Container>
-            <h2 className="t-h2">More from {category?.name}</h2>
-            <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
-              {related.map((p, i) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                />
+            <h2 className="t-h2">
+              More from {type?.name ?? category?.name ?? "this range"}
+            </h2>
+            <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3 lg:grid-cols-4">
+              {related.map((p) => (
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
           </Container>
@@ -108,7 +177,7 @@ export default async function ProductPage({
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
     </>
   );

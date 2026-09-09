@@ -1,23 +1,21 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ButtonLink } from "@/components/ui/Button";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Container, Section } from "@/components/ui/Section";
 import { ProductCard } from "@/components/product/ProductCard";
-import { CategoryToolbar } from "@/components/product/CategoryToolbar";
-import { ProductImage } from "@/components/ui/ProductImage";
+import { TypeChips } from "@/components/product/TypeChips";
+import { ButtonLink } from "@/components/ui/Button";
 import {
   categories,
   categoryBySlug,
-  defaultVariant,
+  productHref,
   productsByCategory,
+  typesOf,
 } from "@/data/catalog";
 import { site } from "@/lib/site";
 
 type Params = { category: string };
-type Search = { sort?: string; availability?: string };
 
 export function generateStaticParams() {
   return categories.map((c) => ({ category: c.slug }));
@@ -25,58 +23,41 @@ export function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-  searchParams,
 }: {
   params: Promise<Params>;
-  searchParams: Promise<Search>;
 }): Promise<Metadata> {
   const { category } = await params;
   const c = categoryBySlug(category);
   if (!c) return {};
-
-  const sp = await searchParams;
-  const filtered = Boolean(sp.sort || sp.availability);
-
   return {
     title: c.name,
     description: c.description.slice(0, 155),
     alternates: { canonical: `/products/${c.slug}` },
-    // Faceted URLs are excluded from the index (SEO.md §5)
-    robots: filtered ? { index: false, follow: true } : undefined,
     openGraph: { title: `${c.name} — ${site.shortName}`, description: c.description },
   };
 }
 
+/**
+ * Category page — simple by instruction.
+ *
+ * Header, a short real description, the type layer where one exists, then the
+ * products. The sort and availability toolbar from v0.2 is withdrawn: the
+ * client asked to avoid complicated filters unless the catalogue actually
+ * needs them, and at this size it does not. Type chips do the useful part of
+ * that job while also giving each type an indexable URL.
+ */
 export default async function CategoryPage({
   params,
-  searchParams,
 }: {
   params: Promise<Params>;
-  searchParams: Promise<Search>;
 }) {
   const { category } = await params;
   const c = categoryBySlug(category);
   if (!c) notFound();
 
-  const { sort = "featured", availability = "all" } = await searchParams;
-
-  let list = productsByCategory(c.slug);
-  if (availability === "in-stock") {
-    list = list.filter(
-      (p) => defaultVariant(p).availability !== "out_of_stock",
-    );
-  }
-
-  list = [...list].sort((a, b) => {
-    const pa = defaultVariant(a).priceMinor;
-    const pb = defaultVariant(b).priceMinor;
-    if (sort === "price-asc") return pa - pb;
-    if (sort === "price-desc") return pb - pa;
-    if (sort === "name-asc") return a.name.localeCompare(b.name);
-    return Number(Boolean(b.featured)) - Number(Boolean(a.featured));
-  });
-
-  const others = categories.filter((x) => x.slug !== c.slug).slice(0, 5);
+  const list = productsByCategory(c.slug);
+  const types = typesOf(c.slug);
+  const others = categories.filter((x) => x.slug !== c.slug);
 
   const itemListJsonLd = {
     "@context": "https://schema.org",
@@ -86,79 +67,76 @@ export default async function CategoryPage({
     itemListElement: list.map((p, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      url: `${site.url}/products/${p.slug}`,
+      url: `${site.url}${productHref(p)}`,
       name: p.name,
     })),
   };
 
   return (
     <>
-      {/* Category hero */}
-      <Section tone="surface" size="sm">
+      <Section tone="white" size="sm">
         <Container>
           <Breadcrumbs
             items={[{ label: "Products", href: "/products" }, { label: c.name }]}
           />
-          <div className="mt-6 grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
-            <div className="lg:col-span-7">
-              <h1 className="t-h1">{c.name}</h1>
-              <p className="t-h3 mt-3 font-normal text-green-700">
-                {c.heroHeadline}
-              </p>
-              <p className="t-lead measure mt-5">{c.description}</p>
-            </div>
-            <div className="lg:col-span-5">
-              <ProductImage name={c.name} ratio="landscape" />
-            </div>
+          <div className="mt-6 max-w-2xl">
+            <h1 className="t-h1">{c.name}</h1>
+            <p className="t-lead mt-3">{c.description}</p>
           </div>
+
+          {types.length > 0 && (
+            <div className="mt-8">
+              <h2 className="t-label mb-3 text-ink-3">Browse by type</h2>
+              <TypeChips categorySlug={c.slug} types={types} />
+            </div>
+          )}
         </Container>
       </Section>
 
-      {/* Grid */}
       <Section tone="white" size="sm">
         <Container>
-          <Suspense
-            fallback={<div className="h-[3.75rem] border-y border-line" />}
-          >
-            <CategoryToolbar resultCount={list.length} />
-          </Suspense>
+          <div className="flex items-baseline justify-between gap-4 border-t border-line pt-8">
+            <h2 className="t-h2">
+              {types.length > 0 ? `All ${c.name}` : "Products"}
+            </h2>
+            <p className="text-[0.875rem] text-ink-3">
+              {list.length} {list.length === 1 ? "product" : "products"}
+            </p>
+          </div>
 
           {list.length === 0 ? (
-            <div className="py-20 text-center">
-              <h2 className="t-h3">No products match these filters</h2>
-              <p className="mx-auto mt-3 max-w-md text-ink-2">
-                Try clearing the filters, or browse another range.
+            <div className="py-16 text-center">
+              <h3 className="t-h3">Nothing here yet</h3>
+              <p className="mx-auto mt-2 max-w-md text-[0.9375rem] text-ink-2">
+                This range is being added. Ask us what is available now.
               </p>
               <div className="mt-6 flex justify-center gap-3">
-                <ButtonLink href={`/products/${c.slug}`} variant="secondary">
-                  Clear filters
+                <ButtonLink href="/products">All products</ButtonLink>
+                <ButtonLink href="/contact" variant="secondary">
+                  Contact us
                 </ButtonLink>
-                <ButtonLink href="/products">All categories</ButtonLink>
               </div>
             </div>
           ) : (
-            <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
-              {list.map((p, i) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                />
+            <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3 lg:grid-cols-4">
+              {list.map((p) => (
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
           )}
         </Container>
       </Section>
 
-      {/* Cross-links keep every category reachable from every category */}
-      <Section tone="white" size="sm">
+      {/* Every category stays reachable from every category */}
+      <Section tone="surface" size="sm">
         <Container>
           <h2 className="t-label text-ink-3">Other ranges</h2>
-          <ul className="mt-5 flex flex-wrap gap-2">
+          <ul className="mt-4 flex flex-wrap gap-2">
             {others.map((o) => (
               <li key={o.slug}>
                 <Link
                   href={`/products/${o.slug}`}
-                  className="inline-block rounded-sm border border-line bg-white px-4 py-2 text-[0.875rem] text-ink transition-colors hover:border-green hover:text-green-700"
+                  className="inline-block rounded-sm border border-line bg-white px-4 py-2 text-[0.875rem] text-ink transition-colors hover:border-green-700 hover:text-green-700"
                 >
                   {o.name}
                 </Link>

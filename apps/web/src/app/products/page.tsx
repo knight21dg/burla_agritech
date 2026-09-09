@@ -6,45 +6,44 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { categories, products } from "@/data/catalog";
 
 export const metadata: Metadata = {
-  title: "Shop All Products",
+  title: "All Products",
   description:
-    "Browse every Burla range — dehydrated powders and flakes, dehydrated fruits, pickles, spiced dal powders, sun-dried crisps, dry fruits, millets, herbal tea and coffee, masala powders and combo packs.",
+    "Every Burla range — dehydrated powders and flakes, dehydrated fruits, pickles, spiced dal powders, sun-dried crisps (vadiyalu), dry fruits, millets, herbal tea and coffee, masala powders and combo packs.",
+  alternates: { canonical: "/products" },
 };
 
-export default function ShopPage() {
+export default function ProductsPage() {
   return (
     <>
-      <Section tone="surface" size="sm">
+      <Section tone="white" size="sm">
         <Container>
-          <Breadcrumbs items={[{ label: "Shop" }]} />
-          <h1 className="t-h1 mt-6">Our full range</h1>
-          <p className="t-lead measure mt-4">
-            Ten ranges built around a single way of working with what the land
-            gives — drying, curing, roasting and milling.
-          </p>
-        </Container>
-      </Section>
+          <Breadcrumbs items={[{ label: "Products" }]} />
+          <div className="mt-6 max-w-2xl">
+            <h1 className="t-h1">Our full range</h1>
+            <p className="t-lead mt-3">
+              Ten ranges, each built around one way of working with what the
+              land gives — drying, curing, roasting and milling.
+            </p>
+          </div>
 
-      <Section >
-        <Container>
-          <div className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-5">
-            {categories.map((c, i) => (
+          <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-5">
+            {categories.map((c) => (
               <CategoryCard key={c.slug} category={c} />
             ))}
           </div>
         </Container>
       </Section>
 
-      <Section >
+      <Section tone="white" size="sm">
         <Container>
-          <div className="flex items-baseline justify-between gap-4">
+          <div className="flex items-baseline justify-between gap-4 border-t border-line pt-8">
             <h2 className="t-h2">Every product</h2>
-            <p className="text-[0.875rem] text-ink-2">
+            <p className="text-[0.875rem] text-ink-3">
               {products.length} products
             </p>
           </div>
-          <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
-            {products.map((p, i) => (
+          <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3 lg:grid-cols-4">
+            {products.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>

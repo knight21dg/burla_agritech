@@ -1,5 +1,10 @@
 import type { MetadataRoute } from "next";
-import { categories, products } from "@/data/catalog";
+import {
+  categories,
+  products,
+  productsByType,
+  productTypes,
+} from "@/data/catalog";
 import { site } from "@/lib/site";
 
 /** Generated from live content, never hand-maintained (SEO.md §5). */
@@ -33,6 +38,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly" as const,
       priority: 0.8,
     })),
+    // Only types the navigation actually links to. A type holding a single
+    // product sends visitors straight to that product, so listing its page
+    // here would submit a near-duplicate of the product page.
+    ...productTypes
+      .filter((t) => productsByType(t.parentSlug!, t.slug).length > 1)
+      .map((t) => ({
+        url: `${site.url}/products/${t.parentSlug}/${t.slug}`,
+        lastModified: now,
+        changeFrequency: "weekly" as const,
+        priority: 0.75,
+      })),
     ...products.map((p) => ({
       url: `${site.url}/products/p/${p.slug}`,
       lastModified: now,
