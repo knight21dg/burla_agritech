@@ -31,7 +31,10 @@ export interface Product {
   id: string;
   slug: string;
   name: string;
+  /** Always the top-level category, so breadcrumbs never need a recursive walk. */
   categorySlug: string;
+  /** The type within that category, where one exists. */
+  typeSlug?: string;
   shortDescriptor: string;
   description: string;
   variants: Variant[];
@@ -58,6 +61,14 @@ export interface Category {
   heroHeadline: string;
   description: string;
   tone: Tone;
+  /**
+   * Present = this row is a TYPE sitting under that category.
+   *
+   * Types are modelled as categories with a parent rather than as a separate
+   * entity, so a category can gain or lose a type layer without a migration
+   * and staff see one concept, not two (PRODUCT-TAXONOMY §4).
+   */
+  parentSlug?: string;
 }
 
 /* --------------------------------------------------------------------------
@@ -168,6 +179,63 @@ export const categories: Category[] = [
   },
 ];
 
+/**
+ * SAMPLE type layer — shape only.
+ *
+ * These demonstrate the Category > Type > Product browsing the client asked
+ * for. The real list per category is blocked on OQ-049; nothing here is
+ * client-supplied. Categories not listed simply have no types, which the
+ * interface handles by showing products directly.
+ */
+export const productTypes: Category[] = [
+  t("pickles", "mango", "Mango", 1, "Raw mango, cured in season.", "chilli"),
+  t("pickles", "lemon", "Lemon", 2, "Cured in salt over weeks.", "turmeric"),
+  t("pickles", "gongura", "Gongura", 3, "Sorrel leaves, sharp and tart.", "leaf"),
+
+  t("dehydrated-fruits", "mango", "Mango", 1, "Ripe mango, gently dried.", "mango"),
+  t("dehydrated-fruits", "pineapple", "Pineapple", 2, "Bright and tart.", "turmeric"),
+  t("dehydrated-fruits", "banana", "Banana", 3, "Sliced ripe banana.", "cream"),
+  t("dehydrated-fruits", "guava", "Guava", 4, "Soft, fragrant, seasonal.", "leaf"),
+
+  t("millets", "ragi", "Ragi", 1, "Finger millet, cleaned and graded.", "grain"),
+  t("millets", "foxtail", "Foxtail", 2, "Cleaned and graded.", "grain"),
+  t("millets", "little", "Little Millet", 3, "Small grain, quick to cook.", "grain"),
+];
+
+function t(
+  parentSlug: string,
+  slug: string,
+  name: string,
+  order: number,
+  description: string,
+  tone: Tone,
+): Category {
+  return {
+    slug,
+    name,
+    shortName: name,
+    order,
+    heroHeadline: "",
+    description,
+    tone,
+    parentSlug,
+  };
+}
+
+/** Top-level categories only — what the nav and the category grid show. */
+export const topCategories = () => categories;
+
+/** The types beneath a category, in display order. Empty when it has none. */
+export const typesOf = (categorySlug: string) =>
+  productTypes
+    .filter((x) => x.parentSlug === categorySlug)
+    .sort((a, b) => a.order - b.order);
+
+export const typeBySlug = (categorySlug: string, typeSlug: string) =>
+  productTypes.find(
+    (x) => x.parentSlug === categorySlug && x.slug === typeSlug,
+  );
+
 export const categoryBySlug = (slug: string) =>
   categories.find((c) => c.slug === slug);
 
@@ -210,6 +278,7 @@ export const products: Product[] = [
     slug: "dehydrated-mango",
     name: "Dehydrated Mango",
     categorySlug: "dehydrated-fruits",
+    typeSlug: "mango",
     shortDescriptor: "Ripe mango, sliced and gently dried",
     description:
       "Fruit is sliced at peak ripeness and dried slowly so the sugars concentrate without scorching. Soft, chewy, and the colour of the fruit it came from.",
@@ -222,6 +291,7 @@ export const products: Product[] = [
     slug: "mango-pickle",
     name: "Mango Pickle",
     categorySlug: "pickles",
+    typeSlug: "mango",
     shortDescriptor: "Raw mango cured in salt, chilli and oil",
     description:
       "Made once a season, when raw mango is at its best. Cut, salted, spiced and left to mature.",
@@ -234,6 +304,7 @@ export const products: Product[] = [
     slug: "ragi-millet",
     name: "Ragi Millet",
     categorySlug: "millets",
+    typeSlug: "ragi",
     shortDescriptor: "Cleaned and graded finger millet",
     description:
       "Whole finger millet, cleaned, de-stoned and graded. For porridge, rotis or malt.",
@@ -287,6 +358,7 @@ export const products: Product[] = [
     slug: "dehydrated-pineapple",
     name: "Dehydrated Pineapple",
     categorySlug: "dehydrated-fruits",
+    typeSlug: "pineapple",
     shortDescriptor: "Bright, tart, naturally sweet",
     description: "Pineapple rings dried slowly to hold their tartness.",
     variants: [v("100g", 28000, 100, "in_stock", true)],
@@ -297,6 +369,7 @@ export const products: Product[] = [
     slug: "dehydrated-banana",
     name: "Dehydrated Banana",
     categorySlug: "dehydrated-fruits",
+    typeSlug: "banana",
     shortDescriptor: "Sliced ripe banana, gently dried",
     description: "Ripe banana, sliced and dried.",
     variants: [v("100g", 25000, 100, "in_stock", true)],
@@ -307,6 +380,7 @@ export const products: Product[] = [
     slug: "dehydrated-guava",
     name: "Dehydrated Guava",
     categorySlug: "dehydrated-fruits",
+    typeSlug: "guava",
     shortDescriptor: "Soft, fragrant, seasonal",
     description: "Guava, sliced and dried in season.",
     variants: [v("100g", 27000, 100, "in_stock", true)],
@@ -317,6 +391,7 @@ export const products: Product[] = [
     slug: "lemon-pickle",
     name: "Lemon Pickle",
     categorySlug: "pickles",
+    typeSlug: "lemon",
     shortDescriptor: "Cured in salt over weeks",
     description: "Lemon, salt, chilli and time.",
     variants: [v("200g", 24000, 200, "in_stock", true)],
@@ -327,6 +402,7 @@ export const products: Product[] = [
     slug: "gongura-pickle",
     name: "Gongura Pickle",
     categorySlug: "pickles",
+    typeSlug: "gongura",
     shortDescriptor: "Sorrel leaves, sharp and tart",
     description: "Gongura leaves cooked down with spice.",
     variants: [v("200g", 30000, 200, "in_stock", true)],
@@ -410,6 +486,7 @@ export const products: Product[] = [
     slug: "foxtail-millet",
     name: "Foxtail Millet",
     categorySlug: "millets",
+    typeSlug: "foxtail",
     shortDescriptor: "Cleaned and graded",
     description: "Whole foxtail millet, cleaned and graded.",
     variants: [v("1kg", 16000, 1000, "in_stock", true)],
@@ -420,6 +497,7 @@ export const products: Product[] = [
     slug: "little-millet",
     name: "Little Millet",
     categorySlug: "millets",
+    typeSlug: "little",
     shortDescriptor: "Small grain, quick to cook",
     description: "Whole little millet, cleaned and graded.",
     variants: [v("1kg", 17000, 1000, "in_stock", true)],
@@ -494,18 +572,44 @@ export const products: Product[] = [
 export const productBySlug = (slug: string) =>
   products.find((p) => p.slug === slug);
 
+/** Everything in a category, including products filed under its types. */
 export const productsByCategory = (slug: string) =>
   products.filter((p) => p.categorySlug === slug);
+
+/** Just the products of one type. */
+export const productsByType = (categorySlug: string, typeSlug: string) =>
+  products.filter(
+    (p) => p.categorySlug === categorySlug && p.typeSlug === typeSlug,
+  );
+
+/** The canonical URL for a product. Flat, so it survives recategorisation. */
+export const productHref = (p: Product) => `/products/p/${p.slug}`;
+
+/** Breadcrumb trail: Home / Category / Type / Product. */
+export function trailFor(p: Product) {
+  const category = categoryBySlug(p.categorySlug);
+  const type = p.typeSlug ? typeBySlug(p.categorySlug, p.typeSlug) : undefined;
+  return { category, type };
+}
 
 export const featuredProducts = () => products.filter((p) => p.featured);
 
 export const defaultVariant = (p: Product) =>
   p.variants.find((x) => x.isDefault) ?? p.variants[0]!;
 
-export const relatedProducts = (p: Product, limit = 4) =>
-  products
-    .filter((x) => x.categorySlug === p.categorySlug && x.id !== p.id)
-    .slice(0, limit);
+/** Same type first, then the rest of the category. Never the product itself. */
+export const relatedProducts = (p: Product, limit = 4) => {
+  const pool = products.filter((x) => x.id !== p.id);
+  const sameType = p.typeSlug
+    ? pool.filter(
+        (x) => x.categorySlug === p.categorySlug && x.typeSlug === p.typeSlug,
+      )
+    : [];
+  const sameCategory = pool.filter(
+    (x) => x.categorySlug === p.categorySlug && !sameType.includes(x),
+  );
+  return [...sameType, ...sameCategory].slice(0, limit);
+};
 
 export function searchProducts(q: string) {
   const term = q.trim().toLowerCase();
