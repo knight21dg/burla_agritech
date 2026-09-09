@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | `docs/DESIGN-SYSTEM.md` |
-| Version | **1.1 — colourful chrome, white content** |
+| Version | **1.2 — colourful homepage, white product panels** |
 | Date | 2026-09-09 |
 | Status | Implemented for the design system, header, footer and homepage |
 | Supersedes | v0.2 (warm ivory / editorial direction), now withdrawn |
@@ -131,11 +131,18 @@ Colour lives here and on the header and footer — nowhere near a product grid.
 |---|---|
 | Header row 1 | `green-900`, white text — 11.1:1 |
 | Header row 2, category strip | `green-700`, white text — 5.33:1 |
+| **Homepage sections** | A produce tint per section, with content on a **white panel** inside |
 | Category tiles | Produce tint, ink label |
 | Footer | `green-900`, white text |
 | Buttons, links, active nav | `green-700` |
 | **Product grids and cards** | **White. Always.** |
-| **Product page** | **White. Always.** |
+| **Listing and product pages** | **White. Always.** |
+
+**The homepage panel pattern.** Each homepage section takes a tint, and its
+content sits on a white `.panel` — 10px radius, 1px `--line` border. The page
+carries the colour; the products sit on white inside it. Listing pages take no
+tint at all: a coloured ground behind a full grid of food photographs fights
+the products in a way a single framed row does not.
 
 ### 3.5 Dark mode
 
@@ -422,13 +429,26 @@ explicit dimensions so CLS stays at zero.
 
 ## 10. Motion
 
-**Allowed:** hover state changes (150ms), image scale on card hover (1.0 → 1.02,
-300ms), menu and drawer open/close (200ms), carousel scroll, fade on route
-change (120ms).
+The client asked for smooth animation on the **homepage**. It stays restrained
+and confined there — listing and product pages carry hover states only.
 
-**Not allowed:** scroll-triggered reveals, parallax, staggered list entrances,
-animated counters, autoplaying carousels, page loaders, 3D, cinematic
-transitions.
+**Allowed:** hover state changes (150ms), image scale on card hover
+(1.0 → 1.02, 300ms), menu and drawer open/close (200ms), carousel scroll,
+and — on the homepage only — a single fade-and-rise as a block enters view
+(450ms, once, never repeated).
+
+**Two rules that make the reveal safe:**
+
+1. **Above-the-fold content never sits behind a JavaScript gate.** The hero
+   uses a pure-CSS `@keyframes` entrance, so it renders even if the script is
+   slow, blocked or fails. The observer-driven `Reveal` is used only below the
+   fold, where the user must scroll before it matters.
+2. **`prefers-reduced-motion` removes it entirely.** CSS forces `.reveal` to
+   full opacity and no transform, and the component short-circuits before
+   observing. Shortening the duration is not sufficient.
+
+**Not allowed:** parallax, staggered list entrances beyond ~90ms, animated
+counters, autoplaying carousels, page loaders, 3D, cinematic transitions.
 
 Easing `cubic-bezier(0.4, 0, 0.2, 1)`. Nothing exceeds 300ms.
 

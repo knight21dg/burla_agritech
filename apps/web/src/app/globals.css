@@ -85,6 +85,12 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+
+    /* Never leave content hidden or displaced if the observer has not run */
+    .reveal {
+      opacity: 1 !important;
+      transform: none !important;
+    }
   }
 
   body {
@@ -162,6 +168,56 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     font-weight: 600;
+  }
+
+  /* White panel holding product content on a coloured section.
+     The Flipkart pattern: colour on the page, products on white inside it. */
+  .panel {
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid var(--color-line);
+    padding: 1.25rem 1rem 1.5rem;
+  }
+  @media (width >= 768px) {
+    .panel {
+      padding: 1.75rem 1.5rem 2rem;
+    }
+  }
+
+  /* Entrance for above-the-fold content.
+     Pure CSS, so it runs without JavaScript and can never leave the hero
+     stuck invisible — unlike the observer-driven .reveal below, which is only
+     safe for content the user has to scroll to. */
+  @keyframes enter {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .enter {
+    animation: enter 500ms var(--ease-standard) both;
+  }
+  .enter-delay-1 {
+    animation-delay: 90ms;
+  }
+
+  /* Scroll-in reveal. Opacity and a small rise only — no scale, no parallax. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 450ms var(--ease-standard),
+      transform 450ms var(--ease-standard);
+    will-change: opacity, transform;
+  }
+  .reveal-in {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
   }
 
   .measure {
