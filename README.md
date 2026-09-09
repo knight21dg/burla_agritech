@@ -7,17 +7,23 @@ Two web applications for Burla Global Agri Products — an Indian agricultural f
 | `apps/web` | `burla.com` | Public catalogue, brand, enquiries, and commerce if enabled |
 | `apps/admin` | `admin.burla.com` | Staff management of products, **stock**, content, orders and enquiries |
 
-One Turborepo monorepo, one PostgreSQL database, shared typed packages.
+One npm-workspaces monorepo, one PostgreSQL database, shared typed packages.
+
+`apps/admin` does not exist yet — it is planned, not built. `apps/web` is real and runs.
 
 ---
 
 ## Status
 
-**Phase 1 of 22 complete. No application code written yet — by design.**
+**Customer frontend: built and running. Backend: designed, not yet written.**
 
-The project is in the planning stage. All Phase 0–1 deliverables are in [`docs/`](docs/README.md).
+`apps/web` renders every page, navigation and search work, forms validate. It is accessible, typed, server-rendered and contrast-verified. What it does not do is persist anything: there is no database, no API, no authentication, and the enquiry form currently reports success without sending anything. The honest description is a **high-fidelity prototype**.
 
-Implementation begins once the eight blocking questions in [`docs/OPEN-QUESTIONS.md`](docs/OPEN-QUESTIONS.md) are answered — most importantly whether V1 sells online or captures enquiries only (`OQ-001`), which determines roughly 40% of the build.
+The full audit is in [`docs/CURRENT-ARCHITECTURE.md`](docs/CURRENT-ARCHITECTURE.md). The plan to make it an application is in [`docs/SYSTEM-DESIGN.md`](docs/SYSTEM-DESIGN.md) — roughly 66 working days for the enquiry-only build, 80 with commerce.
+
+Backend implementation can begin now; the phases that are blocked on client decisions are named in `SYSTEM-DESIGN.md` §13. The largest single unknown remains whether V1 sells online or captures enquiries only ([`OQ-001`](docs/OPEN-QUESTIONS.md)).
+
+> **All product data on the running site is sample data we invented to demonstrate the interface.** It is marked `IS_SAMPLE_DATA` in the source and must not reach production. See `CURRENT-ARCHITECTURE.md` §11.
 
 ---
 

@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | `docs/OPEN-QUESTIONS.md` |
-| Version | 1.2 — logo received; OQ-008 largely resolved |
+| Version | 1.3 — section J restored; section K adds OQ-058 to OQ-074 from the backend architecture pass |
 | Date | 2026-09-09 |
 | Owner | Client (Burla Global Agri Products) unless stated |
 
@@ -19,10 +19,17 @@ This is the single register of everything unknown. **Nothing here has been guess
 
 | Answer first (this week) | Answer within 2 weeks | Answer before launch |
 |---|---|---|
-| **OQ-051**, **OQ-055**, **OQ-057**, OQ-001, OQ-008, OQ-016, OQ-017 | OQ-002, OQ-003, OQ-004, OQ-013, OQ-049, OQ-050, OQ-032 | Everything else marked 🟠 |
+| **OQ-001**, **OQ-038**, **OQ-065**, OQ-016, OQ-017, OQ-049 | OQ-002, OQ-003, OQ-005, OQ-013, OQ-050, OQ-062, OQ-066, OQ-069 | Everything else marked 🟠 |
 
-> The three bolded items are new conflicts created by the clarified design
-> direction. They gate the rework — see section K.
+> **OQ-001** (sell online, or enquiry-only) and **OQ-038** (custom admin, or a
+> CMS) between them decide roughly 24 days of work and about eight database
+> tables. **OQ-065** (Better Auth or Auth.js) is hard to reverse once users
+> exist. Phases 3–11 can start before any of them are answered — see
+> `SYSTEM-DESIGN.md` §12.
+>
+> The three design-direction conflicts that previously sat here — OQ-051,
+> OQ-055 and OQ-057 — have been settled by the rework. They are in section J,
+> marked ✅, for confirmation rather than decision.
 
 ---
 
@@ -326,6 +333,144 @@ Related: `OQ-022` — are combos their own SKU, or a discount on constituents?
 ### 🟠 OQ-046 — Is there a sourcing or producer story?
 Hillpure's strongest asset is a real narrative about marginal hill farmers and women's empowerment — though they bury it in the footer. Does Burla have an equivalent, factually supportable story about where produce comes from and who grows it?
 If yes, it belongs on the homepage, not the footer. If no, we will not invent one.
+**Answer:**
+
+---
+
+## J. Raised by the clarified design direction (2026-09-09)
+
+> **Note:** this section was lost when the file was rebuilt after an encoding
+> failure on 2026-09-09 and has been restored from the working record. Three of
+> its items have since been settled by the work itself; those are marked, and
+> the client should confirm rather than re-answer.
+
+### ✅ CONFLICT-1 / OQ-051 — The supplied hero image contradicts the new brief
+`logos/landing page.png` was the entire homepage hero. The clarified brief ruled it out on four counts:
+
+| Requirement | The supplied image |
+|---|---|
+| "Authentic product photography" | AI-generated composite |
+| "Do NOT use AI-generated food images" | Contains AI-generated food and landscape |
+| "Mostly plain white background" | Full-bleed warm sunset scene |
+| "Hero should be simple, not cinematic" | Cinematic by construction |
+
+It also baked the headline, tagline, four pillars and CTA into the pixels, which cannot be translated, resized or read by a screen reader (WCAG 1.4.5).
+
+**Settled by implementation.** The homepage now uses a white hero with the headline and CTA in real HTML. The image is no longer referenced anywhere in `apps/web`. **Confirm you are happy with that.**
+
+### ✅ CONFLICT-2 / OQ-055 — Sanity, or the custom admin?
+A later stack list named **Sanity** as the CMS, reversing ADR-010, which had removed it in favour of a custom admin — because you asked for one admin to manage "stock and everything", and splitting product content from stock across two systems means two logins and two sources of truth.
+
+**Settled by implementation.** The repository audit at `c17cf19` found six runtime dependencies and no CMS. ADR-010 stands; the backend design assumes a custom admin (`DATA-OWNERSHIP.md` §4). **This remains open as `OQ-038` if you want to revisit it — it is a legitimate choice, and it is yours.**
+
+### ✅ CONFLICT-3 / OQ-057 — The existing build uses the withdrawn design system
+The demo was built on the v0.2 warm ivory palette, display serif, handwriting accent and illustrated hero, all of which were withdrawn.
+
+**Settled by implementation.** The rework was carried out — white canvas, single sans family, the sampled brand green. The accessibility, compliance and data-layer work carried over intact, as planned.
+
+### 🟠 OQ-049 — What is the type layer for each category?
+Pickles → Mango / Lemon / Gongura was your example. We need the real list per category, or confirmation that a category has none.
+
+Specifically for Millets and Dehydrated Powders: is the type the **ingredient** (Ragi, Foxtail) or the **form** (whole, flour, rava)? It cannot be both without a two-axis filter, which conflicts with "avoid complicated filters". Our recommendation is ingredient as the type, form as a pack variant.
+**Answer:**
+
+### 🟠 OQ-050 — Product URL shape
+Nested `/products/pickles/mango/mango-pickle`, or flat `/products/p/mango-pickle`? Effectively irreversible once indexed.
+
+**Built as flat**, so product URLs survive recategorisation (`PRODUCT-DOMAIN.md` §9). Confirm before the site is indexed — `robots.txt` still disallows everything, so nothing is locked in yet.
+**Answer:**
+
+### 🟡 OQ-047 — All-sans typography, or a serif for major headings?
+Our recommendation is a single sans family at launch. It is quieter and never competes with a photograph. A serif can be added to page titles later; removing one that has spread through the UI is much harder. **Built as all-sans.**
+**Answer:**
+
+### 🟡 OQ-048 — Category page thresholds
+Proposed: a category shows types as filter chips below 8 products, and as dedicated type pages at 8 or more. A type with one product links straight to it. Reasonable, or would you prefer a consistent structure regardless of count?
+**Answer:**
+
+### 🟡 OQ-052 — Photography: commissioned or in-house?
+Is there budget and a date? `IMAGE-ASSET-REQUIREMENTS.md` §7 has guidance for a competent in-house shoot if that is the route.
+**Answer:**
+
+### 🟡 OQ-053 — Is packaging artwork final?
+Photographing packs that are about to change would waste the shoot.
+**Answer:**
+
+### 🟡 OQ-054 — Any existing farm, facility or team photographs we may use?
+**Answer:**
+
+### 🟡 OQ-056 — Is wholesale / B2B still in scope?
+The earlier brief made bulk and wholesale enquiry a priority and it is built. The later brief does not mention it. Keep the page, or drop it for now?
+**Answer:**
+
+---
+
+## K. Raised by the backend architecture pass (2026-09-09)
+
+New questions from the audit and the architecture documents. None of them block Phases 3–11; each one blocks a specific later phase, named in the last column.
+
+### 🔴 OQ-065 — Better Auth, or Auth.js v5?
+Our recommendation is **Better Auth**: first-class database sessions, built-in MFA and organisation support, and no adapter layer between us and Postgres. Auth.js is the better-known option and works, but its database-session story is thinner and staff MFA would be hand-rolled. Comparison in `AUTHENTICATION.md` §2.
+
+This is an engineering decision we are happy to take, but it is hard to reverse after users exist, so it is recorded rather than assumed.
+**Blocks:** Phase 10. **Answer:**
+
+### 🟠 OQ-069 — Who owns the Vercel, Neon and Cloudflare accounts?
+These should be in the client's name from day one, not ours. If recovery depends on credentials only we hold, the business has a single point of failure that is not technical (`DATABASE-RECOVERY.md` §8).
+**Blocks:** Phase 20. **Answer:**
+
+### 🟠 OQ-066 — Which domain sends transactional email, and who controls its DNS?
+SPF, DKIM and DMARC records are needed before enquiry notifications will deliver reliably.
+**Blocks:** Phase 9. **Answer:**
+
+### 🟠 OQ-068 — Who owns `burla.co.in` and its DNS, and do we have access?
+**Blocks:** Phase 20. **Answer:**
+
+### 🟠 OQ-071 — Who receives production alerts, and on which number?
+An alert nobody sees is a log line with extra steps.
+**Blocks:** Phase 16. **Answer:**
+
+### 🟠 OQ-062 — Who is the DPDP data fiduciary contact?
+Required for the privacy policy and for breach notification under the Digital Personal Data Protection Act 2023. May be the same person as the grievance officer (`OQ-005`).
+**Blocks:** launch. **Answer:**
+
+### 🟠 OQ-074 — Who is authorised to approve a production database restore?
+A decision made during an incident is a decision made badly.
+**Blocks:** Phase 20. **Answer:**
+
+### 🟡 OQ-058 — Are `content_manager` and `order_manager` needed at launch?
+The permission model defines five roles. For two partners, `staff` + `admin` may be enough, with the finer roles added when you hire. The matrix supports both; the question is which to switch on.
+**Blocks:** Phase 11. **Answer:**
+
+### 🟡 OQ-059 — Should staff accounts be created by an admin, or by invitation email?
+**Blocks:** Phase 10. **Answer:**
+
+### 🟡 OQ-063 — Are combo packs in scope at launch?
+Category 10 is structurally different — a combo contains other products (`PRODUCT-DOMAIN.md` §6). The shape is recorded so the schema does not have to change later, but no code is written for it yet.
+**Blocks:** Phase 12. **Answer:**
+
+### 🟡 OQ-064 — Are the ten category names final?
+Taken from the handwritten sheet. Worth one read-through together before they become URLs. Related to `OQ-013`.
+**Blocks:** Phase 5. **Answer:**
+
+### 🟡 OQ-060 — Retention period for the audit log
+**Blocks:** Phase 11. **Answer:**
+
+### 🟡 OQ-061 — Retention period for enquiries
+Under the DPDP Act, personal data should not be kept indefinitely without a reason.
+**Blocks:** Phase 9. **Answer:**
+
+### 🟡 OQ-072 — Log retention period
+**Blocks:** Phase 16. **Answer:**
+
+### 🟡 OQ-067 — PostHog region: EU or US?
+**Blocks:** Phase 16. **Answer:**
+
+### 🟡 OQ-073 — Where is the offline record of secrets kept, and who can reach it?
+**Blocks:** Phase 20. **Answer:**
+
+### 🟢 OQ-070 — Is there a launch date, and is it tied to anything external?
+A festival, a trade show, or a print run would change the ordering of the plan.
 **Answer:**
 
 ---

@@ -3,8 +3,8 @@
 | Field | Value |
 |---|---|
 | Document | `docs/SECURITY.md` |
-| Version | 0.2 — two-origin architecture |
-| Date | 2026-09-07 |
+| Version | 0.3 — reconciled with the backend architecture pass |
+| Date | 2026-09-09 |
 
 > **Scope note.** §8 summarises our understanding of the Indian regulatory requirements that apply to a food business selling or marketing online. It is written so nothing is missed during build. **It is not legal advice.** The client must have these confirmed by their own legal or regulatory advisor before launch.
 
@@ -179,7 +179,9 @@ Not currently a statutory requirement for private Indian websites, but WCAG 2.2 
 - Secret rotation procedure documented; rotation on any staff departure.
 - Separate credentials per environment. Production secrets are never present in preview environments.
 
-**Immediate risk in this project:** the working directory currently resolves to a git repository rooted at the user's Windows home folder, which contains `.ssh/`, credential files and browser data (`PROJECT-BRIEF.md` §9). A dedicated repository with a `.gitignore` must exist before the first commit.
+✅ **Resolved 2026-09-09.** The working directory previously resolved to a git repository rooted at the user's Windows home folder, containing `.ssh/`, credential files and browser data (`PROJECT-BRIEF.md` §9). A dedicated repository was initialised in the project folder and `.gitignore` — including `.env`, `.env.*` and `!.env.example` — was the first thing committed. Nothing from the home directory was ever staged.
+
+Detail on every variable, boot-time validation, rotation, and the three guards that stop local development pointing at production: `ENVIRONMENT.md`.
 
 ---
 
@@ -203,6 +205,29 @@ Not currently a statutory requirement for private Indian websites, but WCAG 2.2 
 | Logging hygiene | No passwords, tokens, card data, full IPs or full emails in logs |
 | Incident response | Documented: detect → contain → assess → notify → remediate → review. Named owner. Breach notification timelines per DPDP |
 | Backup restore | Tested before launch and re-tested quarterly. **An untested backup is not a backup** |
+
+---
+
+## 11a. Where the detail now lives
+
+This document is the security *policy*. The backend architecture pass moved the mechanism into documents of their own, so that a rule and its implementation do not drift apart:
+
+| Concern | Document |
+|---|---|
+| Sessions, passwords, MFA, account recovery | `AUTHENTICATION.md` |
+| Roles, the permission matrix, ownership checks, 404-not-403, audit | `AUTHORIZATION.md` |
+| Input validation, mass-assignment guard, sort allowlist, error envelope | `API-DESIGN.md` §9 |
+| Environment variables, secret rotation, production-database guards | `ENVIRONMENT.md` |
+| Upload security, webhook signatures, payment verification | `INTEGRATIONS.md` |
+| Log redaction, PII scrubbing, alerting | `OBSERVABILITY.md` |
+| Backups, restore drills, compromise recovery | `DATABASE-RECOVERY.md` |
+| Headers, CSP rollout, launch checklist | `DEPLOYMENT.md` |
+
+Three positions taken there are worth restating here, because they are the ones most often lost during implementation:
+
+1. **Authorization runs in the service, on every call.** Route middleware and hidden links are UX, not security.
+2. **Ownership belongs in the WHERE clause.** Owned entities have no repository method that can be called without the owner id.
+3. **A payment is confirmed by a signature-verified webhook, never by the browser.**
 
 ---
 

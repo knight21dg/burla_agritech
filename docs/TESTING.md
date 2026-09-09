@@ -3,8 +3,8 @@
 | Field | Value |
 |---|---|
 | Document | `docs/TESTING.md` |
-| Version | 1.0 — adds carousel and taxonomy coverage |
-| Date | 2026-09-07 |
+| Version | 1.1 — adds test-data rules and the cutover regression suite |
+| Date | 2026-09-09 |
 | Tools | Vitest · Testing Library · Playwright · axe-core · Lighthouse CI |
 
 ---
@@ -101,6 +101,43 @@ Run against a real Postgres instance (Neon branch or a container), never mocks o
 | **Publish validation** | A product missing any legally required field cannot be published; an image without alt text blocks publish |
 | **Stock adjustment** | Writes a movement record, updates the variant, writes an audit entry, and cannot drive stock negative — all in one transaction, all or nothing |
 | **Audit log** | Every admin mutation produces an entry with actor, before and after |
+
+---
+
+### 5.1 Test data — rules
+
+**Where we are today:** the repository audit at `c17cf19` found **zero tests**. No Vitest, no Playwright, no CI. Everything in this document is a plan, not a description, and that is worth stating plainly rather than letting the detail imply otherwise.
+
+Four rules, before the first test is written:
+
+1. **Tests never use production data.** Not a copy, not a subset, not "just the catalogue". Customer PII in a CI log is a breach with extra steps.
+2. **Tests never run against a production database.** `vitest.setup.ts` calls `assertNotProduction("run tests")` before opening a connection (`ENVIRONMENT.md` §5). The check also catches a production connection string pasted into a local `.env`, which is the case a simple `APP_ENV` check would miss.
+3. **Each suite owns its data.** Fixtures are created by the test and removed after it, against a dedicated Neon branch that is truncated between suites. Tests that depend on data another test left behind fail in a different order.
+4. **Seeded demo data is clearly demo.** `seed/demo.ts` refuses to run when `APP_ENV=production` (`MIGRATIONS.md` §9), and there is a test asserting that it refuses.
+
+### 5.2 Authorization suite
+
+The twelve authorization tests in `AUTHORIZATION.md` §10 are not a subset of the table above — they are the acceptance criteria for that document. If they do not exist, authorization is not implemented, whatever the code looks like.
+
+The one most often missing: **Customer A requesting Customer B's order id must return 404, not 403.** A 403 confirms the row exists.
+
+---
+
+## 5.3 Cutover regression suite — temporary, and the most valuable tests in the project
+
+While `catalog.ts` is being replaced by the database (`MIGRATIONS.md` Part B), one assertion matters more than any other:
+
+> **The rendered HTML must be identical before and after each cutover commit.**
+
+The brief is explicit that the frontend is not being redesigned. So any visual difference after a cutover commit is a bug in the cutover, not an improvement — and without a diff, a subtle one (a dropped variant, a reordered list, a missing `mrpMinor`) ships unnoticed.
+
+```
+1. Before starting: render every route against the seed data, snapshot the HTML.
+2. After each cutover commit: re-render, diff.
+3. Any difference is investigated. None is accepted as "close enough".
+```
+
+These snapshots are deleted once `catalog.ts` is deleted. They exist to protect one migration, and keeping them afterwards would freeze the markup against future legitimate change.
 
 ---
 
