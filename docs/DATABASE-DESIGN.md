@@ -3,10 +3,32 @@
 | Field | Value |
 |---|---|
 | Document | `docs/DATABASE-DESIGN.md` |
-| Version | 1.0 |
+| Version | 1.1 — reconciled with the schema as built |
 | Date | 2026-09-09 |
-| Engine | PostgreSQL 16 (Neon) · Drizzle ORM |
+| Engine | PostgreSQL 16 (Neon) · Drizzle ORM 0.45 |
 | Supersedes | `DATABASE.md` v0.2 |
+| Implemented in | `apps/web/src/server/db/schema/` · migrations `0000`, `0001` |
+
+---
+
+## 0. What was actually built, and where it differs
+
+Phase 3 is complete for everything except commerce. Nineteen tables, two
+migrations, verified by 40 assertions against a real Postgres engine.
+
+Five differences from v1.0 of this document, each with a reason:
+
+| # | Change | Why |
+|---|---|---|
+| 1 | **Commerce tables deferred.** No `carts`, `orders`, `payments`, `refunds`, `webhook_events` yet | They are conditional on `OQ-001`. The design in §6 is settled, so adding them later is one migration; creating eight empty tables for an unmade decision is not better. If the answer is enquiry-only they never exist |
+| 2 | `product_variants.track_inventory` added | The frontend already renders `enquire_only`. Without this column there is nothing to derive it from — and it is what the whole catalogue uses if `OQ-001` lands on enquiry-only |
+| 3 | `enquiries.notified_at` added | Distinguishes "lead saved" from "somebody was told". A partial index finds leads that were saved and never emailed — the failure mode `OBSERVABILITY.md` §5 is most worried about |
+| 4 | `search_vector` excludes category and type names | A generated column can only see its own row, and those live in `categories`. The search query matches them through the join instead — `API-DESIGN.md` §4 |
+| 5 | The five `roles` rows are inserted by migration `0001`, not by the seed | They are reference data the permission model depends on, not sample data. They must exist in production before anyone can be granted one |
+
+**One implementation detail worth recording**, because it will look odd otherwise: `products.search_vector` calls a helper function `burla_keywords_text(text[])` rather than `array_to_string`. A `GENERATED ALWAYS` column may only call `IMMUTABLE` functions, and `array_to_string` is marked `STABLE` — because for arrays of arbitrary element type the output function can depend on session settings. For `text[]` the result is the identity, so the wrapper is genuinely immutable rather than conveniently mislabelled. It must never be widened to `anyarray`.
+
+Also implemented and not in v1.0: `stock_quantity` is maintained by a trigger on `inventory_movements`, so the ledger is the only way stock changes; `inventory_movements` and `audit_log` reject `UPDATE` and `DELETE` outright; `updated_at` is set by trigger on all sixteen tables that carry it.
 
 ---
 

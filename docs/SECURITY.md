@@ -193,6 +193,14 @@ Detail on every variable, boot-time validation, rotation, and the three guards t
 - Prefer copy-in components (shadcn/ui) over runtime dependencies where reasonable.
 - No unvetted package with a postinstall script.
 
+### Known accepted advisory
+
+| Advisory | Severity | Package | Decision |
+|---|---|---|---|
+| `GHSA-67mh-4wv8-2f99` — esbuild dev server accepts cross-origin requests | Moderate | `esbuild`, reached through `@esbuild-kit/*` → `drizzle-kit` | **Accepted.** Dev dependency only; never in a production bundle. It affects an esbuild dev server we do not run. The only `npm audit fix` is a downgrade to `drizzle-kit@0.18.1`, which is three years of breaking changes back and would lose migration support entirely. Re-check when drizzle-kit drops `@esbuild-kit`. |
+
+High and critical still block the merge. Accepting a moderate requires an entry in this table, with the reason — not silence.
+
 ---
 
 ## 11. Monitoring and incident response

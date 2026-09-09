@@ -46,6 +46,24 @@ npm run db:studio      # inspect, local only
 
 Generated SQL is read, not trusted blindly. A rename that the differ interprets as drop-then-create is a data-loss bug that looks like a rename in the TypeScript.
 
+### 3.1 Two things Drizzle Kit does not generate
+
+**Extensions and functions.** Drizzle manages tables, not `CREATE EXTENSION` or `CREATE FUNCTION`. Migration `0000` therefore carries a hand-written preamble above the generated body — `citext`, `pg_trgm`, and the `burla_keywords_text` helper. It must stay first: `users.email` is `citext` and `products.search_vector` calls the helper, so `CREATE TABLE` fails without them. It is idempotent, so re-running is harmless.
+
+Editing a generated migration is normally forbidden (§2, rule 4). The exception here is narrow and safe: `0000` had never been applied anywhere when the preamble was added, and the preamble adds nothing the snapshot tracks, so the schema snapshot and the database do not drift.
+
+**Triggers.** Anything needing a subquery cannot be a `CHECK` constraint in Postgres, so it is a trigger, written by hand in `0001` via `drizzle-kit generate --custom` (which creates the file *and* the journal entry — never hand-edit `_journal.json`).
+
+| Rule | Mechanism |
+|---|---|
+| `updated_at` is current | `set_updated_at()` on 16 tables |
+| Taxonomy is exactly two levels deep | `categories_enforce_depth()` |
+| `products.category_id` is top-level and `type_id` is its child | `products_enforce_taxonomy()` |
+| Stock is the sum of the ledger | `inventory_apply_movement()` |
+| The ledger and the audit log are append-only | two `RAISE EXCEPTION` triggers |
+
+Do not remove a trigger because "the service already checks it". The service is one caller; a migration, a script or a psql session is another.
+
 ## 4. Expand / contract
 
 Any change that could drop data runs across two releases.
@@ -95,6 +113,18 @@ ALTER TABLE products ALTER COLUMN sort_order SET NOT NULL;      -- 4. brief lock
 ```
 
 Migrations run **before** the new code, never after, and never concurrently across instances — a Postgres advisory lock ensures a single runner.
+
+## 7a. Verifying a migration before there is a database
+
+Neither Docker nor a credentialed Postgres was available when the first two migrations were written, and shipping untested DDL is exactly what this document exists to prevent. So they were applied to **PGlite** — Postgres compiled to WebAssembly, running in-process — and then exercised: 40 assertions covering every constraint, trigger and index the schema claims to enforce, including the ones that must *fail*.
+
+That found one real defect before it reached a database: `array_to_string` is `STABLE`, so the generated `search_vector` column was rejected outright. A review would probably not have caught it.
+
+Two honest limits: PGlite is not Neon, so it proves the DDL is valid and the logic is right, not that Neon behaves identically; and it says nothing about performance, locking or concurrency. **A Neon preview branch is still the gate before production** (§2, rule 6).
+
+The harness is a scratch script, not part of the repository. Worth promoting to a real Vitest suite in Phase 19 — the assertions are already written, and "the schema enforces what it claims" is the sort of test that stays valuable.
+
+---
 
 ## 8. Review checklist
 
