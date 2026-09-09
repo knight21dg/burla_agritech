@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { MessageCircle } from "lucide-react";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container, Section, SectionHead } from "@/components/ui/Section";
-import { PageHero, PendingContent } from "@/components/sections/PageHero";
+import { PageHeader, PendingContent } from "@/components/sections/PageHeader";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { whatsappLink } from "@/lib/site";
 
@@ -31,7 +31,7 @@ const steps = [
 export default function WholesalePage() {
   return (
     <>
-      <PageHero
+      <PageHeader
         crumbs={[{ label: "Bulk & Wholesale" }]}
         eyebrow="Bulk &amp; wholesale"
         title="Supplying retailers, kitchens and exporters."

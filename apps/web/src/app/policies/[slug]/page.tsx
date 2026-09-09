@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Container, Section } from "@/components/ui/Section";
-import { PageHero, PendingContent } from "@/components/sections/PageHero";
+import { PageHeader, PendingContent } from "@/components/sections/PageHeader";
 import { site } from "@/lib/site";
 
 /**
@@ -101,7 +101,7 @@ export default async function PolicyPage({
 
   return (
     <>
-      <PageHero
+      <PageHeader
         crumbs={[{ label: "Policies" }, { label: policy.title }]}
         eyebrow="Policies"
         title={policy.title}
