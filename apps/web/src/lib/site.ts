@@ -41,12 +41,18 @@ export const site = {
   },
 } as const;
 
+/**
+ * Primary navigation.
+ *
+ * Locations is deliberately absent — the client asked for it out of the main
+ * nav (2026-09-09). It remains a real, indexable page linked from the footer
+ * and About. Product categories are not here either: they live in their own
+ * persistent bar beneath the header, so all ten stay visible on every page.
+ */
 export const mainNav = [
   { label: "Home", href: "/" },
-  { label: "Shop", href: "/shop", hasMegaMenu: true },
   { label: "About", href: "/about" },
   { label: "Quality", href: "/quality" },
-  { label: "Locations", href: "/locations" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
