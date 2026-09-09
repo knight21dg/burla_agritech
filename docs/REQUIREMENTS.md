@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | `docs/REQUIREMENTS.md` |
-| Version | 0.2 — adds the admin application (§2.11) |
+| Version | 1.0 — product-first navigation, taxonomy and carousel |
 | Date | 2026-09-07 |
 | Status | Awaiting client sign-off |
 
@@ -86,8 +86,9 @@ This section is a faithful transcription before any interpretation. It is the au
 | ID | Requirement | Pri | Source |
 |---|---|---|---|
 | FR-001 | Site-wide header carrying the Burla logo linking to `/` | MUST | `[CLIENT]` |
-| FR-002 | Primary navigation: Home, Shop, About, Quality, Locations, Contact | MUST | `[PROPOSED]` — see §2.2 |
-| FR-003 | Shop opens a category mega-menu on desktop and an accordion on mobile, listing all CMS-published categories | MUST | `[DERIVED]` from the 10-category nav list |
+| FR-002 | Primary navigation: Home, About, Quality, Contact. **Locations is excluded** and lives in the footer | MUST | `[CLIENT]` 2026-09-09 |
+| FR-003 | A persistent category bar beneath the header carries all ten categories on every page; below 1280px it scrolls horizontally with a partial next item visible | MUST | `[CLIENT]` 2026-09-09 |
+| FR-003b | Mobile drawer lists all ten categories flat under a "Products" heading, with no accordion | MUST | `[CLIENT]` 2026-09-09 |
 | FR-004 | Header exposes Search, Account and (when commerce is enabled) Cart | MUST | `[CLIENT]` |
 | FR-005 | Header is sticky with a condensed state after scroll; must not obscure content or trap focus | SHOULD | `[PROPOSED]` |
 | FR-006 | Persistent WhatsApp contact affordance on every page | MUST | `[CLIENT]` |
@@ -98,22 +99,28 @@ This section is a faithful transcription before any interpretation. It is the au
 | FR-011 | Global 404 and 500 pages, art-directed, with recovery paths | MUST | `[PROPOSED]` |
 | FR-012 | Breadcrumbs on all shop, product and content pages | MUST | `[PROPOSED]` |
 
-#### §2.2 Why the nav differs from the handwritten list
+#### §2.2 Navigation — resolved 2026-09-09
 
-The client listed **all ten product categories as top-level nav items**. Implemented literally, this produces a header with 12+ items that breaks below 1280px, is unusable on mobile, dilutes every link's weight, and is a known SEO anti-pattern (link equity spread thinly across a flat taxonomy).
+Earlier we proposed nesting the ten categories under a "Shop" mega-menu.
+**That is withdrawn.** The client has confirmed they want categories visible at
+the top, and specifically that **Locations must not be a main navigation item**.
 
-**Recommendation:** preserve every category, but nest them one level under **Shop** as a mega-menu. All ten categories remain one click from any page, are fully crawlable via `/shop`, and appear in the footer sitemap block.
+The structure is now two rows on desktop — company links above, a persistent
+product bar carrying all ten categories below — and a flat category list at the
+top of the mobile drawer. Full specification in `SITEMAP.md` §3.
 
-**This is a deviation from the client's literal instruction and requires explicit approval — `OQ-014`.**
+This resolves `OQ-014` in favour of the client's original handwritten intent.
 
 ### 2.2 Home
 
 | ID | Requirement | Pri | Source |
 |---|---|---|---|
-| FR-020 | Hero answering who Burla is, what it offers, why it matters, and what to do next | MUST | `[PROPOSED]` |
-| FR-021 | Hero carries one primary CTA and one secondary CTA | MUST | `[PROPOSED]` |
-| FR-022 | Category showcase presenting all published categories with imagery | MUST | `[CLIENT]` — "About products with pictures" |
-| FR-023 | Brand story section linking to About | MUST | `[CLIENT]` |
+| FR-020 | Simple hero on white: brand statement and CTA in real HTML, one authentic product photograph. Not full-viewport, not cinematic | MUST | `[CLIENT]` 2026-09-09 |
+| FR-021 | Hero carries one primary CTA ("Explore Products") and at most one secondary | MUST | `[CLIENT]` |
+| FR-021b | **Products must be visible without scrolling past company copy.** The category bar sits above the fold and the first product section follows the hero directly | MUST | `[CLIENT]` 2026-09-09 |
+| FR-021c | **Horizontal product carousel** on the homepage: drag, swipe, arrow buttons, keyboard navigation, partial next card visible, no autoplay | MUST | `[CLIENT]` 2026-09-09 |
+| FR-022 | Category grid presenting all ten categories, each with an **authentic photograph** — not an icon or illustration | MUST | `[CLIENT]` 2026-09-09 |
+| FR-023 | **Short** brand statement linking to About — placed below the products, not above them | MUST | `[CLIENT]` 2026-09-09 |
 | FR-024 | Featured products section, CMS-curated | MUST | `[PROPOSED]` |
 | FR-025 | Quality & standards teaser linking to `/quality` | MUST | `[CLIENT]` |
 | FR-026 | Combo packs / collections feature | SHOULD | `[CLIENT]` |
@@ -121,21 +128,25 @@ The client listed **all ten product categories as top-level nav items**. Impleme
 | FR-028 | Contact / WhatsApp closing section | MUST | `[CLIENT]` |
 | FR-029 | All homepage sections orderable and toggleable from the CMS | SHOULD | `[PROPOSED]` |
 
-### 2.3 Shop and categories
+### 2.3 Products and categories
 
 | ID | Requirement | Pri | Source |
 |---|---|---|---|
-| FR-040 | `/shop` index listing every published category | MUST | `[DERIVED]` |
-| FR-041 | `/shop/[category]` landing page per category with its own hero, description and imagery | MUST | `[DERIVED]` |
+| FR-040 | `/products` index listing every published category, then the full catalogue | MUST | `[CLIENT]` |
+| FR-041 | `/products/[category]` page per category with its own description and imagery | MUST | `[CLIENT]` |
+| FR-041b | `/products/[category]/[type]` page per type where types exist | MUST | `[CLIENT]` 2026-09-09 |
 | FR-042 | Product grid with responsive columns (1 / 2 / 3 / 4 by breakpoint) | MUST | `[PROPOSED]` |
-| FR-043 | Filtering — category, availability, weight/pack size, price range (when prices exist) | SHOULD | `[PROPOSED]` |
+| FR-043 | Filtering kept minimal — the client asked to avoid complicated filters. Type chips and availability only, unless the catalogue size justifies more | SHOULD | `[CLIENT]` 2026-09-09 |
 | FR-044 | Sorting — featured, newest, price asc/desc, A–Z | SHOULD | `[PROPOSED]` |
 | FR-045 | Filter and sort state reflected in the URL (shareable, back-button safe, crawl-controlled) | MUST | `[PROPOSED]` |
 | FR-046 | Pagination or load-more with an SEO-safe crawl path | MUST | `[PROPOSED]` |
-| FR-047 | Product card: image, name, short descriptor, pack size, price if available, availability, CTA. No more | MUST | `[PROPOSED]` |
+| FR-047 | Product card: image (≈78% of the card), name, pack size, price if available. **Four items maximum.** No shadow, no badge stack, no rating | MUST | `[CLIENT]` 2026-09-09 |
 | FR-048 | Empty state when filters return nothing, with a one-click reset | MUST | `[PROPOSED]` |
 | FR-049 | Categories reorderable and hideable from the CMS without a deploy | MUST | `[DERIVED]` |
-| FR-050 | Sub-categories supported to one level (needed if `OQ-011` resolves as nested) | SHOULD | `[DERIVED]` |
+| FR-050 | **Category → Type → Product hierarchy**, two levels of category nesting, rendered generically and never hard-coded in a component | MUST | `[CLIENT]` 2026-09-09 |
+| FR-051 | A category with no types renders products directly; with types it renders filter chips or type pages depending on product count (`PRODUCT-TAXONOMY.md` §1.1) | MUST | `[PROPOSED]` |
+| FR-052 | A type with a single product links straight to that product, never to a page containing one card | SHOULD | `[PROPOSED]` |
+| FR-053 | Breadcrumbs on every category, type and product page, with matching `BreadcrumbList` structured data | MUST | `[CLIENT]` — "never feel lost" |
 
 ### 2.4 Product detail
 

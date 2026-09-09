@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | `docs/TESTING.md` |
-| Version | 0.2 — covers both applications |
+| Version | 1.0 — adds carousel and taxonomy coverage |
 | Date | 2026-09-07 |
 | Tools | Vitest · Testing Library · Playwright · axe-core · Lighthouse CI |
 
@@ -56,6 +56,8 @@ Priority areas:
 | Cart logic | Add, merge duplicate lines, update, remove, quantity limits, empty-cart edge cases |
 | Date and shelf-life formatting | IST rendering, timezone correctness |
 | Availability resolution | Which of in stock / low / out / enquire-only is shown given each data state |
+| **Taxonomy rendering** | A category with no types renders a product grid; with types and <8 products renders filter chips; with types and >=8 renders type cards; a type with one product links straight to it |
+| **Breadcrumb building** | Correct trail for 2-level and 3-level products; correct when a product is recategorised |
 
 ---
 
@@ -75,6 +77,9 @@ Rendered with Testing Library, queried by **role and accessible name** — which
 | WhatsApp button | Correct `href`; analytics event fired; hidden on checkout; dismissible on mobile |
 | Cart drawer | Add, update, remove, empty state, total recalculation |
 | Skeletons | Dimensions match loaded content — the CLS regression guard |
+| **Product carousel** | Scroll-snap positions; arrows disable at each end; keyboard arrows scroll; every card reachable by Tab; partial next card visible at every breakpoint; instant scroll under `prefers-reduced-motion`; no autoplay |
+| **Category bar** | All ten categories present; active item marked; scrolls horizontally below 1280px without clipping the last item |
+| **Breadcrumbs** | Trail matches the URL exactly; `aria-current` on the last item; JSON-LD mirrors the visible trail |
 
 ---
 

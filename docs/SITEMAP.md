@@ -3,49 +3,44 @@
 | Field | Value |
 |---|---|
 | Document | `docs/SITEMAP.md` |
-| Version | 0.2 — two applications |
-| Date | 2026-09-07 |
+| Version | **1.0 — product-first IA** |
+| Date | 2026-09-09 |
+| Supersedes | v0.2 (`/shop` structure, Locations in main nav) |
 
 ---
 
-## 1. IA principles
+## 1. Principles
 
-1. **Shallow for people, deep for crawlers.** Every product is reachable in three clicks from the homepage; every page is reachable from a crawlable link.
-2. **One canonical home per piece of content.** A product lives at exactly one URL regardless of how it is reached.
-3. **URLs are permanent.** Slugs are CMS-owned; any change writes a 301 redirect record automatically.
-4. **Trust pages are first-class.** About, Quality and Locations sit in the primary navigation, not buried in the footer — although the client asked for footer links, and those remain (FR-007).
-5. **Category pages are the SEO engine.** They carry real editorial content, not just a grid.
+1. **Products are reachable from everywhere.** All ten categories sit in a
+   persistent bar under the header, not behind a dropdown.
+2. **Three clicks to any product, maximum**, from any page.
+3. **Locations leaves the main navigation** at the client's request, but remains
+   a real, indexable page linked from the footer and About.
+4. **URLs are permanent.** Slugs are CMS-owned; any change writes a 301.
+5. **The hierarchy is visible.** Breadcrumbs on every category, type and product
+   page — the customer should never have to guess where they are.
 
 ---
 
-## 2. Site structure — customer site (`burla.com`)
-
-The admin site is a separate application on `admin.burla.com` — see §3.4.
+## 2. Route structure
 
 ```
-/                                     Home
+/                                    Home — products visible without scrolling
 │
-├── /shop                             Shop index — all categories
-│   ├── /shop/dehydrated-powders-flakes
-│   ├── /shop/dehydrated-fruits
-│   ├── /shop/pickles
-│   ├── /shop/spiced-dal-powders
-│   ├── /shop/[sun-dried-crisps]      slug pending OQ-012
-│   ├── /shop/dry-fruits
-│   ├── /shop/millets
-│   ├── /shop/herbal-tea-coffee
-│   ├── /shop/masala-powders
-│   └── /shop/combo-packs
+├── /products                        All categories + full catalogue
+│   ├── /products/[category]         e.g. /products/pickles
+│   │   ├── /products/[category]/[type]      e.g. /products/pickles/mango
+│   │   └── …
+│   └── …  (ten categories)
 │
-├── /products/[slug]                  Product detail
+├── /products/p/[slug]               Product detail — see §5 for the open decision
 │
-├── /search                           Search results
+├── /search                          Search results
 │
-├── /about                            About Burla
-├── /quality                          Quality Control & Standards
-├── /locations                        Our Locations
-├── /contact                          Contact
-├── /wholesale                        Bulk & Wholesale Enquiries
+├── /about                           About Burla
+├── /quality                         Quality Control & Standards
+├── /locations                       Our Locations  [footer-linked, not in main nav]
+├── /contact                         Contact
 │
 ├── /policies
 │   ├── /policies/return-and-refund
@@ -53,194 +48,156 @@ The admin site is a separate application on `admin.burla.com` — see §3.4.
 │   ├── /policies/privacy
 │   └── /policies/terms
 │
-├── /account                          [auth]
+├── /account                         [auth]
 │   ├── /account/profile
-│   ├── /account/addresses            [commerce]
-│   ├── /account/orders               [commerce]
-│   ├── /account/orders/[id]          [commerce]
-│   └── /account/wishlist             [optional]
+│   ├── /account/orders              [commerce]
+│   └── /account/addresses           [commerce]
 │
-├── /auth
-│   ├── /auth/sign-in
-│   ├── /auth/sign-up
-│   ├── /auth/verify-email
-│   ├── /auth/forgot-password
-│   └── /auth/reset-password
+├── /auth/sign-in · /auth/sign-up · /auth/verify-email · /auth/reset-password
 │
-├── /cart                             [commerce]
-├── /checkout                         [commerce]
-│   ├── /checkout/address
-│   ├── /checkout/payment
-│   └── /checkout/confirmation/[orderId]
+├── /cart                            [commerce]
+├── /checkout/…                      [commerce]
 │
-├── /sitemap.xml
-├── /robots.txt
-├── /opensearch.xml                   [optional]
-├── /404
-└── /500
+├── /sitemap.xml · /robots.txt · /404 · /500
 ```
 
-`[commerce]` routes exist only if `OQ-001` resolves to full or hybrid ecommerce. They are behind a feature flag, not a separate codebase.
+`[commerce]` routes exist only if the client confirms online selling
+(`OQ-001`). They sit behind a feature flag, not in a separate codebase.
 
----
+### Change from v0.2
 
-## 3. Page inventory
-
-Legend — **Render:** SSG = static, ISR = incremental static regeneration, SSR = server-rendered per request, CSR = client-rendered. **Index:** whether search engines should index it.
-
-### 3.1 Marketing and content
-
-| Route | Purpose | Primary action | Render | Index | Auth | Requirements |
-|---|---|---|---|---|---|---|
-| `/` | Establish brand, route to categories, build trust | Explore products | ISR 60s | ✅ | — | FR-020…029 |
-| `/shop` | Present the full range | Enter a category | ISR 60s | ✅ | — | FR-040 |
-| `/shop/[category]` | Sell the category, list its products | Open a product | ISR 60s | ✅ | — | FR-041…050 |
-| `/products/[slug]` | Convert — buy or enquire | Add to cart / WhatsApp | ISR 60s | ✅ | — | FR-060…075 |
-| `/about` | Establish credibility and story | Continue to Quality/Shop | ISR 300s | ✅ | — | FR-090 |
-| `/quality` | Prove food safety and process rigour | Trust → shop or enquire | ISR 300s | ✅ | — | FR-091 |
-| `/locations` | Prove physical existence | Contact | ISR 300s | ✅ | — | FR-092 |
-| `/contact` | Enable contact | Submit form / WhatsApp | ISR 300s | ✅ | — | FR-093, FR-100 |
-| `/wholesale` | Capture B2B leads | Submit wholesale enquiry | ISR 300s | ✅ | — | FR-094, FR-101 |
-| `/policies/*` | Legal and consumer protection | Read | ISR 3600s | ✅ | — | FR-095 |
-| `/search` | Find products | Open a product | SSR | ❌ | — | FR-083 |
-
-### 3.2 Account and auth
-
-| Route | Purpose | Render | Index | Auth |
-|---|---|---|---|---|
-| `/auth/sign-in` | Authenticate | SSR | ❌ | Guest only |
-| `/auth/sign-up` | Register | SSR | ❌ | Guest only |
-| `/auth/verify-email` | Confirm address | SSR | ❌ | Token |
-| `/auth/forgot-password` | Request reset | SSR | ❌ | Guest only |
-| `/auth/reset-password` | Set new password | SSR | ❌ | Token |
-| `/account` | Account hub | SSR | ❌ | ✅ |
-| `/account/profile` | Manage details | SSR | ❌ | ✅ |
-| `/account/addresses` | Manage addresses | SSR | ❌ | ✅ |
-| `/account/orders` | Order history | SSR | ❌ | ✅ |
-| `/account/orders/[id]` | Order detail | SSR | ❌ | ✅ + ownership |
-| `/account/wishlist` | Saved products | SSR | ❌ | ✅ |
-
-### 3.3 Commerce
-
-| Route | Purpose | Render | Index | Auth |
-|---|---|---|---|---|
-| `/cart` | Review basket | CSR over server data | ❌ | — |
-| `/checkout/address` | Capture delivery details | SSR | ❌ | — (guest allowed) |
-| `/checkout/payment` | Take payment | SSR | ❌ | Session-scoped |
-| `/checkout/confirmation/[orderId]` | Confirm and reassure | SSR | ❌ | Token or ownership |
-
-### 3.4 Administration — `admin.burla.com`, a separate application
-
-A second Next.js app (`apps/admin`), deployed to its own domain. Every route is dynamic, `no-store`, `noindex`, and requires a `staff` or `admin` role with MFA. There is **no public sign-up** — staff accounts are created by invitation.
-
-| Route | Purpose |
-|---|---|
-| `/` | Dashboard — today's orders and enquiries, low-stock alerts, recent activity |
-| `/sign-in` | Staff authentication (invitation-only; no registration route exists) |
-| `/products` | Product list — search, filter by category and status, bulk actions |
-| `/products/new` | Create product |
-| `/products/[id]` | Edit — details, description, images, SEO |
-| `/products/[id]/variants` | Pack sizes, SKUs, prices, GST rates, weights |
-| `/products/[id]/information` | The legally required information block |
-| `/products/[id]/preview` | Renders the real customer page against draft data |
-| `/categories` | List, create, drag-to-reorder, publish/unpublish |
-| `/categories/[id]` | Edit — hero, copy, SEO |
-| `/inventory` | Stock across all variants, low-stock view, bulk adjust |
-| `/inventory/[variantId]` | Movement history — every change, who and why |
-| `/orders` | Order list — filter by status, date, payment `[commerce]` |
-| `/orders/[id]` | Detail, status transitions, invoice, refund, dispatch `[commerce]` |
-| `/enquiries` | Contact and wholesale enquiries, status pipeline, CSV export |
-| `/enquiries/[id]` | Detail, assignment, internal notes, reply shortcuts |
-| `/customers` | Accounts, order history, addresses |
-| `/content/home` | Homepage sections — add, reorder, toggle |
-| `/content/pages` | About, Quality, Locations, Contact, policies |
-| `/content/locations` | Location records and map data |
-| `/media` | Image library — upload, alt text, replace, usage before delete |
-| `/settings` | Contact details, WhatsApp number, socials, legal block (FSSAI, GSTIN, grievance officer) |
-| `/settings/navigation` | Header and footer link management |
-| `/settings/redirects` | 301 redirect records |
-| `/users` | Staff accounts, roles, MFA status, invitations |
-| `/audit` | Full mutation log — who changed what, when |
-
-`robots.txt` on this domain is `Disallow: /`, and every response carries `X-Robots-Tag: noindex`.
-
-### 3.5 System
-
-| Route | Purpose | Index |
+| Was | Now | Consequence |
 |---|---|---|
-| `/sitemap.xml` | Generated from live content | — |
-| `/robots.txt` | Crawl directives | — |
-| `/404` | Not found, with recovery paths | ❌ |
-| `/500` | Server error, with recovery paths | ❌ |
-| `/api/*` | Internal endpoints | ❌ (disallowed in robots) |
+| `/shop` | `/products` | Redirect required |
+| `/shop/[category]` | `/products/[category]` | Redirect required |
+| *(no type layer)* | `/products/[category]/[type]` | New route |
+| `/products/[slug]` | `/products/p/[slug]` *(proposed)* | Redirect required — `OQ-050` |
+
+A redirect map covers all of these. They are cheap now and expensive after
+launch.
 
 ---
 
-## 4. Navigation model
+## 3. Navigation
 
-### 4.1 Desktop header
-
-```
-┌──────────────────────────────────────────────────────────────────────────┐
-│  [BURLA logo]      Shop ▾   About   Quality   Locations   Contact        │
-│                                              [Search] [Account] [Cart]   │
-└──────────────────────────────────────────────────────────────────────────┘
-```
-
-**Shop ▾** opens a mega-panel:
+### 3.1 Desktop — two rows
 
 ```
-┌──────────────────────────────────────────────────────────────────────────┐
-│  BY CATEGORY                          BY OCCASION            FEATURED    │
-│                                                                          │
-│  Dehydrated Powders & Flakes          Combo Packs            [image]     │
-│  Dehydrated Fruits                    New Arrivals           Featured    │
-│  Pickles                              Best Sellers           product     │
-│  Spiced Dal Powders                                          card        │
-│  Sun-Dried Crisps                     ─────────────                      │
-│  Dry Fruits                           Bulk & Wholesale →                 │
-│  Millets                                                                 │
-│  Herbal Tea & Coffee                                                     │
-│  Masala Powders                                                          │
-│                                       View all products →                │
-└──────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│  [BURLA LOGO]         Home   About   Quality   Contact   🔍  👤  🛒  │
+├──────────────────────────────────────────────────────────────────────┤
+│  Dehydrated Powders · Dehydrated Fruits · Pickles · Dal Powders ·    │
+│  Sandige · Dry Fruits · Millets · Tea & Coffee · Masalas · Combos    │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
-Behaviour: opens on hover **and** on click/Enter; closes on `Esc`, outside click or focus leaving; arrow keys move between items; the trigger carries `aria-expanded` and `aria-controls`; the panel is a real list of links, never `div`s with click handlers.
+**Row 1** — brand, company pages, utilities.
+**Row 2** — the product bar. All ten categories, always visible, one click from
+anywhere. The active category carries a 2px green underline.
 
-### 4.2 Mobile header
+**Locations is deliberately absent** from row 1, per the client's instruction.
+
+**Below 1280px** the ten labels stop fitting on one line. Rather than shrinking
+the type or wrapping to a ragged second row, the bar scrolls horizontally with a
+partial next item visible — the same affordance as the product carousel. Every
+category stays one tap away, with no dropdown.
+
+The v0.2 "Shop" mega-menu is **withdrawn**: it hid the categories behind a hover,
+which is the opposite of what the client asked for.
+
+### 3.2 Mobile
 
 ```
-┌───────────────────────────────────┐
-│ [BURLA]        [search] [☰]       │
-└───────────────────────────────────┘
+┌────────────────────────────┐
+│  [BURLA]           🔍   ☰  │
+└────────────────────────────┘
 ```
 
-The drawer is a full-height sheet: Shop (accordion listing all categories) → About → Quality → Locations → Wholesale → Contact → Account → contact block with WhatsApp. Focus trapped, body scroll locked, closes on `Esc` and on route change, restores focus to the trigger.
-
-### 4.3 Footer — `[CLIENT]` structure preserved exactly
+Drawer contents, in this order:
 
 ```
-┌──────────────────────────────────────────────────────────────────────────┐
-│  [BURLA logo]                                                            │
-│  One-line brand statement                                                │
-│                                                                          │
-│  SHOP              COMPANY            POLICIES           CONNECT         │
-│  All categories    About Us           Return & Refund    WhatsApp        │
-│  (10 links)        Our Locations      Delivery           Facebook        │
-│                    Quality Control    Privacy            Instagram       │
-│                    & Standards        Terms & Conditions YouTube         │
-│                    Contact Us                                            │
-│                    Bulk & Wholesale                                      │
-│                                                                          │
-│  ──────────────────────────────────────────────────────────────────────  │
-│  [Legal entity name] · Registered address                                │
-│  FSSAI Licence No. [·] · GSTIN [·] · Grievance Officer: [·]              │
-│  © 2026 Burla Global Agri Products. All rights reserved.                 │
-└──────────────────────────────────────────────────────────────────────────┘
+PRODUCTS
+  Dehydrated Powders & Flakes
+  Dehydrated Fruits
+  Pickles
+  Spiced Dal Powders
+  Sandige / Crisps / Vadiyalu
+  Dry Fruits
+  Millets
+  Herbal Tea & Coffee
+  Masala Powders
+  Combo Packs
+  ─────────────────
+  View all products →
+
+Home · About · Quality · Contact · Locations · Account
+
+WhatsApp · Phone
 ```
 
-The footer is also where all ten categories appear as flat links — this preserves the client's intent from the handwritten sheet and gives crawlers a complete category index on every page.
+Categories are listed **flat, not in an accordion** — the client asked not to
+overwhelm the mobile screen, and an accordion adds a tap without reducing
+cognitive load for a list this short.
+
+### 3.3 Footer
+
+```
+BURLA                SHOP              COMPANY            POLICIES
+GLOBAL AGRI          All 10            About Us           Return & Refund
+PRODUCTS             categories        Quality Control    Delivery
+                                       & Standards        Privacy
+[logo, reversed]                       Our Locations      Terms
+                                       Contact Us
+                     CONNECT
+                     WhatsApp · Facebook · Instagram · YouTube
+─────────────────────────────────────────────────────────────────────
+[Entity] · [Address] · FSSAI [·] · GSTIN [·] · Grievance Officer [·]
+© 2026 Burla Global Agri Products
+```
+
+The footer is the one place the brand green dominates. It also carries the
+legal block required of an Indian food business, and the complete category
+index for crawlers.
+
+---
+
+## 4. Page inventory
+
+**Render:** SSG static · ISR incremental · SSR per-request · CSR client.
+
+### 4.1 Product pages
+
+| Route | Purpose | Primary action | Render | Index |
+|---|---|---|---|---|
+| `/` | Show what Burla sells, immediately | Enter a category or product | ISR 60s | ✅ |
+| `/products` | Full range — categories then catalogue | Enter a category | ISR 60s | ✅ |
+| `/products/[category]` | Category: types, then products | Enter a type or product | ISR 60s | ✅ |
+| `/products/[category]/[type]` | Products of one type | Open a product | ISR 60s | ✅ |
+| `/products/p/[slug]` | Convert — buy or enquire | Add to bag / WhatsApp | ISR 60s | ✅ |
+| `/search` | Find a product | Open a product | SSR | ❌ |
+
+### 4.2 Company pages
+
+| Route | Purpose | Render | Index | In main nav |
+|---|---|---|---|---|
+| `/about` | Who Burla is | ISR 300s | ✅ | ✅ |
+| `/quality` | Quality control & standards | ISR 300s | ✅ | ✅ |
+| `/contact` | Contact and enquiry | ISR 300s | ✅ | ✅ |
+| `/locations` | Where Burla operates | ISR 300s | ✅ | ❌ footer only |
+| `/policies/*` | Legal and consumer protection | ISR 3600s | ✅ | ❌ footer only |
+
+### 4.3 Account, commerce, admin
+
+| Route | Render | Index | Auth |
+|---|---|---|---|
+| `/auth/*` | SSR | ❌ | Guest only |
+| `/account/*` | SSR | ❌ | ✅ |
+| `/cart`, `/checkout/*` | SSR / CSR | ❌ | — |
+| Admin | *separate application* | ❌ | Staff + MFA |
+
+The admin is a separate app on its own subdomain — see `docs/ARCHITECTURE.md`.
+Note the stack list in the latest brief reintroduces Sanity, which conflicts
+with that decision; flagged as `OQ-055`.
 
 ---
 
@@ -248,57 +205,66 @@ The footer is also where all ten categories appear as flat links — this preser
 
 | Rule | Example |
 |---|---|
-| Lowercase, hyphenated, no underscores | `/shop/dry-fruits` |
-| No file extensions, no IDs in public URLs | `/products/mango-powder` not `/products/1042` |
+| Lowercase, hyphenated, no underscores | `/products/dry-fruits` |
+| No IDs, no file extensions | `/products/p/mango-pickle` |
 | No trailing slash (enforced by redirect) | `/about` |
-| Categories under `/shop/`, products under `/products/` | products are *not* nested under category, so a product in two categories has one canonical URL |
-| Query params for state only, never for identity | `/shop/pickles?sort=price-asc` |
-| Filter/sort URLs carry `noindex` when parameters are present | prevents facet-crawl bloat |
-| Slug changes always write a permanent redirect | old → new, 301 |
+| Query params for state only, never identity | `/products/pickles?sort=price-asc` |
+| Filter/sort URLs carry `noindex` | Prevents facet crawl bloat |
+| Slug change always writes a permanent 301 | old → new |
 
-**Decision:** products sit at `/products/[slug]`, **not** `/shop/[category]/[product]`. Reason: a product may belong to more than one category (e.g. a millet-based crisp), and nesting forces either duplicate URLs or an arbitrary primary category. A flat product namespace gives one canonical URL per product with no canonicalisation gymnastics. Breadcrumbs still show the category path contextually.
+### Open decision: product URL shape — `OQ-050`
+
+Two options, and it is effectively irreversible once indexed:
+
+- **Nested** `/products/pickles/mango/mango-pickle` — matches the client's
+  example, reads well, shows the hierarchy in the URL. Breaks if a product
+  belongs to two categories, and the URL changes if a product is recategorised.
+- **Flat** `/products/p/mango-pickle` — one canonical URL per product forever,
+  no duplicate-content handling, recategorisation is free. Loses the hierarchy
+  from the URL, though breadcrumbs still show it.
+
+**Our recommendation: flat.** Product URLs should survive merchandising
+decisions. Breadcrumbs and structured data carry the hierarchy for both users
+and search engines.
 
 ---
 
-## 6. Content depth per page type
+## 6. Content depth minimums
 
 To avoid thin pages that neither convert nor rank:
 
-| Page type | Minimum editorial content |
+| Page type | Minimum |
 |---|---|
-| Category | 150–300 words of genuine category copy, a distinct hero image, and at least 3 products |
-| Product | Short descriptor, 100+ word description, complete legal information block, at least 3 images |
-| About | 500+ words, at least 3 real photographs |
-| Quality | 400+ words describing the actual process, with a process visualisation |
-| Locations | At least one verified address |
+| Category | 100–200 words of real category copy, a distinct photograph, ≥3 products |
+| Type | A short descriptor, ≥2 products |
+| Product | Short descriptor, 80+ word description, complete legal information block, ≥1 real photograph |
+| About | 400+ words, ≥2 real photographs |
+| Quality | 300+ words describing the actual process |
+| Locations | ≥1 verified address |
 
-A category with fewer than 3 products should be marked as unpublished rather than shown empty.
+A category with fewer than three products is marked unpublished rather than
+shown empty.
 
 ---
 
-## 7. Crawl and index policy
+## 7. Crawl policy
 
 | Path | robots | Sitemap |
 |---|---|---|
-| `/`, `/shop`, `/shop/*`, `/products/*`, `/about`, `/quality`, `/locations`, `/contact`, `/wholesale`, `/policies/*` | index, follow | ✅ |
-| `/search`, `/search?q=*` | noindex, follow | ❌ |
-| `/shop/*?` with filter params | noindex, follow | ❌ |
-| `/cart`, `/checkout/*` | noindex, nofollow | ❌ |
-| `/account/*`, `/auth/*` | noindex, nofollow | ❌ |
+| `/`, `/products`, `/products/**`, `/about`, `/quality`, `/locations`, `/contact`, `/policies/*` | index, follow | ✅ |
+| `/search`, filtered category URLs | noindex, follow | ❌ |
+| `/cart`, `/checkout/*`, `/account/*`, `/auth/*` | noindex, nofollow | ❌ |
 | `/api/*` | disallow | ❌ |
-| `admin.burla.com` (entire domain) | `Disallow: /` + `X-Robots-Tag: noindex` | ❌ |
+| Admin subdomain | `Disallow: /` + `X-Robots-Tag: noindex` | ❌ |
 
 ---
 
-## 8. Future routes — architected, not built
+## 8. Future routes — reserved, not built
 
-Reserved so they do not require restructuring later:
-
-| Route | Purpose | Trigger to build |
-|---|---|---|
-| `/journal` or `/recipes` | Content marketing | Month 3+, when content capacity exists |
-| `/collections/[slug]` | Curated groupings beyond category | When merchandising need arises |
-| `/[locale]/...` | Localised sites | Confirmed second-language market |
-| `/export` | Dedicated export/international page | Confirmed export operations |
-| `/track-order` | Guest order tracking | Commerce + shipping integration |
-| `/careers` | Recruitment | Client request |
+| Route | Trigger to build |
+|---|---|
+| `/recipes` or `/journal` | Month 3+, when content capacity exists |
+| `/collections/[slug]` | When merchandising needs groupings beyond category |
+| `/wholesale` | Retained from v0.2; confirm whether B2B is still in scope (`OQ-056`) |
+| `/[locale]/…` | A confirmed second-language market |
+| `/track-order` | Commerce plus shipping integration |

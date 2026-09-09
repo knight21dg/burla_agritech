@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | `docs/PROJECT-BRIEF.md` |
-| Version | 0.2 — two applications (customer + admin) |
+| Version | 1.0 — product-first direction confirmed |
 | Date | 2026-09-07 |
 | Status | Phase 0–1 complete. No implementation started. |
 | Source material | 2 client-supplied images: brand logo, handwritten requirements sheet |
@@ -18,6 +18,35 @@
 ---
 
 ## 1. Project understanding
+
+### 0. Design direction — confirmed 2026-09-09
+
+The client has clarified what they want, and it changes the visual direction
+materially. Recording it here because it now governs every design decision.
+
+**They want:** minimal, clean, mostly plain white, easy to use, product-focused,
+fast, mobile-friendly, professional but not flashy. Authentic product
+photography. Categories visible at the top. Easy browsing from category into
+product type.
+
+**They do not want:** a fancy, animated, luxury-looking site. Decorative
+graphics, heavy effects, or a design that competes with the products.
+
+**The governing principle: _let the products speak._** The interface is a white
+frame around photographs of food. Company story, quality process and brand
+narrative all matter — but they sit *below* the products, not above them.
+
+This supersedes the warm, editorial direction of v0.2. `DESIGN-SYSTEM.md` v1.0
+is a full replacement; §2 there records exactly what changed and why.
+
+**Three conflicts this creates** with material already supplied or built, each
+needing a decision before the rework begins:
+
+| # | Conflict | Tracked as |
+|---|---|---|
+| 1 | The supplied hero image is AI-generated with baked-in text — ruled out by the new brief on four counts | `OQ-051` |
+| 2 | The new stack list reintroduces Sanity, reversing ADR-010 | `OQ-055` |
+| 3 | ~60% of the existing frontend is built on the withdrawn design system | `OQ-057` |
 
 ### 1.0 Scope
 
@@ -246,6 +275,8 @@ The largest risk here is **not engineering** — it is **content and photography
 | R3 | **Ecommerce scope flips mid-build** (`OQ-001` answered late) | Medium | High — rework of cart/checkout/DB | Architecture supports both from day one; commerce is a feature-flagged module, not a rewrite |
 | R4 | **Legal compliance missed** — FSSAI, Legal Metrology declarations, grievance officer | Medium | Critical — regulatory exposure for a food business | Requirements enumerated in `SECURITY.md` §8; client must have them reviewed by their own advisor |
 | R5 | **Design drifts to template** under delivery pressure | Medium | High — the one outcome the client explicitly rejected | Anti-pattern list is a review gate; every page passes design review before merge |
+| R12 | **Minimal is mistaken for unfinished.** A white, restrained site lives or dies on photography and typography; with placeholder imagery it can read as empty rather than clean | High | High | Photography is the gating dependency (`IMAGE-ASSET-REQUIREMENTS.md`); review the homepage with real images before judging the direction |
+| R13 | **Further direction changes.** The visual direction has now changed once, after a demo was built | Medium | High — rework cost repeats | Agree `DESIGN-SYSTEM.md` v1.0 and one built page before rebuilding the rest |
 | R6 | ~~Dual source-of-truth between CMS and database~~ **Resolved** | — | — | Eliminated by ADR-010: Postgres is the single source of truth, managed through one admin application |
 | R7 | **Category taxonomy changes** after URLs are indexed | Medium | Medium — SEO loss | Slugs CMS-owned with permanent 301 redirect records from day one |
 | R8 | Scope creep into blog, multi-language, marketplace | Medium | Medium | Non-goals stated in §5.3 and agreed at sign-off |

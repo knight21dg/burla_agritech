@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | `docs/SEO.md` |
-| Version | 0.1 |
+| Version | 1.0 — /products IA |
 | Date | 2026-09-07 |
 
 ---
@@ -14,12 +14,19 @@ Burla is an unknown brand. Nobody is searching for "Burla" yet. Organic growth t
 
 | Intent type | Example query | Landing page |
 |---|---|---|
-| Category | "dehydrated mango powder buy online" | `/shop/dehydrated-powders-flakes` |
-| Product | "sun dried vadiyalu online" | `/products/[slug]` |
-| Regional | "andhra vadiyalu online" | Category + product |
+| Category | "dehydrated mango powder buy online" | `/products/dehydrated-powders-flakes` |
+| **Type** | "mango pickle online" | `/products/pickles/mango` |
+| Product | "sun dried vadiyalu online" | `/products/p/[slug]` |
+| Regional | "andhra vadiyalu online" | Category + type |
 | B2B | "dehydrated fruit powder supplier india" | `/wholesale` |
 | Ingredient | "little millet online india" | Product |
 | Brand (later) | "burla agri products" | `/` |
+
+**The type layer is an SEO asset, not just navigation.** "Mango pickle" has far
+more search volume than "pickles", and a dedicated `/products/pickles/mango`
+page can rank for it where a filtered view cannot. This is a strong argument for
+building the type layer properly rather than treating types as filter chips
+everywhere — see `PRODUCT-TAXONOMY.md` §1.1.
 
 **Consequence:** category pages carry real editorial content, not just a grid. A category page with a heading and twelve cards ranks for nothing.
 

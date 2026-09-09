@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Document | `docs/USER-FLOWS.md` |
-| Version | 0.2 — adds UF-10b, stock management |
+| Version | 1.0 — product-first journey |
 | Date | 2026-09-07 |
 
 Every flow below lists its **states** (loading / empty / error / success), because a flow specification without failure modes is only half a specification. Each flow maps to Playwright coverage in `docs/TESTING.md`.
@@ -27,6 +27,42 @@ Every flow below lists its **states** (loading / empty / error / success), becau
 | UF-10b | Staff updates stock | Staff | Critical | No |
 | UF-11 | Staff handles an enquiry | Staff | High | No |
 | UF-12 | Mobile-first browse | All | Critical | No |
+
+---
+
+## UF-00 — The primary journey (client-specified, 2026-09-09)
+
+The client set out the journey the site must support. Everything else serves it.
+
+```
+LANDING
+  │  brand understood in seconds; categories already visible in the top bar
+  ▼
+PRODUCTS                  category bar, homepage carousel, or category grid
+  │
+  ▼
+CATEGORY                  /products/pickles
+  │
+  ▼
+PRODUCT TYPE              /products/pickles/mango        (skipped where no types exist)
+  │
+  ▼
+PRODUCT                   full detail, specifications, photography
+  │
+  ├──► Purchase           [if commerce enabled]
+  └──► WhatsApp enquiry
+```
+
+**Three rules this imposes:**
+
+1. **Products are reachable from the first screen.** The category bar sits above
+   the fold on every page, and the homepage shows products before any company copy.
+2. **Never more than three clicks to any product** from anywhere.
+3. **Never lost.** Breadcrumbs on every category, type and product page; the
+   category bar always present; the logo always returns home.
+
+The type step is skipped entirely for categories that have no types — the flow
+adapts to the catalogue rather than forcing a level (`PRODUCT-TAXONOMY.md` §1.1).
 
 ---
 

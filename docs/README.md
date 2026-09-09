@@ -1,6 +1,12 @@
 # Documentation Index — Burla Global Agri Products
 
-Phase 0–1 deliverables. **No implementation has started.**
+**Direction updated 2026-09-09: minimal, clean, mostly white, product-first.**
+`DESIGN-SYSTEM.md` v1.0 replaces the earlier warm editorial direction. A demo
+exists but is built on the withdrawn system — see `IMPLEMENTATION-PLAN.md` §1–2
+for exactly what survives.
+
+**Three decisions gate the rework:** `OQ-051` (hero image), `OQ-055` (Sanity vs
+custom admin), `OQ-057` (rework vs restart).
 
 **Scope: two websites.** A customer site (`burla.com`) and a separate admin site (`admin.burla.com`) where staff manage products, stock, content, orders and enquiries. Both are Next.js applications in one monorepo sharing a single PostgreSQL database — see `ARCHITECTURE.md` ADR-009 and ADR-010.
 
@@ -24,7 +30,10 @@ Every factual statement is tagged: `[CLIENT]` supplied · `[DERIVED]` inferred �
 | 10 | [SECURITY.md](SECURITY.md) | How it is protected, and the legal requirements |
 | 11 | [TESTING.md](TESTING.md) | How we know it works |
 | 12 | [ANALYTICS.md](ANALYTICS.md) | How we measure it |
-| 13 | [REFERENCE-ANALYSIS.md](REFERENCE-ANALYSIS.md) | The two client-supplied reference sites — what to learn, what to avoid, where the gap is |
+| 13 | [PRODUCT-TAXONOMY.md](PRODUCT-TAXONOMY.md) | Category → Type → Product, and when to collapse a level |
+| 14 | [IMAGE-ASSET-REQUIREMENTS.md](IMAGE-ASSET-REQUIREMENTS.md) | The photography specification and shot list |
+| 15 | [CLIENT-ASSETS-REQUIRED.md](CLIENT-ASSETS-REQUIRED.md) | Everything we need from you, in one checklist |
+| 16 | [REFERENCE-ANALYSIS.md](REFERENCE-ANALYSIS.md) | The two client-supplied reference sites — what to learn, what to avoid |
 | 14 | [PHOTOGRAPHY-BRIEF.md](PHOTOGRAPHY-BRIEF.md) | The images we need — longest lead time |
 | 15 | [CONTENT-INVENTORY.md](CONTENT-INVENTORY.md) | Every word and fact you need to supply |
 | 16 | [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md) | The plan, the phases, and what happens next |
@@ -57,7 +66,7 @@ Every factual statement is tagged: `[CLIENT]` supplied · `[DERIVED]` inferred �
 | `OQ-007` | Domain name and business email |
 | `OQ-008` | Vector logo and exact brand green |
 
-See [OPEN-QUESTIONS.md](OPEN-QUESTIONS.md) for the full register of 46 items.
+See [OPEN-QUESTIONS.md](OPEN-QUESTIONS.md) for the full register of 57 items.
 
 ---
 

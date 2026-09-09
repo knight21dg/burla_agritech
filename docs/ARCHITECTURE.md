@@ -8,6 +8,13 @@
 | Status | Proposed — awaiting approval |
 | Change from v0.1 | Client confirmed two websites: a customer site and a separate admin site. Sanity removed; Postgres is now the single source of truth. See ADR-009 and ADR-010 |
 
+> ⚠️ **Unresolved conflict (`OQ-055`).** The clarified brief of 2026-09-09 lists
+> **Sanity** in the stack, which reverses ADR-010. That decision removed Sanity
+> specifically because the client asked for one admin managing "stock and
+> everything", and keeping a CMS alongside it means two logins and product data
+> split across two stores. This document still describes the custom-admin
+> architecture. **Do not begin Phase 16 until `OQ-055` is answered.**
+
 ---
 
 ## 1. Architectural principles

@@ -3,8 +3,8 @@
 | Field | Value |
 |---|---|
 | Document | `docs/OPEN-QUESTIONS.md` |
-| Version | 0.3 — adds OQ-038 to OQ-046 |
-| Date | 2026-09-07 |
+| Version | 1.0 — adds OQ-047 to OQ-057 and the design-direction conflicts |
+| Date | 2026-09-09 |
 | Owner | Client (Burla Global Agri Products) unless stated |
 
 This is the single register of everything unknown. **Nothing here has been guessed or filled in with invented information.**
@@ -19,7 +19,10 @@ This is the single register of everything unknown. **Nothing here has been guess
 
 | Answer first (this week) | Answer within 2 weeks | Answer before launch |
 |---|---|---|
-| OQ-001, **OQ-038**, OQ-002, OQ-003, OQ-004, OQ-007, OQ-008 | OQ-005, OQ-006, OQ-011, OQ-012, OQ-014, OQ-016, OQ-039, OQ-044 | Everything else marked 🟠 |
+| **OQ-051**, **OQ-055**, **OQ-057**, OQ-001, OQ-008, OQ-016, OQ-017 | OQ-002, OQ-003, OQ-004, OQ-013, OQ-049, OQ-050, OQ-032 | Everything else marked 🟠 |
+
+> The three bolded items are new conflicts created by the clarified design
+> direction. They gate the rework — see section K.
 
 ---
 
@@ -112,10 +115,11 @@ Please confirm exact spelling, capitalisation and singular/plural for all ten. T
 
 **Answer:**
 
-### 🟠 OQ-014 — Approval to nest categories under "Shop"
-The handwritten sheet lists all ten categories as top-level navigation. We recommend nesting them under a **Shop** mega-menu — all ten stay one click away, but the header stays usable on mobile and the SEO structure is sound. See `REQUIREMENTS.md` §2.2.
-This is a **deliberate deviation from your instruction** and needs your approval.
-**Answer:**
+### ✅ OQ-014 — ~~Approval to nest categories under "Shop"~~ **Resolved**
+Superseded by the clarified direction of 2026-09-09: categories are **not**
+nested behind a Shop mega-menu. All ten sit in a persistent bar under the
+header, visible from every page. The client's original handwritten intent —
+every category reachable at the top — is now met directly. See `SITEMAP.md` §3.
 
 ### 🟡 OQ-015 — Regional and linguistic identity
 "Vadiyalu" suggests Andhra/Telangana; "sandige" suggests Karnataka. Which region is Burla actually from? This affects copy voice, product naming, SEO keywords and any future language support.

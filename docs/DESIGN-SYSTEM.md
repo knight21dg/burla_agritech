@@ -1,416 +1,477 @@
-# Design System & Art Direction — Burla Global Agri Products
+# Design System — Burla Global Agri Products
 
 | Field | Value |
 |---|---|
 | Document | `docs/DESIGN-SYSTEM.md` |
-| Version | 0.2 — direction proposal, validated against reference sites |
-| Date | 2026-09-07 |
-| Status | Awaiting approval. Colour values are provisional until the vector logo arrives (`OQ-008`) |
+| Version | **1.0 — white canvas, product-first** |
+| Date | 2026-09-09 |
+| Status | Proposed — awaiting approval before implementation |
+| Supersedes | v0.2 (warm ivory / editorial direction), now withdrawn |
+
+> **This is a full replacement, not an edit.** The client has clarified that they
+> do not want a fancy, editorial, warm-toned site. They want a clean, mostly
+> white, product-first site where the products supply the colour. The previous
+> palette (ivory, sand, terracotta, turmeric) and the display serif are
+> withdrawn.
 
 ---
 
-## 1. Art direction
+## 1. The one rule
 
-### 1.1 The idea
+**Let the products speak.**
 
-**"Processed with care, presented with restraint."**
+The interface is a white frame around photographs of food. Anything that draws
+attention to the frame is working against the brief. If a design decision makes
+the page more interesting but the product less prominent, it is the wrong
+decision.
 
-Burla turns raw agricultural produce into shelf-stable food. The interesting tension in the brand is between the **raw** (soil, fruit, pulses, sun-drying, hand processes) and the **refined** (clean packs, precise weights, consistent quality). The design should hold both, not resolve to either. A site that is all rustic texture reads as a farmers' market stall; a site that is all clinical white reads as a chemical supplier.
+Three practical consequences:
 
-**The resolution:** rustic in *photography and texture*, refined in *typography and grid*.
-
-### 1.2 Reference language
-
-Think closer to a premium pantry brand or a food-focused editorial publication than to a grocery store. Specifically:
-
-- Large, confident, well-set type — a headline is allowed to be the hero.
-- Photography that shows **material**: grain, powder, seed, oil, dust, weave.
-- Generous, deliberate whitespace — not empty, but *paced*.
-- Asymmetry. Off-centre compositions. Content that does not always start at the same left edge.
-- Editorial devices: rules, captions, small caps labels, numbered sequences, pull quotes.
-- Colour used **structurally** — a deep green section that anchors the page — rather than decoratively.
-
-### 1.3 The five-second test
-
-A visitor landing on the homepage should, within five seconds, be able to say: *"This is an Indian company that makes real food products, and they take it seriously."*
-
-If a section does not contribute to that, it does not ship.
+1. **White is the default, not a choice.** A section needs a reason to be
+   anything else.
+2. **Colour comes from the food.** Turmeric yellow, chilli red, millet gold —
+   these belong in the photographs, not in the CSS.
+3. **Green is identity, not decoration.** It marks the brand, the primary
+   action and the active state. Nothing else.
 
 ---
 
-## 2. Anti-patterns — hard rules
+## 2. What changed from v0.2, and why
 
-These are review-blocking. A pull request containing any of them does not merge.
+| v0.2 (withdrawn) | v1.0 | Reason |
+|---|---|---|
+| Ivory `#FAF6EC` page background | **White `#FFFFFF`** | Client: "mostly plain white background" |
+| Warm sand borders, cream cards | Neutral grey `#E5E5E5` lines | Client: no excessive beige/brown |
+| Terracotta + turmeric accents | **Removed** | Colour comes from product photography |
+| Fraunces display serif | **Single sans family** | Client: typography must not distract |
+| Caveat handwriting accent | **Removed** | Decorative; conflicts with "not flashy" |
+| Deep-green full-bleed anchor bands | Green reserved for actions and footer | Client: no excessive green backgrounds |
+| Editorial asymmetry, varied section patterns | Consistent, predictable grid | Client: easy to use, not art-directed |
+| Illustrated SVG hero scene | Real product photograph | Client: authentic imagery only |
+| Section entrance animations | Removed except hover/fade | Client: subtle only |
 
-| ❌ Never | ✅ Instead |
-|---|---|
-| Green gradient backgrounds | Flat, considered colour fields |
-| `rounded-2xl` / `rounded-3xl` on everything | Radius 2–8px; cards mostly square; radius is a signal, not a default |
-| Drop shadows on every card | A 1px warm border, or a background-tone change |
-| Glassmorphism, blur panels, neon | Solid, honest surfaces |
-| Three identical `[icon] [heading] [text]` cards in a row | Varied layout: numbered sequence, alternating image/text, editorial list |
-| Emoji as icons | Lucide, at consistent stroke width, or no icon at all |
-| Generic stock photography of "happy farmer at sunset" | Real Burla product and process photography (`docs/PHOTOGRAPHY-BRIEF.md`) |
-| Every section full-width, centred, same rhythm | Alternating full-bleed / contained / offset compositions |
-| A heading above every section regardless of need | A section may open with an image or a statement |
-| Scroll-triggered animation on every element | Motion only where it clarifies (see §9) |
-| Purple/blue as accent | Warm earth tones only |
-| A "100% NATURAL" style badge on every card *(observed on all 19 categories at hillpureorganic.com)* | A claim on everything is information on nothing. Say something specific, or say nothing |
-| 40-word keyword-stuffed product names *(observed throughout hillpureorganic.com)* | Short human names; keywords live in SEO fields — `REFERENCE-ANALYSIS.md` §6 |
-| A discount badge on every product *(observed on both reference sites)* | Genuine MRP, occasional real offers — `REFERENCE-ANALYSIS.md` §7 |
-| The same product rail repeated under three headings *(observed at hillpureorganic.com)* | One curated rail with a reason to exist |
-| Everything green | Green ≤ 20% of any viewport, except deliberate anchor sections |
-| Text over a busy image with no scrim | Scrim, dedicated colour block, or a considered crop |
-| `text-gray-500` on `white` for body copy | Tokens only; contrast verified |
-| Placeholder Latin text shipped to production | Real copy or a clearly marked, tracked placeholder |
+**What is retained:** the accessibility floor (WCAG 2.2 AA), the anti-pattern
+discipline, the refusal to invent product facts, and the small-radius,
+low-shadow treatment — all of which the new brief reinforces.
 
 ---
 
 ## 3. Colour
 
-### 3.1 Source
-
-The brand green is taken from the supplied logo. **The value below is sampled from a raster image and is provisional.** It must be replaced with the exact value from the vector file before Phase 7 (`OQ-008`).
-
-### 3.2 Palette
+### 3.1 Tokens
 
 ```
-BRAND
-  --burla-green         #2E9E5B    provisional — logo green, brand identity
-  --burla-green-deep    #0E3B23    anchor sections, reversed surfaces
-  --burla-green-text    #1B6B3F    the only green permitted for body-size text
-
 SURFACE
-  --ivory               #FAF7F0    default page background
-  --ivory-warm          #F2EDE2    alternating section background
-  --paper               #FFFFFF    cards, elevated surfaces
-  --sand                #E5DDCC    borders, dividers, subtle fills
+  --white            #FFFFFF   default page background
+  --surface          #FAFAFA   subtle section separation, used sparingly
+  --surface-2        #F5F5F5   image placeholder ground, input fill
+  --line             #E5E5E5   borders, dividers, card outlines
+  --line-strong      #D4D4D4   hover borders, stronger separation
 
 INK
-  --ink                 #1A1917    primary text
-  --ink-muted           #5C574E    secondary text, captions
-  --ink-faint           #8C8478    tertiary, disabled, metadata
+  --ink              #171717   headings and body
+  --ink-2            #4A4A4A   secondary text
+  --ink-3            #6B6B6B   metadata, captions, disabled labels
 
-ACCENT — use sparingly, one per view
-  --terracotta          #B3542E    B2B/wholesale, alerts, editorial accents
-  --turmeric            #C8901F    highlights, badges — large text only
+BRAND
+  --green            #2E9E5B   logo green (PROVISIONAL — OQ-008)
+                               graphics, icons, borders. NOT for text.
+  --green-700        #157A3F   primary buttons, links, active nav
+  --green-900        #0E4A27   footer ground, dark surfaces
+  --green-50         #F1F8F3   selected chip / active pill background
 
 FUNCTIONAL
-  --success             #1B6B3F
-  --warning             #A66A12
-  --danger              #A32B1E
-  --info                #2A5A6B
+  --success          #157A3F
+  --warning          #8A5A00
+  --danger           #A32B1E
 ```
 
-### 3.3 Verified contrast
+There is no fifth colour. Terracotta, turmeric, sand and ivory are gone.
 
-Measured WCAG contrast ratios. Provisional pending the exact brand green.
+### 3.2 Verified contrast
 
 | Foreground | Background | Ratio | Verdict |
 |---|---|---|---|
-| `--ink` #1A1917 | `--ivory` #FAF7F0 | ~16.1:1 | ✅ AAA |
-| `--ink-muted` #5C574E | `--ivory` | ~7.4:1 | ✅ AAA |
-| `--ink-faint` #8C8478 | `--ivory` | ~3.6:1 | ⚠️ Large text and non-text only |
-| `--burla-green-text` #1B6B3F | `--ivory` | ~6.1:1 | ✅ AA body |
-| `--burla-green` #2E9E5B | `#FFFFFF` | ~3.4:1 | ⚠️ **Not valid for body text.** Large text (≥24px, or ≥18.66px bold), icons, borders and graphics only |
-| `--ivory` | `--burla-green-deep` #0E3B23 | ~11.8:1 | ✅ AAA — reversed sections |
-| `--terracotta` #B3542E | `#FFFFFF` | ~5.0:1 | ✅ AA body |
-| `--turmeric` #C8901F | `#FFFFFF` | ~2.8:1 | ❌ Decorative fills only |
-| `--turmeric` | `--burla-green-deep` | ~4.5:1 | ⚠️ Large text on dark only |
+| `--ink` #171717 | white | **17.4:1** | ✅ AAA |
+| `--ink-2` #4A4A4A | white | **8.9:1** | ✅ AAA |
+| `--ink-3` #6B6B6B | white | **5.3:1** | ✅ AA at any size |
+| `--ink-3` | `--surface` #FAFAFA | **5.1:1** | ✅ AA |
+| `--green-700` #157A3F | white | **5.4:1** | ✅ AA — links and buttons |
+| white | `--green-700` | **5.4:1** | ✅ AA — button label on fill |
+| white | `--green-900` #0E4A27 | **10.5:1** | ✅ AAA — footer |
+| `--green` #2E9E5B | white | **3.4:1** | ⚠️ **Never for text.** Icons, borders, graphics only |
 
-**The important consequence:** the logo green is *not* a text colour. This is normal for a brand green and is why `--burla-green-text` exists. Buttons using `--burla-green` as a fill carry white text — verify that combination separately (white on `#2E9E5B` is ~3.4:1, which passes for large/bold button labels at ≥18.66px bold but **not** at 14px). Primary buttons therefore use `--burla-green-deep` as the fill.
+Every value above is computed, not estimated. The one deliberate constraint:
+the logo green is too light for text on white, which is normal for a brand
+green — `--green-700` exists for that. It must be re-verified once the real
+brand colour arrives (`OQ-008`).
 
-### 3.4 Colour proportion
+### 3.3 Colour proportion
 
-Per viewport, roughly: **60% ivory/paper · 25% ink (type and photography) · 12% green · 3% accent.** Anchor sections (a full-bleed `--burla-green-deep` band) are the deliberate exception and should appear **once or twice per page, never more**.
+Per viewport, roughly: **white 75% · product photography 20% · ink 4% ·
+green 1%.**
 
-### 3.5 Dark mode
+Green appears as: the logo, the primary button, link text, the active nav
+underline, and the footer ground. Nowhere else.
 
-**Not in V1.** The brand is warm-light by nature and a dark variant doubles the design and QA surface for a food catalogue. Tokens are defined as CSS custom properties so a dark theme remains possible later. `prefers-color-scheme` is not honoured in V1; the page declares `color-scheme: light`.
+### 3.4 Dark mode
+
+Not in V1. Tokens are CSS custom properties so it stays possible. The page
+declares `color-scheme: light`.
 
 ---
 
 ## 4. Typography
 
-### 4.1 Three directions
+### 4.1 Recommendation: one family
 
-Presented for selection. Each is technically sound; they differ in personality.
+**Instrument Sans** for everything — navigation, headings, body, UI.
 
-**Direction A — Editorial warmth (recommended)**
-Display: **Fraunces** · Body/UI: **Instrument Sans**
-A variable serif with optical-size and soft axes, paired with a modern, slightly narrow grotesque. Fraunces has genuine character at large sizes without being decorative; Instrument Sans keeps interface text crisp and dense. Reads premium and human. Best fit for the food-editorial direction.
+A single well-set sans is the correct answer for a product-first catalogue. It
+is quiet, it reads cleanly at every size, and it never competes with a
+photograph. The v0.2 pairing (Fraunces display serif + Caveat script) is
+withdrawn: it was editorial, and the client has asked for the opposite.
 
-**Direction B — Modern restraint**
-Display: **Instrument Serif** · Body/UI: **Geist**
-Higher contrast, more fashion-adjacent, cooler. Very clean. Slightly less "agricultural", slightly more "boutique".
+**Optional, if the client wants a touch more brand character:** a restrained
+serif on the homepage `h1` and page titles *only* — never on product names,
+never in the interface. Our recommendation is to launch without it and add it
+later if the site feels too plain in review. Adding is easy; removing a serif
+that has spread through the UI is not. Logged as `OQ-047`.
 
-**Direction C — Confident sans**
-Display: **Bricolage Grotesque** · Body/UI: **Public Sans**
-No serif at all. Contemporary, bolder, more product-brand than publication. Lowest risk, least distinctive.
+Self-hosted via `next/font` — no third-party request, no layout shift.
 
-**Recommendation: Direction A.**
+### 4.2 Scale
 
-All are open-source with clear licences and are self-hostable via `next/font` — no third-party font request, no FOUT, no privacy issue.
+| Token | Size | Line height | Weight | Use |
+|---|---|---|---|---|
+| `display` | 36 → 52px | 1.08 | 600 | Homepage hero only |
+| `h1` | 30 → 40px | 1.15 | 600 | Page titles |
+| `h2` | 22 → 28px | 1.25 | 600 | Section titles |
+| `h3` | 17 → 19px | 1.35 | 600 | Card titles, sub-sections |
+| `body-lg` | 17px | 1.6 | 400 | Lead paragraphs |
+| `body` | 16px | 1.65 | 400 | Default |
+| `body-sm` | 14px | 1.55 | 400 | Secondary, product meta |
+| `caption` | 13px | 1.5 | 400 | Captions, footnotes |
+| `label` | 12px | 1.4 | 600, `0.06em` | Eyebrows, section labels |
+| `nav` | 15px | 1 | 500 | Navigation |
+| `button` | 15px | 1 | 600 | Buttons |
 
-### 4.2 Type scale
-
-Fluid, `clamp()`-based. Mobile → desktop.
-
-| Token | Size | Line height | Tracking | Weight | Use |
-|---|---|---|---|---|---|
-| `display` | 44 → 88px | 0.95 | −0.03em | 500 | Hero only, once per page |
-| `h1` | 34 → 56px | 1.05 | −0.02em | 500 | Page title |
-| `h2` | 26 → 38px | 1.15 | −0.015em | 500 | Section title |
-| `h3` | 20 → 26px | 1.25 | −0.01em | 600 | Sub-section, card title |
-| `h4` | 17 → 19px | 1.35 | 0 | 600 | Small headings |
-| `body-lg` | 17 → 19px | 1.6 | 0 | 400 | Intros, lead paragraphs |
-| `body` | 16 → 17px | 1.65 | 0 | 400 | Default |
-| `body-sm` | 14 → 15px | 1.6 | 0 | 400 | Secondary |
-| `caption` | 13px | 1.5 | 0.01em | 400 | Image captions, metadata |
-| `label` | 12px | 1.4 | 0.10em | 600, uppercase | Eyebrows, section labels |
-| `button` | 15px | 1 | 0.01em | 600 | All buttons |
-| `nav` | 15px | 1 | 0 | 500 | Navigation |
+Deliberately flatter than v0.2. The display size drops from 88px to 52px,
+because a 5rem headline on a product catalogue is the frame shouting.
 
 ### 4.3 Rules
 
-- Measure: **60–75 characters** for body text. Enforced with `max-width`, not by hoping.
-- Display face for `display`, `h1`, `h2` and pull quotes **only**. Everything else is the body face.
-- Numerals: tabular in tables, prices and specifications; proportional in prose.
-- No text below 12px anywhere. No `letter-spacing` on body copy.
-- Indian product names (vadiyalu, sandige, podi) are set in the same face — never italicised as foreign words. They are the product's actual name.
-- Minimum 16px on form inputs to prevent iOS zoom-on-focus.
-- `font-display: swap` with a metric-matched fallback to keep CLS at zero.
+- Body measure 60–75 characters, enforced with `max-width`.
+- Product names are **never** styled as display type. They are `h3` at card
+  level, `h1` at product level, and they stay plain.
+- Tabular numerals for prices, weights and specifications.
+- Nothing below 12px. Inputs at 16px minimum (prevents iOS zoom).
+- Regional product names (vadiyalu, sandige, podi) are set in the same face,
+  never italicised as foreign words. They are the product's real name.
+- Sentence case for headings. No all-caps except the 12px `label` token.
 
 ---
 
-## 5. Space, grid and layout
+## 5. Space, grid, shape
 
-### 5.1 Spacing scale
+### 5.1 Spacing
 
-4px base: `4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48 · 64 · 80 · 96 · 128 · 160`. Nothing off-scale.
+4px base: `4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48 · 64 · 80 · 96`. Nothing
+off-scale. The v0.2 128/160 steps are removed — they created the airy editorial
+rhythm the client does not want.
 
 ### 5.2 Section rhythm
 
-| Breakpoint | Section padding (block) |
+| Breakpoint | Block padding |
 |---|---|
-| Mobile | 64px |
-| Tablet | 80px |
-| Desktop | 96–128px |
+| Mobile | 48px |
+| Tablet | 56px |
+| Desktop | 64–72px |
 
-Consecutive sections must not use identical padding and identical background — the eye needs variation to perceive structure.
+Tighter than v0.2 (which went to 128px). Products should arrive sooner.
 
 ### 5.3 Grid
 
-- 12 columns, 24px gutter desktop / 16px mobile.
-- Container max-width **1320px**; text-heavy content constrained to **720px**.
-- Full-bleed permitted for imagery and anchor sections.
-- A deliberate **asymmetric variant**: 5/7 or 4/8 splits for editorial sections, so the page does not read as a stack of centred blocks.
+- Container max-width **1280px**, gutters 16px mobile / 24px tablet / 32px desktop.
+- Text-heavy content constrained to 680px.
+- Product grid: **2 / 3 / 4 columns** at mobile / tablet / desktop. 5 only above 1536px.
+- Category grid: **2 / 3 / 5 columns**.
+- Symmetric and predictable. The v0.2 asymmetric 5/7 editorial splits are withdrawn.
 
 ### 5.4 Breakpoints
 
 `sm 640 · md 768 · lg 1024 · xl 1280 · 2xl 1536`
 
-Verified at **320, 375, 390, 414, 768, 1024, 1280, 1440, 1920**. 320px is a hard floor — no horizontal scroll, no clipped content.
+Verified at **320, 375, 390, 414, 768, 1024, 1280, 1440, 1920**.
 
 ### 5.5 Radius and elevation
 
 | Token | Value | Use |
 |---|---|---|
-| `radius-none` | 0 | Images, full-bleed, most product imagery |
-| `radius-sm` | 2px | Inputs, badges, small controls |
-| `radius-md` | 4px | Buttons, cards |
-| `radius-lg` | 8px | Modals, drawers, sheets |
-| `radius-full` | 9999px | Avatars, pills, the WhatsApp button only |
+| `radius-none` | 0 | Product and category images |
+| `radius-sm` | 3px | Inputs, chips, badges |
+| `radius-md` | 6px | Buttons, cards |
+| `radius-full` | 9999px | The WhatsApp button only |
 
-**Elevation is expressed with borders and background tone, not shadow.** Two shadows exist in total: `shadow-overlay` for modals/drawers, and `shadow-sticky` for the mobile bottom bar and the sticky header's scrolled state. No card shadows.
+**Elevation is a 1px `--line` border, not a shadow.** Exactly two shadows exist
+in the system: `shadow-overlay` for modals and drawers, and `shadow-header` for
+the sticky header once scrolled. Product cards have no shadow — a shadow on a
+white card on a white page is decoration.
 
 ---
 
-## 6. Photography direction
+## 6. Anti-patterns — review-blocking
 
-Detailed shot list in `docs/PHOTOGRAPHY-BRIEF.md`. The visual rules:
+A pull request containing any of these does not merge.
 
-| Aspect | Direction |
+| ❌ Never | ✅ Instead |
 |---|---|
-| Light | Natural, directional, single source. Soft shadows with real edges. Never flat ring-light or on-camera flash |
-| Background | Warm neutrals — linen, unbleached paper, stone, aged wood, jute. Never pure white cut-out except for pack shots |
-| Colour | Warm, true to the product. Turmeric must look like turmeric. No teal-and-orange grading |
-| Composition | Generous negative space; product placed off-centre; overhead and 3/4 angles |
-| Styling | Show the material — spill the powder, scatter the seed, leave a spoon in. Immaculate is not the goal; *considered* is |
-| Human presence | Hands, not faces. Working hands, in-process. Avoid posed portraits |
-| Consistency | One lighting setup, one background family, one grade across the entire catalogue |
-
-**Aspect ratios:** product pack shot 1:1 · lifestyle 4:5 (mobile-friendly) · category hero 16:9 desktop / 4:5 mobile art-directed crop · editorial 3:2.
-
-**Technical:** AVIF with WebP fallback, `next/image` with explicit `sizes`, responsive `srcset`, LQIP blur placeholder generated at upload, `priority` on the LCP image only, everything else lazy.
+| Coloured or gradient page backgrounds | White |
+| Beige, cream, tan, sand surfaces | White or `--surface` |
+| Green section backgrounds | Green on buttons, links, footer only |
+| Card shadows | 1px `--line` border |
+| `rounded-2xl` / `rounded-3xl` | 6px max on cards |
+| Decorative icons beside every heading | No icon, or one meaningful icon |
+| Three identical icon-heading-text cards in a row | A real list, or nothing |
+| Scroll-triggered animation | Hover and fade only |
+| Parallax, 3D, cinematic transitions | Nothing |
+| Stock or AI-generated food photography as product imagery | Real client photographs, or a marked placeholder |
+| Fake packaging renders | A marked placeholder |
+| Star ratings without real reviews | Omit entirely |
+| Discount badges on every product | Only genuine, time-bound offers |
+| Health claims ("rich in nutrition", "boosts immunity") | Factual specifications only |
+| 40-word keyword-stuffed product names | 2–4 word human names |
+| Text baked into images | Real HTML text |
+| Emoji as icons | Lucide, or nothing |
+| Company story above the products on the homepage | Products first |
 
 ---
 
-## 7. Component specifications
+## 7. Components
 
 ### 7.1 Button
 
 | Variant | Fill | Text | Border | Use |
 |---|---|---|---|---|
-| Primary | `--burla-green-deep` | `--ivory` | none | One per view. The main action |
-| Secondary | transparent | `--ink` | 1px `--ink` | Alternative action |
-| Tertiary | transparent | `--burla-green-text` | none, underline on hover | Inline, low emphasis |
-| WhatsApp | `#25D366` | `#0B2E13` | none | WhatsApp actions only |
-| Destructive | `--danger` | white | none | Delete, cancel order |
+| Primary | `--green-700` | white | none | One per view |
+| Secondary | white | `--ink` | 1px `--line-strong` | Alternative action |
+| Tertiary | none | `--green-700` | none, underline on hover | Inline |
+| WhatsApp | `#25D366` | `#0B2E13` | none | WhatsApp only |
 
-Height 44px (default) / 52px (large) / 36px (small). Horizontal padding 24px. Radius 4px. Focus: 2px outline offset 2px in `--ink`, ≥3:1 against both the button and the page. States: default, hover, active, focus-visible, disabled, loading (spinner replaces the label, width preserved, `aria-busy`).
+Height 44px default / 52px large / 36px small. Radius 6px. Focus: 2px
+`--ink` outline, 2px offset. States: default, hover, active, focus-visible,
+disabled, loading (spinner replaces label, width preserved, `aria-busy`).
 
 ### 7.2 Product card
 
 ```
-┌─────────────────────┐
-│                     │
-│    product image    │  1:1, no radius, subtle warm bg
-│                     │
-├─────────────────────┤
-│ CATEGORY            │  label token, ink-faint
-│ Product Name        │  h4
-│ Short descriptor    │  body-sm, ink-muted, max 2 lines
-│ 250g · ₹XXX         │  body-sm, tabular numerals
-│ [ CTA ]             │  appears on hover (desktop) / always (mobile)
-└─────────────────────┘
+┌───────────────────┐
+│                   │
+│   PRODUCT PHOTO   │   1:1, no radius, --surface-2 ground
+│                   │
+└───────────────────┘
+  Mango Pickle           h3, --ink
+  500 g                  body-sm, --ink-3
+  ₹XXX                   body-sm, --ink, tabular
 ```
 
-Where a product has multiple pack sizes, the card may expose them as small selectable chips (a pattern that works well on organicindia.com) — this removes a click for repeat buyers without adding visual noise.
+**Four pieces of information, maximum.** No shadow, no border on the card
+itself (the image edge defines it), no badge stack, no rating, no countdown.
+The whole card is one link. Price is omitted entirely — not shown blank — when
+a product has none. "View product →" appears on hover at desktop and is
+implicit on mobile (the whole card is tappable).
 
-Rules: at most **five** pieces of information. No badge stacks. No star ratings unless real reviews exist. No countdown timers. No "only 2 left!" unless it is true. The whole card is one link; nested interactive elements use proper markup, never a link inside a link. Price is omitted entirely — not shown blank — when no price exists.
+Image occupies roughly 78% of the card's height. That is the point.
 
 ### 7.3 Category card
 
-Large image, name overlaid or beneath, product count optional. Sized generously — a category is a destination, not a chip. Mobile: horizontally scrollable with a visible edge-peek so the affordance is obvious, or a 2-column grid.
+```
+┌───────────────────┐
+│   CATEGORY PHOTO  │   4:3
+└───────────────────┘
+  Pickles                h3
+  8 products             body-sm, --ink-3
+```
 
-### 7.4 Other components
+Authentic photography only — no icons, no illustrations, no abstract tiles.
+Entire card is one link.
+
+### 7.4 Product carousel
+
+A horizontally scrollable rail, built on native CSS scroll-snap rather than a
+carousel library. Zero JavaScript for the scrolling itself.
+
+- `scroll-snap-type: x mandatory`, `overflow-x: auto`, `scroll-padding` matching the gutter
+- **Partial next card visible** at every breakpoint, so it is obvious more exists
+- Arrow buttons on desktop (hidden when there is nothing to scroll to)
+- Native touch/trackpad swipe on all devices
+- Keyboard: the rail is focusable, arrow keys scroll, Tab moves through cards
+- `aria-label` on the region; cards are ordinary links, not `role="listbox"` theatre
+- Respects `prefers-reduced-motion` (instant rather than smooth scroll)
+
+No autoplay. Ever.
+
+### 7.5 Other components
 
 | Component | Notes |
 |---|---|
-| Input | 44px, 1px `--sand` border, `--paper` fill, 16px text, label always visible (never placeholder-as-label), error text below with `aria-describedby` |
-| Select | Radix Select; native on mobile |
-| Mega menu | Radix Navigation Menu; keyboard and screen-reader correct |
-| Drawer / sheet | Radix Dialog; focus trap, scroll lock, `Esc` to close, focus restored |
-| Modal | Radix Dialog; `aria-labelledby`; no nested modals |
-| Toast | Bottom-right desktop, bottom mobile; `role="status"`; auto-dismiss 5s except on errors |
-| Badge | Small, rectangular, 2px radius; only for real status — New, Out of stock, Bestseller (only if measured) |
-| Breadcrumb | `nav` + ordered list, `aria-label="Breadcrumb"`, current page marked `aria-current` |
-| Accordion | Radix Accordion; used for product information on mobile |
-| Table | Product specification tables only; horizontally scrollable with a visible affordance on mobile |
-| Skeleton | Matches final dimensions exactly; `--ivory-warm` fill; no shimmer animation under `prefers-reduced-motion` |
-| Empty state | Illustration or photograph + one line + one action |
-| Error state | Plain language + retry + WhatsApp fallback |
+| Header | White, 1px bottom line, sticky. Category bar beneath on desktop — see §8 |
+| Category bar | Horizontal row of category links; active item gets a 2px green underline |
+| Mobile drawer | Full-height sheet, Products list first, focus trapped, `Esc` to close |
+| Input | 44px, 1px `--line`, white fill, visible label always, 16px text |
+| Search overlay | Dialog, instant suggestions, keyboard operable, focus restored on close |
+| Breadcrumb | `nav` + ordered list, `aria-current` on the last item. Present on every product and category page |
+| Chip / filter pill | 3px radius, `--green-50` fill and `--green-700` text when selected |
+| Badge | Rectangular, 3px radius. Only for real status: "Out of stock", "New" |
+| Skeleton | Matches final dimensions exactly. `--surface-2` fill, no shimmer under reduced motion |
+| Empty state | One line of explanation, one action |
+| Error state | Plain language, retry, plus a WhatsApp fallback |
+| Footer | `--green-900` ground, white text. The one place the brand colour dominates |
 
 ---
 
-## 8. Section patterns
+## 8. Navigation pattern
 
-To keep pages varied, sections are composed from this vocabulary — with a hard rule that **no two adjacent sections may use the same pattern**.
+The client has asked for categories visible at the top, and specifically for
+**Locations removed from the main navigation**.
 
-| Pattern | Description |
+**Desktop — two rows:**
+
+```
+┌────────────────────────────────────────────────────────────────────┐
+│  [BURLA LOGO]        Home   About   Quality   Contact    🔍  👤  🛒 │
+├────────────────────────────────────────────────────────────────────┤
+│  Dehydrated Powders · Dehydrated Fruits · Pickles · Dal Powders ·   │
+│  Sandige · Dry Fruits · Millets · Tea & Coffee · Masalas · Combos   │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+Row two is the product bar: all ten categories, always visible, one click from
+anywhere. Active category carries a 2px green underline.
+
+**Below 1280px** the ten labels will not fit on one line. Rather than shrink
+the type or wrap to a ragged second line, the bar becomes horizontally
+scrollable with the same partial-item-visible cue as the product carousel.
+This keeps every category one tap away without a dropdown.
+
+**Mobile:**
+
+```
+┌──────────────────────────┐
+│  [BURLA]        🔍   ☰   │
+└──────────────────────────┘
+```
+
+Drawer contents, in order: **Products** (all ten categories, listed flat — no
+accordion, no extra tap), then Home, About, Quality, Contact, then Locations,
+then the contact block with WhatsApp.
+
+**Locations** moves to the footer and the About page, per the client's
+instruction, while remaining a real, indexable page.
+
+---
+
+## 9. Photography
+
+This is the highest-risk dependency in the project. Full specification in
+`docs/IMAGE-ASSET-REQUIREMENTS.md`.
+
+| Aspect | Direction |
 |---|---|
-| `hero-editorial` | Full-bleed image, type overlaid in a scrim or offset panel |
-| `hero-split` | 50/50 or 40/60 type and image |
-| `category-grid` | Image-led category cards |
-| `story-alternating` | Image/text pairs alternating side, 5/7 asymmetric |
-| `process-sequence` | Numbered steps with rules — for Quality |
-| `product-rail` | Horizontally scrollable product row |
-| `statement` | Large type on a colour field. No image. Used for a single strong claim |
-| `anchor-dark` | Full-bleed `--burla-green-deep` band — used once or twice per page |
-| `spec-list` | Two-column definition list — product information |
-| `cta-band` | Contact/WhatsApp closing block |
-| `feature-detail` | One large image with annotated callouts |
+| Source | **Client-supplied photographs only.** No stock. No AI-generated food. No rendered packaging |
+| Background | White or very light neutral, consistent across the catalogue |
+| Light | Even, clean, accurate. Product colour must be true — turmeric must look like turmeric |
+| Framing | Product centred, generous margin, consistent scale between products |
+| Consistency | One setup, one background family, one grade across the whole catalogue |
+| Ratios | Product 1:1 · category 4:3 · hero 3:2 or 16:9 |
+| Alt text | Describes the actual product, never "product image" |
+
+**Until real photography exists**, the site uses a clearly neutral placeholder:
+a `--surface-2` panel with the product name. It does not attempt to look like a
+photograph, and it does not invent packaging. Nothing on the site should imply a
+product looks a particular way when we do not know.
+
+**Technical:** `next/image`, AVIF with WebP fallback, responsive `srcset` with
+explicit `sizes`, lazy loading below the fold, `priority` on the LCP image only,
+explicit dimensions so CLS stays at zero.
 
 ---
 
-## 9. Motion
+## 10. Motion
 
-**Principle:** motion clarifies relationships and state. It is never decoration.
+**Allowed:** hover state changes (150ms), image scale on card hover (1.0 → 1.02,
+300ms), menu and drawer open/close (200ms), carousel scroll, fade on route
+change (120ms).
 
-| Interaction | Motion | Duration |
-|---|---|---|
-| Page transition | Fade only | 150ms |
-| Hover on card | Image scale 1.0 → 1.03, `ease-out` | 300ms |
-| Menu open | Height/opacity | 200ms |
-| Drawer | Slide, `ease-out` | 250ms |
-| Modal | Fade + 2% scale | 200ms |
-| Section entry | Fade + 12px rise, **once**, only for major sections | 400ms |
-| Button press | Scale 0.98 | 80ms |
-| Skeleton → content | Crossfade | 150ms |
+**Not allowed:** scroll-triggered reveals, parallax, staggered list entrances,
+animated counters, autoplaying carousels, page loaders, 3D, cinematic
+transitions.
 
-Easing: `cubic-bezier(0.22, 1, 0.36, 1)` for entrances, `cubic-bezier(0.4, 0, 0.2, 1)` for transitions. Nothing exceeds 400ms.
+Easing `cubic-bezier(0.4, 0, 0.2, 1)`. Nothing exceeds 300ms.
 
-**`prefers-reduced-motion: reduce` removes all transform and scroll-triggered motion entirely** — opacity changes only. It is not enough to shorten durations.
-
-**Never:** parallax on text, scroll-jacking, auto-playing carousels, entrance animation on every list item, animated counters, marquees, cursor followers.
+`prefers-reduced-motion: reduce` removes all transform and scroll animation —
+opacity only. Shortening durations is not sufficient.
 
 ---
 
-## 10. Iconography
+## 11. Accessibility floor
 
-Lucide, 1.5px stroke, 20px default / 16px inline / 24px touch targets. Icons **support** labels; they do not replace them except for universally understood affordances (search, close, cart) which still carry an `aria-label`. Never mix icon libraries. Never use an emoji as an icon.
+Non-negotiable, and part of the definition of done:
 
----
-
-## 11. Voice and copy
-
-| Do | Don't |
-|---|---|
-| "Sun-dried in small batches" | "Passionately crafted with love" |
-| "250g · shelf life 9 months" | "Premium quality guaranteed!" |
-| "Ask us about bulk pricing" | "Contact us today for the best deals!!" |
-| Name products by their real regional names | Anglicise everything into blandness |
-| State facts and let them do the work | Stack adjectives |
-| Sentence case for headings | ALL CAPS SHOUTING |
-
-**Absolutely prohibited without client evidence:** health claims, "best in India", customer counts, export-country lists, awards, certifications, testimonials, reviews, years in business, "trusted by X families".
-
-Every placeholder string in the codebase must be marked `[PLACEHOLDER]` and tracked in `docs/CONTENT-INVENTORY.md`. A placeholder must never reach production.
+- WCAG 2.2 AA. Zero critical or serious axe violations in CI.
+- Every interactive element keyboard reachable, with a visible focus indicator at ≥3:1.
+- One `h1` per page; no skipped heading levels.
+- Meaningful alt text on every product and category image; decorative images `alt=""`.
+- Carousel operable by keyboard and screen reader.
+- Target size ≥24×24px, ≥44px for primary mobile actions.
+- Usable at 200% zoom and 320px width with no horizontal scroll.
+- Forms: real labels, `aria-describedby` for errors, errors announced.
+- `prefers-reduced-motion` honoured.
 
 ---
 
 ## 12. Implementation
 
-Tokens are defined once as CSS custom properties in `app/globals.css` and exposed to Tailwind v4 via `@theme`. Components consume Tailwind utilities bound to those tokens — never raw hex values, never arbitrary values like `text-[#2E9E5B]`.
+Tokens defined once as CSS custom properties and exposed to Tailwind v4 through
+`@theme`. Components consume utilities bound to tokens — never raw hex, never
+arbitrary values like `text-[#2E9E5B]`. A lint rule blocks raw colour in
+component files.
 
 ```css
 @theme {
-  --color-burla-green: #2E9E5B;
-  --color-burla-green-deep: #0E3B23;
-  --color-burla-green-text: #1B6B3F;
-  --color-ivory: #FAF7F0;
-  --color-ivory-warm: #F2EDE2;
-  --color-paper: #FFFFFF;
-  --color-sand: #E5DDCC;
-  --color-ink: #1A1917;
-  --color-ink-muted: #5C574E;
-  --color-ink-faint: #8C8478;
-  --color-terracotta: #B3542E;
-  --color-turmeric: #C8901F;
+  --color-white: #ffffff;
+  --color-surface: #fafafa;
+  --color-surface-2: #f5f5f5;
+  --color-line: #e5e5e5;
+  --color-line-strong: #d4d4d4;
+  --color-ink: #171717;
+  --color-ink-2: #4a4a4a;
+  --color-ink-3: #6b6b6b;
+  --color-green: #2e9e5b;
+  --color-green-700: #157a3f;
+  --color-green-900: #0e4a27;
+  --color-green-50: #f1f8f3;
 }
 ```
 
-A lint rule blocks raw colour values in component files.
-
 ---
 
-## 13. Design review checklist
+## 13. Review checklist
 
-Every page passes this before merge:
+Every page passes before merge:
 
-- [ ] No anti-pattern from §2 present
-- [ ] Adjacent sections use different patterns (§8)
-- [ ] Green occupies ≤ 20% of the viewport outside anchor sections
-- [ ] Every colour pair verified against §3.3
-- [ ] One `display`-scale element per page, maximum
-- [ ] Body measure within 60–75 characters
+- [ ] Background is white unless there is a stated reason
+- [ ] Green appears only on logo, primary action, link, active nav, footer
+- [ ] No shadow on any card
+- [ ] Products are visible without scrolling past company copy
+- [ ] Product image is the largest element in every product card
+- [ ] No anti-pattern from §6
 - [ ] Verified at 320, 375, 768, 1024, 1440px
-- [ ] Keyboard-only pass completed
-- [ ] Screen-reader pass on interactive components
+- [ ] Keyboard-only pass complete
+- [ ] Carousel operable by keyboard and screen reader
 - [ ] `prefers-reduced-motion` verified
-- [ ] Loading, empty and error states designed, not improvised
-- [ ] No placeholder copy without a `[PLACEHOLDER]` marker and a tracking entry
+- [ ] Loading, empty and error states designed
 - [ ] Every image has meaningful alt text
+- [ ] No placeholder copy without a tracked entry
 - [ ] LCP element identified and prioritised
-- [ ] Could this be mistaken for a template? If yes, it is not done
+- [ ] **Would a first-time visitor understand what Burla sells within five seconds?**
