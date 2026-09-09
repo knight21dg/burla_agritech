@@ -13,7 +13,8 @@
     "db:check": "drizzle-kit check",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx --conditions=react-server src/server/db/seed/index.ts",
-    "db:verify": "tsx --conditions=react-server src/server/db/verify.ts"
+    "db:verify": "tsx --conditions=react-server src/server/db/verify.ts",
+    "db:parity": "tsx --conditions=react-server scripts/cutover-parity.mts"
   },
   "dependencies": {
     "clsx": "2.1.1",
