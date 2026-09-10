@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Caveat, Instrument_Sans } from "next/font/google";
+import { Caveat, Instrument_Sans, Source_Serif_4 } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
@@ -9,10 +9,9 @@ import { site } from "@/lib/site";
 import "./globals.css";
 
 /**
- * One family (DESIGN-SYSTEM §4.1). The v0.2 pairing — Fraunces display serif
- * plus a Caveat script accent — is withdrawn: it was editorial, and the client
- * asked for typography that never competes with the product photography.
- * Self-hosted through next/font: no third-party request, no FOUT, no CLS.
+ * Sans for everything a customer reads to act — navigation, prices, labels,
+ * body copy. Self-hosted through next/font: no third-party request, no FOUT,
+ * no layout shift.
  */
 const instrument = Instrument_Sans({
   subsets: ["latin"],
@@ -30,6 +29,23 @@ const caveat = Caveat({
   subsets: ["latin"],
   variable: "--font-caveat",
   display: "swap",
+});
+
+/**
+ * Serif for section headings and the hero, as in the client's final mockup
+ * (2026-09-10), which sets every heading — "Our Product Categories",
+ * "Rooted in Values." — in a book serif against a sans body.
+ *
+ * Source Serif 4 because it is a true optical-size family: the `opsz` axis
+ * sharpens contrast at display sizes and opens it up at heading sizes, so one
+ * file serves both the 7rem hero wordmark and a 1.75rem section title without
+ * either looking wrong.
+ */
+const serif = Source_Serif_4({
+  subsets: ["latin"],
+  variable: "--font-source-serif",
+  display: "swap",
+  axes: ["opsz"],
 });
 
 export const metadata: Metadata = {
@@ -71,7 +87,7 @@ export default function RootLayout({
   return (
     <html
       lang="en-IN"
-      className={`${instrument.variable} ${caveat.variable}`}
+      className={`${instrument.variable} ${caveat.variable} ${serif.variable}`}
     >
       <body className="flex min-h-screen flex-col antialiased">
         <ChromeMeasure />

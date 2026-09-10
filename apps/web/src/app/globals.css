@@ -48,9 +48,15 @@
   --color-warning: #8a5a00;
   --color-danger: #a32b1e;
 
-  /* Type. One working family; the script is a decorative accent only. */
+  /* Type. Sans to read and act; serif for headings, as in the client's final
+     mockup; the script is a decorative accent only. */
   --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-source-serif), ui-serif, Georgia, "Times New Roman", serif;
   --font-script: var(--font-caveat), ui-serif, cursive;
+
+  /* The deep green of the mockup's pill buttons and hero wordmark.
+     White on it is 12.9:1. */
+  --color-forest: #0f4a2c;
 
   /* Radius — small by design */
   --radius-sm: 3px;
@@ -158,6 +164,30 @@
     line-height: 1.35;
     font-weight: 600;
   }
+  /* Serif headings — client mockup, 2026-09-10 */
+  .t-serif {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.012em;
+    font-optical-sizing: auto;
+  }
+  .t-section {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem);
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    color: var(--color-ink);
+  }
+  /* Widely tracked small capitals: "NATURAL PRODUCTS", "GLOBAL AGRI PRODUCTS" */
+  .t-tracked {
+    font-size: 0.75rem;
+    line-height: 1.7;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
   .t-lead {
     font-size: 1.0625rem;
     line-height: 1.6;
@@ -209,6 +239,32 @@
   }
   .enter-delay-1 {
     animation-delay: 90ms;
+  }
+  .enter-delay-2 {
+    animation-delay: 180ms;
+  }
+  .enter-delay-3 {
+    animation-delay: 280ms;
+  }
+  .enter-delay-4 {
+    animation-delay: 380ms;
+  }
+
+  /* The hero illustration settles in more slowly than the words, the way a
+     photograph comes into focus: fade, a little scale, no travel. */
+  @keyframes enter-art {
+    from {
+      opacity: 0;
+      transform: scale(0.965);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .enter-art {
+    animation: enter-art 1100ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
+    transform-origin: 60% 70%;
   }
 
   /* Scroll-in reveal. Opacity and a small rise only — no scale, no parallax. */
@@ -265,4 +321,42 @@
 @utility rail-item {
   scroll-snap-align: start;
   flex: none;
+}
+
+/* Falling leaves (components/home/FallingLeaves.tsx).
+   Fewer on small screens — hidden here rather than rendered conditionally, so
+   the server markup and the hydrated markup are identical. The script skips
+   hidden leaves rather than animating them. */
+@media (width < 768px) {
+  .leaf-layer-back > .leaf:nth-child(n + 8),
+  .leaf-layer-front > .leaf:nth-child(n + 2) {
+    display: none;
+  }
+}
+
+.leaf-layer {
+  contain: layout paint;
+}
+
+/* Leaves tucked into the hero still life stir on the same breeze the falling
+   leaves ride. Pivoting at the stem (bottom centre of the leaf box), with
+   unequal periods and offsets (set per leaf in StillLife.tsx) so neighbouring
+   leaves never move in step. The global reduced-motion rule ends these at
+   their rest pose. */
+@keyframes still-sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(4deg);
+  }
+  70% {
+    transform: rotate(-2.5deg);
+  }
+}
+.still-leaf {
+  transform-box: fill-box;
+  transform-origin: 50% 96%;
+  animation: still-sway 7s ease-in-out infinite;
 }

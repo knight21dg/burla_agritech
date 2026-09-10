@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Search, ShoppingBag, User, X } from "lucide-react";
+import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { categories } from "@/data/catalog";
 import { mainNav, site } from "@/lib/site";
@@ -11,18 +11,26 @@ import { cn } from "@/lib/utils";
 import { SearchOverlay } from "./SearchOverlay";
 
 /**
- * Header, following the client's mockup.
+ * Header, built to the client's final mockup (2026-09-10).
  *
- * Row 1 — a thin utility strip: company links and the search, account and bag
- *         icons, set small and quiet.
- * Row 2 — the working navigation: logo, then Home and all ten categories
- *         inline. This is where a customer spends their attention, so it gets
- *         the space.
+ * One band, two rows, with the stacked logo spanning both on the left:
  *
- * Categories are never hidden behind a dropdown. Below `lg` the row scrolls
- * horizontally on native scroll-snap rather than collapsing into a menu, so
- * every category stays one tap away.
+ *   logo  |                    About Us  Quality  Contact Us   search  account  bag
+ *         |  Home  Powders & Flakes  Dehydrated Fruits  Pickles  ...
+ *
+ * The category row is where a customer spends attention, so it gets the long
+ * line; company links are small and quiet above it. Categories are never
+ * hidden behind a dropdown — below `lg` the row scrolls horizontally on
+ * native scroll-snap rather than collapsing, so every category stays one tap
+ * away.
  */
+
+/** The company links read as the mockup labels them. */
+const COMPANY_LABEL: Record<string, string> = {
+  "/about": "About Us",
+  "/contact": "Contact Us",
+};
+
 export function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -54,6 +62,21 @@ export function Header() {
   }, [mobileOpen]);
 
   const catActive = (slug: string) => pathname.startsWith(`/products/${slug}`);
+  // The bag is not built yet (OQ-001), so it is honestly empty. Typed as a
+  // number so the label logic is already correct when a real count arrives.
+  const bagCount: number = 0;
+
+  const iconButton =
+    "relative grid size-10 place-items-center rounded-full text-ink transition-colors hover:bg-surface hover:text-green-700";
+
+  const navLink = (active: boolean) =>
+    cn(
+      "relative block whitespace-nowrap px-2 py-2 text-[0.78rem] transition-colors",
+      "after:absolute after:inset-x-2 after:bottom-0.5 after:h-0.5 after:rounded-full after:transition-colors",
+      active
+        ? "font-semibold text-green-700 after:bg-green-700"
+        : "text-ink after:bg-transparent hover:text-green-700 hover:after:bg-green-700/30",
+    );
 
   return (
     <>
@@ -64,88 +87,101 @@ export function Header() {
         Skip to content
       </a>
 
-      <header data-site-chrome className="sticky top-0 z-50 bg-white">
-        {/* Row 1 — utility strip */}
-        <div className="border-b border-line/70">
-          <Container>
-            <div className="flex h-10 items-center justify-end gap-1">
-              <nav className="hidden md:flex md:items-center" aria-label="Company">
-                {mainNav
-                  .filter((i) => i.href !== "/")
-                  .map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      aria-current={
-                        pathname.startsWith(item.href) ? "page" : undefined
-                      }
-                      className={cn(
-                        "px-3 py-1.5 text-[0.8125rem] transition-colors",
-                        pathname.startsWith(item.href)
-                          ? "font-semibold text-green-700"
-                          : "text-ink-2 hover:text-green-700",
-                      )}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-              </nav>
+      <header
+        data-site-chrome
+        className="sticky top-0 z-50 border-b border-line/70 bg-white"
+      >
+        <Container>
+          <div className="flex items-center gap-6 py-2 lg:gap-10 lg:py-2.5">
+            <Link
+              href="/"
+              className="shrink-0"
+              aria-label={`${site.name} — home`}
+            >
+              <span className="block lg:hidden">
+                <Logo variant="full" height={46} priority alt="" />
+              </span>
+              <span className="hidden lg:block">
+                <Logo variant="full" height={66} priority alt="" />
+              </span>
+            </Link>
 
-              <div className="flex items-center gap-0.5">
+            <div className="flex min-w-0 flex-1 flex-col">
+              {/* Row 1 — company links and the icons */}
+              <div className="flex items-center justify-end gap-1">
+                <nav
+                  className="mr-3 hidden items-center md:flex"
+                  aria-label="Company"
+                >
+                  {mainNav
+                    .filter((i) => i.href !== "/")
+                    .map((item) => {
+                      const active = pathname.startsWith(item.href);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          aria-current={active ? "page" : undefined}
+                          className={cn(
+                            "px-3 py-1.5 text-[0.75rem] transition-colors",
+                            active
+                              ? "font-semibold text-green-700"
+                              : "text-ink-2 hover:text-green-700",
+                          )}
+                        >
+                          {COMPANY_LABEL[item.href] ?? item.label}
+                        </Link>
+                      );
+                    })}
+                </nav>
+
                 <button
                   type="button"
                   onClick={() => setSearchOpen(true)}
-                  className="rounded-md p-2 text-ink-2 transition-colors hover:bg-surface hover:text-green-700"
+                  className={iconButton}
                   aria-label="Search products"
                 >
-                  <Search className="size-[1.05rem]" aria-hidden="true" />
+                  <Search className="size-[1.2rem]" strokeWidth={1.75} aria-hidden="true" />
                 </button>
-                <Link
-                  href="/account"
-                  className="rounded-md p-2 text-ink-2 transition-colors hover:bg-surface hover:text-green-700"
-                  aria-label="Your account"
-                >
-                  <User className="size-[1.05rem]" aria-hidden="true" />
+                <Link href="/account" className={iconButton} aria-label="Your account">
+                  <User className="size-[1.2rem]" strokeWidth={1.75} aria-hidden="true" />
                 </Link>
                 <Link
                   href="/cart"
-                  className="rounded-md p-2 text-ink-2 transition-colors hover:bg-surface hover:text-green-700"
-                  aria-label="Your bag"
+                  className={iconButton}
+                  aria-label={`Your bag, ${bagCount} ${bagCount === 1 ? "item" : "items"}`}
                 >
-                  <ShoppingBag className="size-[1.05rem]" aria-hidden="true" />
+                  <ShoppingCart className="size-[1.2rem]" strokeWidth={1.75} aria-hidden="true" />
+                  <span
+                    aria-hidden="true"
+                    className="absolute right-0.5 top-0.5 grid h-[1.05rem] min-w-[1.05rem] place-items-center rounded-full bg-green-700 px-1 text-[0.625rem] font-semibold leading-none text-white tabular-nums"
+                  >
+                    {bagCount}
+                  </span>
                 </Link>
+
+                <button
+                  type="button"
+                  onClick={() => setMobileOpen(true)}
+                  className={cn(iconButton, "lg:hidden")}
+                  aria-label="Open menu"
+                  aria-expanded={mobileOpen}
+                >
+                  <Menu className="size-[1.35rem]" aria-hidden="true" />
+                </button>
               </div>
-            </div>
-          </Container>
-        </div>
 
-        {/* Row 2 — logo and the product navigation */}
-        <div className="border-b border-line">
-          <Container>
-            <div className="flex items-center gap-6 py-2.5">
-              <Link
-                href="/"
-                className="shrink-0"
-                aria-label={`${site.name} — home`}
-              >
-                <Logo variant="full" height={44} priority alt="" />
-              </Link>
-
+              {/* Row 2 — Home and the ten categories */}
               <nav
-                className="hidden min-w-0 flex-1 lg:block"
+                className="hidden min-w-0 lg:block"
                 aria-label="Product categories"
               >
-                <ul className="rail gap-0.5">
+                <ul className="rail -mx-2">
                   <li className="rail-item">
                     <Link
                       href="/"
                       aria-current={pathname === "/" ? "page" : undefined}
-                      className={cn(
-                        "block whitespace-nowrap border-b-2 px-2.5 py-2 text-[0.8125rem] transition-colors",
-                        pathname === "/"
-                          ? "border-green-700 font-semibold text-green-700"
-                          : "border-transparent text-ink hover:text-green-700",
-                      )}
+                      className={navLink(pathname === "/")}
                     >
                       Home
                     </Link>
@@ -155,12 +191,7 @@ export function Header() {
                       <Link
                         href={`/products/${c.slug}`}
                         aria-current={catActive(c.slug) ? "page" : undefined}
-                        className={cn(
-                          "block whitespace-nowrap border-b-2 px-2.5 py-2 text-[0.8125rem] transition-colors",
-                          catActive(c.slug)
-                            ? "border-green-700 font-semibold text-green-700"
-                            : "border-transparent text-ink hover:text-green-700",
-                        )}
+                        className={navLink(catActive(c.slug))}
                       >
                         {c.shortName}
                       </Link>
@@ -168,19 +199,9 @@ export function Header() {
                   ))}
                 </ul>
               </nav>
-
-              <button
-                type="button"
-                onClick={() => setMobileOpen(true)}
-                className="ml-auto rounded-md p-2 text-ink transition-colors hover:bg-surface lg:hidden"
-                aria-label="Open menu"
-                aria-expanded={mobileOpen}
-              >
-                <Menu className="size-[1.35rem]" aria-hidden="true" />
-              </button>
             </div>
-          </Container>
-        </div>
+          </div>
+        </Container>
       </header>
 
       {/* Mobile drawer — products first, flat, no accordion */}
