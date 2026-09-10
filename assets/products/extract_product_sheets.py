@@ -8,6 +8,7 @@ Input   assets/products/powders-supplied.png       13 cards (2092 x 752)
         assets/products/fruits-supplied.png        6 cards (1774 x 887)
         assets/products/pickles-supplied.png       7 cards (1536 x 1024)
         assets/products/dal-powders-supplied.png   4 cards (2092 x 752)
+        assets/products/crisps-dry-fruits-supplied.png  8 cards (1536 x 1024)
 Output  apps/web/public/images/products/{slug}.webp  one square image each
 
 Same method as extract_featured.py: card edges measured from the sheet's own
@@ -98,12 +99,29 @@ DAL_POWDERS = [
     ("sesame-seed-nuvvulu", (1571, 2072), DAL_ROW),  # sheet: "Sesame Seed / Nuvvulu"
 ]
 
+# Crisps and Dry Fruits sheet: a band over each row of four cards. Its
+# first band reads "Crisps / Vadialu"; the catalogue names the category
+# "Crisps", and the site keeps that.
+C_ROW = (74, 481)       # Crisps
+N_ROW = (577, 970)      # Dry Fruits
+CRISPS_DRY_FRUITS = [
+    ("rice-vadialu", (15, 384), C_ROW),
+    ("gummadi-vadialu", (393, 763), C_ROW),
+    ("saggubiyyam", (772, 1143), C_ROW),
+    ("minapa-vadialu", (1151, 1521), C_ROW),
+    ("badam", (16, 386), N_ROW),
+    ("pista", (394, 764), N_ROW),
+    ("cashews", (772, 1141), N_ROW),
+    ("dates", (1149, 1520), N_ROW),
+]
+
 SHEETS = [
     ("powders-supplied.png", POWDERS),
     ("flakes-supplied.png", FLAKES),
     ("fruits-supplied.png", FRUITS),
     ("pickles-supplied.png", PICKLES),
     ("dal-powders-supplied.png", DAL_POWDERS),
+    ("crisps-dry-fruits-supplied.png", CRISPS_DRY_FRUITS),
 ]
 
 TILE = 600      # square, matching the product card's image area, ~2x its size

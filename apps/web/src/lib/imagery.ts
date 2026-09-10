@@ -95,14 +95,14 @@ export const imagery: {
       { src: `/images/categories/${slug}.webp`, alt: alt!, width: 480, height: 360 },
     ]),
   ),
-  // Supplied by the client, 2026-09-10, as six sheets; each photo cut out
+  // Supplied by the client, 2026-09-10, as seven sheets; each photo cut out
   // and re-centred at one scale (assets/products/).
   //   - The Featured Products sheet: red chilli powder. Its Dehydrated Banana
   //     and Ragi Flour are not in the catalogue; its Dehydrated Mango, Mango
   //     Pickle and Gongura Pickle are superseded by the category sheets.
-  //   - The Powders, Flakes, Dehydrated Fruits, Pickles and Dal Powders
-  //     sheets: every card, one per product in those categories, each named
-  //     on its card.
+  //   - The Powders, Flakes, Dehydrated Fruits, Pickles, Dal Powders, and
+  //     Crisps and Dry Fruits sheets: every card, one per product in those
+  //     categories, each named on its card.
   //     The pickle jars' labels are part of the generated image, not real
   //     packaging.
   // Alt text describes what each photograph shows, and nothing more.
@@ -125,6 +125,14 @@ export const imagery: {
       ["chana-powder", "Wooden bowl of chana powder with a sack of chickpeas"],
       ["avise-powder", "Wooden bowl of avise powder with a scoop of brown seeds and blue flowers"],
       ["sesame-seed-nuvvulu", "Wooden bowl of powder with a bowl and a scoop of sesame seeds"],
+      ["rice-vadialu", "Wooden bowl of rice vadialu with a sack of rice"],
+      ["gummadi-vadialu", "Wooden bowl of gummadi vadialu with a cut pumpkin"],
+      ["saggubiyyam", "Wooden bowl of saggubiyyam crisps with a scoop of white pearls"],
+      ["minapa-vadialu", "Wooden bowl of minapa vadialu with a small bowl of whole lentils"],
+      ["badam", "Wooden bowl of almonds with green leaves"],
+      ["pista", "Wooden bowl of pistachios in their shells"],
+      ["cashews", "Wooden bowl of cashews with green leaves"],
+      ["dates", "Wooden bowl of dates with green leaves"],
       ["red-chilli-powder", "Wooden bowl of red chilli powder with dried red chillies"],
       ["moringa-powder", "Wooden bowl of moringa powder with moringa leaves"],
       ["banana-powder", "Wooden bowl of banana powder with bananas and banana slices"],
