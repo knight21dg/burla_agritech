@@ -123,7 +123,9 @@ export default function HomePage() {
         aria-labelledby="home-about"
         className="relative overflow-hidden border-y border-line/70 bg-white"
       >
-        <div className="grid lg:grid-cols-[minmax(0,44%)_minmax(0,1fr)]">
+        {/* Full-bleed as in the mockup, but capped: past 1920px a band that
+            keeps widening turns a landscape into a stretched banner. */}
+        <div className="mx-auto grid max-w-[1920px] lg:grid-cols-[minmax(0,44%)_minmax(0,1fr)]">
           {/* Full-bleed to the left edge of the viewport, as in the mockup */}
           <div className="relative min-h-[16rem] lg:min-h-[21rem]">
             {about ? (
@@ -149,7 +151,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="px-4 py-10 md:px-10 lg:py-12 lg:pl-10 lg:pr-[max(2rem,calc((100vw-var(--container-page))/2+2rem))]">
+          <div className="px-4 py-10 md:px-10 lg:py-12 lg:pl-10 lg:pr-[max(2rem,calc((min(100vw,1920px)-var(--container-page))/2+2rem))]">
             <Reveal>
               <div className="grid gap-8 md:grid-cols-[minmax(0,1.25fr)_auto_minmax(0,1fr)] md:gap-8">
                 <div>
