@@ -64,5 +64,24 @@ export const imagery: {
     height: 880,
   },
   about: null,
-  categories: {},
+  // Supplied by the client, 2026-09-10, as one sheet of ten cards; each photo
+  // cut out, its printed label left behind, and re-centred at one scale
+  // (assets/categories/). Decorative in the tile, whose name is the label.
+  categories: Object.fromEntries(
+    [
+      ["dehydrated-powders-flakes", "A wooden bowl of dehydrated powder"],
+      ["dehydrated-fruits", "A wooden bowl of dried mango slices"],
+      ["pickles", "A jar of mango pickle"],
+      ["spiced-dal-powders", "A wooden bowl of spiced dal powder"],
+      ["sun-dried-crisps", "A wooden bowl of sun-dried crisps"],
+      ["dry-fruits", "A wooden bowl of mixed nuts"],
+      ["millets", "A wooden bowl of millet"],
+      ["herbal-tea-coffee", "A wooden bowl of loose herbal tea"],
+      ["masala-powders", "A wooden bowl of masala powders"],
+      ["combo-packs", "A set of packs and jars"],
+    ].map(([slug, alt]) => [
+      slug!,
+      { src: `/images/categories/${slug}.webp`, alt: alt!, width: 480, height: 360 },
+    ]),
+  ),
 };

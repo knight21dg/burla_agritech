@@ -13,8 +13,8 @@ import { imagery } from "@/lib/imagery";
  * tint; the mockup keeps the tiles white and lets the photograph carry the
  * colour, which also keeps ten tiles in a row from turning into a paint chart.
  *
- * Until photography arrives the image is the illustrated bowl for that
- * category. Set `imagery.categories[slug]` and the photograph takes its place.
+ * The photograph comes from `imagery.categories[slug]` (supplied by the
+ * client); a category without one falls back to its illustrated bowl.
  */
 export function CategoryCard({ category }: { category: Category }) {
   const photo = imagery.categories[category.slug];
@@ -28,10 +28,13 @@ export function CategoryCard({ category }: { category: Category }) {
         {photo ? (
           <Image
             src={photo.src}
+            // Decorative: the tile's name, below, is its label.
             alt=""
             width={photo.width}
             height={photo.height}
-            sizes="(min-width: 1024px) 120px, 36vw"
+            // Pre-encoded at 480 x 360 (about 20 KB), which already covers a
+            // tile at 2x — there is nothing for the optimiser to add.
+            unoptimized
             className="aspect-4/3 w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.05]"
           />
         ) : (
