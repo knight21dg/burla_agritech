@@ -61,9 +61,17 @@ function assert(label: string, condition: boolean, detail = ""): void {
   }
 }
 
-/** catalog.ts orders categories by array position; the service by sort_order. */
-const bySlug = (list: { slug: string }[]) =>
-  [...list].sort((x, y) => x.slug.localeCompare(y.slug));
+/**
+ * catalog.ts orders categories by array position; the service by sort_order.
+ * `confirmation` (the catalogue's TODO notes) exists in catalog.ts only — the
+ * database has no column for it — so it is left out of every comparison.
+ */
+const withoutNote = <T extends { confirmation?: string }>(x: T) => {
+  const { confirmation: _note, ...rest } = x;
+  return rest;
+};
+const bySlug = (list: { slug: string; confirmation?: string }[]) =>
+  [...list].map(withoutNote).sort((x, y) => x.slug.localeCompare(y.slug));
 
 console.log("--- taxonomy ---");
 
@@ -99,18 +107,24 @@ check(
   await catalogService.getCategory("no-such-category"),
 );
 
-// The case that a single global slug index would have broken.
-const pickleMango = await catalogService.getType("pickles", "mango");
-const fruitMango = await catalogService.getType("dehydrated-fruits", "mango");
-check("getType(pickles, mango)", catalog.typeBySlug("pickles", "mango"), pickleMango);
+// Types, addressed as their URLs address them (both slugs).
+for (const [parent, slug] of [
+  ["pickles", "veg-pickles"],
+  ["pickles", "non-veg-pickles"],
+  ["dehydrated-powders-flakes", "powders"],
+  ["millet-powders", "foxtail-korralu"],
+] as const) {
+  const source = catalog.typeBySlug(parent, slug);
+  check(
+    `getType(${parent}, ${slug})`,
+    source && withoutNote(source),
+    await catalogService.getType(parent, slug),
+  );
+}
 check(
-  "getType(dehydrated-fruits, mango)",
-  catalog.typeBySlug("dehydrated-fruits", "mango"),
-  fruitMango,
-);
-assert(
-  "the two 'mango' types are different rows",
-  pickleMango?.description !== fruitMango?.description,
+  "a type is not found under the wrong parent",
+  undefined,
+  await catalogService.getType("spices", "veg-pickles"),
 );
 
 console.log("\n--- products ---");
@@ -125,7 +139,7 @@ assert(
 // ids are UUIDs in the database and "p1".. in catalog.ts, so compare
 // everything else.
 const stripId = (p: Product | catalog.Product) => {
-  const { id, variants, ...rest } = p as Product;
+  const { id, variants, confirmation: _note, ...rest } = p as Product;
   return {
     ...rest,
     variants: variants.map(({ id: _vid, ...v }) => v),
@@ -189,10 +203,11 @@ console.log("\n--- helpers ---");
 const sampleProduct = (await catalogService.getProduct("turmeric-powder"))!;
 const sampleSource = catalog.productBySlug("turmeric-powder")!;
 
+// No pack sizes have been supplied, so both sides agree there is none.
 check(
-  "defaultVariant picks the same pack size",
-  catalog.defaultVariant(sampleSource).label,
-  defaultVariant(sampleProduct).label,
+  "defaultVariant agrees (none, until pack sizes are supplied)",
+  catalog.defaultVariant(sampleSource)?.label,
+  defaultVariant(sampleProduct)?.label,
 );
 check(
   "productHref",
@@ -227,7 +242,10 @@ assert(
 
 console.log("\n--- search ---");
 
-for (const term of ["mango", "pickle", "millet", "turmeric"]) {
+// Terms matching fewer products than the search limit (20), so the comparison
+// is of what is found, not of where the cut falls. "dal" reaches its products
+// through the category name only.
+for (const term of ["mango", "pickle", "millet", "dal", "korralu"]) {
   const expected = catalog.searchProducts(term).map((p) => p.slug).sort();
   const actual = (await catalogService.search(term)).products
     .map((p) => p.slug)
@@ -240,17 +258,21 @@ for (const term of ["mango", "pickle", "millet", "turmeric"]) {
   );
 }
 
-const fuzzy = await catalogService.search("vadiyaalu");
+// The catalogue writes "Vadialu"; "vadiyalu" is the other common spelling.
+const spelling = await catalogService.search("vadiyalu");
 assert(
-  "search survives a misspelling that catalog.ts cannot handle",
-  fuzzy.products.length > 0 && catalog.searchProducts("vadiyaalu").length === 0,
-  `db=${fuzzy.products.length} catalog=${catalog.searchProducts("vadiyaalu").length}`,
+  "search finds the Vadialu products under the other spelling, which catalog.ts cannot",
+  spelling.products.some((p) => p.slug === "rice-vadialu") &&
+    catalog.searchProducts("vadiyalu").length === 0,
+  `db=${spelling.products.length} catalog=${catalog.searchProducts("vadiyalu").length}`,
 );
 
-const regional = await catalogService.search("avakaya");
+const byType = await catalogService.search("non-veg");
 assert(
-  "search finds a product by its Telugu name",
-  regional.products.some((p) => p.slug === "mango-pickle"),
+  "search reaches products through their type name",
+  ["chicken-pickle", "prawns-pickle", "mutton-pickle"].every((slug) =>
+    byType.products.some((p) => p.slug === slug),
+  ),
 );
 
 const tooShort = await catalogService.search("m");

@@ -1,10 +1,10 @@
 /**
  * DEMONSTRATION SEED — MUST NEVER RUN IN PRODUCTION.
  *
- * Every row this file creates was invented by us to show how the interface
- * behaves: 10 product types (`OQ-049`), 30 products with their names, prices,
- * SKUs, weights and descriptions (`OQ-016`). None of it is client-supplied.
- * A visitor cannot tell the difference, which is the whole problem.
+ * Seeds the catalogue module's types and products: 9 types and 63 products,
+ * named from the client's catalogue (2026-09-10). What the client has not
+ * supplied — prices, pack sizes, descriptions, legal details — is absent, so
+ * these rows are incomplete and must not reach production as they are.
  *
  * Three things stop it reaching a live site:
  *
@@ -68,26 +68,18 @@ const STOCK_FOR: Record<Availability, { quantity: number; tracked: boolean }> = 
 };
 
 /**
- * Regional search synonyms, so the search endpoint has something real to
- * exercise. These are Telugu and Tamil terms for the dish, not claims about
- * the product — "avakaya" genuinely is what an Andhra mango pickle is called.
- * Products not listed simply have none.
+ * Search keywords: alternate spellings of names exactly as the catalogue
+ * writes them, and nothing more — no synonyms, no claims. The catalogue
+ * spells it "Vadialu"; "vadiyalu" is the other common spelling of the same
+ * word, so a customer typing it still finds the products. Products not listed
+ * have none.
  */
+const VADIALU = ["vadiyalu", "vadalu"];
 const KEYWORDS: Record<string, string[]> = {
-  "mango-pickle": ["avakaya", "aavakaaya", "mamidikaya"],
-  "gongura-pickle": ["gongura", "sorrel", "pulicha keerai"],
-  "lemon-pickle": ["nimmakaya", "elumichai"],
-  "rice-vadiyalu": ["vadiyalu", "vadiyam", "sandige", "fryums"],
-  "sabudana-vadiyalu": ["sabudana", "saggubiyyam", "sago", "vadiyalu"],
-  "idli-podi": ["podi", "gunpowder", "milagai podi"],
-  "garlic-podi": ["vellulli karam", "podi", "garlic powder"],
-  "curry-leaf-podi": ["karivepaku", "kariveppilai", "podi"],
-  "curry-leaf-powder": ["karivepaku", "kariveppilai"],
-  "drumstick-leaf-powder": ["moringa", "munagaku", "murungai"],
-  "ragi-millet": ["ragi", "finger millet", "kelvaragu"],
-  "foxtail-millet": ["korralu", "thinai", "foxtail"],
-  "little-millet": ["samalu", "samai"],
-  "turmeric-powder": ["pasupu", "manjal", "haldi"],
+  "rice-vadialu": VADIALU,
+  "gummadi-vadialu": VADIALU,
+  "minapa-vadialu": VADIALU,
+  saggubiyyam: ["saggubiyam"],
 };
 
 export interface DemoSeedResult {

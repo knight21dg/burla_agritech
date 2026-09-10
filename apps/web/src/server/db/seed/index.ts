@@ -69,8 +69,8 @@ async function main(): Promise<void> {
   if (isProduction) {
     throw new Error(
       "--demo is refused when APP_ENV=production.\n" +
-        "Every product it would create was invented to demonstrate the " +
-        "interface and must not be published as fact.",
+        "The products it would create have no prices, pack sizes, " +
+        "descriptions or legal details, and must not be published.",
     );
   }
 
@@ -83,9 +83,9 @@ async function main(): Promise<void> {
         : ""),
   );
   console.log(
-    "\n⚠  This catalogue is DEMONSTRATION DATA. Every name, price, SKU and\n" +
-      "   description was invented by us. It is flagged is_sample and a\n" +
-      "   production boot will refuse to serve it.",
+    "\n⚠  This catalogue is INCOMPLETE. The names are the client's, but no\n" +
+      "   price, pack size, description or legal detail has been supplied.\n" +
+      "   It is flagged is_sample and a production boot will refuse to serve it.",
   );
 }
 

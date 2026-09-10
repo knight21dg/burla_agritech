@@ -1,11 +1,11 @@
 /**
  * Guards that stand between demonstration data and a live site.
  *
- * The catalogue currently on the site — 10 product types, 30 products, every
- * price, SKU and description — was invented by us to show the interface. None
- * of it is client-supplied (`OQ-016`, `OQ-049`). A visitor cannot tell the
- * difference, which is exactly why a comment saying "remember to remove this"
- * is not a control.
+ * The catalogue on the site — 9 product types and 63 products — is named
+ * from the client's catalogue (2026-09-10), but carries no prices, pack
+ * sizes, descriptions or legally required details yet. Rows seeded from it are
+ * flagged `is_sample` so they cannot reach production until those exist; a
+ * comment saying "remember to remove this" would not be a control.
  */
 import "server-only";
 import { count, eq, inArray } from "drizzle-orm";
@@ -50,7 +50,7 @@ export async function countSampleData(db: Database): Promise<SampleDataReport> {
  * Throws if production holds any demonstration data.
  *
  * Called by the health check and by the pre-deploy verification step, so a
- * production deploy that would serve invented product information fails
+ * production deploy that would serve incomplete product information fails
  * loudly rather than going live looking fine.
  *
  * Outside production this is a no-op: preview and development are *supposed*
@@ -66,8 +66,8 @@ export async function assertNoSampleData(db: Database): Promise<void> {
     `Refusing to run: production contains demonstration data — ` +
       `${report.sampleProducts} product(s) and ${report.sampleCategories} ` +
       `category/type row(s) flagged is_sample.\n` +
-      `Every price, name and description in those rows was invented to ` +
-      `demonstrate the interface and must not be published as fact.\n` +
+      `Those rows have no prices, pack sizes, descriptions or legal ` +
+      `details and must not be published as they are.\n` +
       `Remove them with: npm run db:seed -- --purge-demo\n` +
       `See docs/DATABASE-DESIGN.md §10.`,
   );

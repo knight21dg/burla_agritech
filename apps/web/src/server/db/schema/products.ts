@@ -69,10 +69,11 @@ export const products = pgTable(
     tone: toneEnum("tone").notNull().default("cream"),
 
     /**
-     * True for the demonstration products. Every one of them — the names,
-     * prices, SKUs and descriptions — was invented by us to show the interface
-     * (OQ-016). None of it is client-supplied, and none of it may reach
-     * production. `assertNoSampleData()` refuses to let it.
+     * True for products seeded by the demonstration seed. Their names are the
+     * client's (catalogue of 2026-09-10), but no prices, pack sizes,
+     * descriptions or legally required details exist for them, so none may
+     * reach production as they are. `assertNoSampleData()` refuses to let
+     * them.
      */
     isSample: boolean("is_sample").notNull().default(false),
 
@@ -80,9 +81,9 @@ export const products = pgTable(
     seoDescription: text("seo_description"),
 
     /**
-     * Regional names, synonyms and alternate spellings — "vadiyalu",
-     * "sandige", "podi", "avakaya". Feeds the search vector, so a customer
-     * who knows the Telugu word finds the product.
+     * Alternate spellings of the names — "vadiyalu" for the catalogue's
+     * "Vadialu". Feeds the search vector, so a customer who spells the Telugu
+     * word another way still finds the product.
      */
     searchKeywords: text("search_keywords").array(),
 
@@ -90,8 +91,8 @@ export const products = pgTable(
      * Maintained by Postgres, never written by application code.
      *
      * Weighting: the name matters most, then the descriptor and the regional
-     * keywords, then the body copy. So "vadiyalu" in a product name outranks
-     * "vadiyalu" mentioned in a paragraph.
+     * keywords, then the body copy. So "vadialu" in a product name outranks
+     * "vadialu" mentioned in a paragraph.
      *
      * Everything in a generated expression must be IMMUTABLE, which rules out
      * two things that look fine: the one-argument `to_tsvector` (STABLE, hence

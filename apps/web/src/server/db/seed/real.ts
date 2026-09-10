@@ -3,7 +3,7 @@
  *
  * Everything here traces to something the client supplied:
  *
- *   - the ten top-level categories, from the handwritten sheet
+ *   - the ten top-level categories, from the client's catalogue (2026-09-10)
  *   - the business identity, from the business card
  *
  * Nothing in this file is invented. Where a legally required value has not
@@ -34,7 +34,7 @@ export async function seedReal(db: Database): Promise<SeedResult> {
   let inserted = 0;
   let updated = 0;
 
-  // The ten categories, in the order they appear on the sheet.
+  // The ten categories, in the order they appear in the catalogue.
   //
   // Written one at a time rather than as a bulk upsert: the unique index is on
   // an expression — coalesce(parent_id, nil uuid) — which ON CONFLICT cannot

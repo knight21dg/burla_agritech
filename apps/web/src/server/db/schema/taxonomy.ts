@@ -68,11 +68,11 @@ export const categories = pgTable(
     /**
      * True for rows the demo seed created.
      *
-     * The ten top-level categories come from the client's handwritten sheet
-     * and are NOT sample data. The type layer beneath them is invented by us
-     * to demonstrate the browsing pattern (OQ-049), and must never reach
-     * production. A boot guard refuses to serve production with any of these
-     * present — docs/DATABASE-DESIGN.md §10.
+     * The ten top-level categories come from the client's catalogue
+     * (2026-09-10) and are NOT sample data. The types beneath them are named
+     * from the same catalogue, but are seeded alongside products that are not
+     * yet complete, so they carry the flag too. A boot guard refuses to serve
+     * production with any of these present — docs/DATABASE-DESIGN.md §10.
      */
     isSample: boolean("is_sample").notNull().default(false),
 
