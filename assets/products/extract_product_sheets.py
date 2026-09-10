@@ -6,6 +6,7 @@ Cut the product photographs out of the client's per-category sheets.
 Input   assets/products/powders-supplied.png       13 cards (2092 x 752)
         assets/products/flakes-supplied.png        7 cards (2092 x 752)
         assets/products/fruits-supplied.png        6 cards (1774 x 887)
+        assets/products/pickles-supplied.png       7 cards (1536 x 1024)
 Output  apps/web/public/images/products/{slug}.webp  one square image each
 
 Same method as extract_featured.py: card edges measured from the sheet's own
@@ -72,10 +73,26 @@ FRUITS = [
     ("dehydrated-fruits-honey", (1190, 1762), D_ROW_2),  # sheet: "Honey (Confirmation Required)"
 ]
 
+# Pickles sheet: a "Veg Pickles" band over four cards, a "Non-Veg Pickles"
+# band over three. The rows start below each band. Its Mango and Gongura
+# cards replace the Featured sheet's, so the seven pickles match.
+P_ROW_1 = (66, 466)     # Veg Pickles
+P_ROW_2 = (553, 989)    # Non-Veg Pickles
+PICKLES = [
+    ("tomato-pickle", (17, 384), P_ROW_1),
+    ("gongura-pickle", (394, 762), P_ROW_1),
+    ("garlic-pickle", (773, 1141), P_ROW_1),
+    ("mango-pickle", (1151, 1518), P_ROW_1),
+    ("chicken-pickle", (17, 511), P_ROW_2),
+    ("prawns-pickle", (521, 1014), P_ROW_2),
+    ("mutton-pickle", (1024, 1518), P_ROW_2),
+]
+
 SHEETS = [
     ("powders-supplied.png", POWDERS),
     ("flakes-supplied.png", FLAKES),
     ("fruits-supplied.png", FRUITS),
+    ("pickles-supplied.png", PICKLES),
 ]
 
 TILE = 600      # square, matching the product card's image area, ~2x its size
@@ -108,30 +125,34 @@ for sheet, (slug, (x0, x1), (top, bottom)) in CARDS:
     coloured = (ink & (sat > 50)).sum(axis=1)
     textlike = (((grey < 110) & (sat < 45)).sum(axis=1) >= 3) & (coloured == 0)
 
-    # The label is found from the BOTTOM up, not from mid-card down: white
-    # garlic and a dark beetroot are colourless enough to pass for text, and
-    # scanning down stopped on them. Upwards, the label is the first text,
-    # its lines (two, on ABC) are close together, and a wide blank gap
-    # separates it from the photograph. Colour anywhere ends it at once.
-    inked = ink.sum(axis=1)
-    y = max(yy for yy in range(h) if textlike[yy])
-    text_top, gap = y, 0
-    while y > 0:
-        y -= 1
-        if coloured[y] > 0:
+    # The label is found from the BOTTOM up, in blocks: runs of inked rows
+    # separated by blank ones. The lowest text block is the label's last
+    # line; the blocks above it join the label while they are colourless and
+    # close (ABC and Honey have two lines, 11 and 5 rows apart). The first
+    # block with colour in it is the photograph, and so is anything past a
+    # wide gap.
+    #
+    # Not row by row: a bowl's colourless shadow sits in the same block as
+    # the bowl, and read row by row it passed for label — on the Tomato
+    # Pickle card the cut then took 8 rows off the photo. Nor scanning down
+    # from mid-card: white garlic and dark beetroot pass for text.
+    blank = ink.sum(axis=1) <= 2
+    blocks, y = [], 0
+    while y < h:
+        if blank[y]:
+            y += 1
+            continue
+        start = y
+        while y < h and not blank[y]:
+            y += 1
+        blocks.append((start, y - 1))
+    last_line = max(yy for yy in range(h) if textlike[yy])
+    label = [b for b in blocks if b[0] <= last_line]
+    text_top = label[-1][0]
+    for above, below in zip(label[-2::-1], label[:0:-1]):
+        if below[0] - above[1] - 1 >= LABEL_GAP or coloured[above[0]:above[1] + 1].any():
             break
-        if inked[y] <= 2:
-            gap += 1
-            if gap >= LABEL_GAP:
-                break
-        else:
-            # A narrower gap still ends the label if what sits above it is
-            # coloured: the Honey card's photo is only 11 rows above its
-            # name — the same spacing as ABC's two label lines, which are
-            # text, and colourless.
-            if gap >= 4 and coloured[max(0, y - 7):y + 1].any():
-                break
-            gap, text_top = 0, y
+        text_top = above[0]
     photo = card[: text_top - 8]
 
     ys, xs = np.nonzero((255 - photo).max(axis=2) > 14)

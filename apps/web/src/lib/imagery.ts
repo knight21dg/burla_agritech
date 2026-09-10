@@ -95,13 +95,15 @@ export const imagery: {
       { src: `/images/categories/${slug}.webp`, alt: alt!, width: 480, height: 360 },
     ]),
   ),
-  // Supplied by the client, 2026-09-10, as four sheets; each photo cut out
+  // Supplied by the client, 2026-09-10, as five sheets; each photo cut out
   // and re-centred at one scale (assets/products/).
-  //   - The Featured Products sheet: mango pickle, red chilli powder and
-  //     gongura pickle. Its Dehydrated Banana and Ragi Flour are not in the
-  //     catalogue; its Dehydrated Mango is superseded by the fruits sheet.
-  //   - The Powders, Flakes and Dehydrated Fruits sheets: every card, one per
-  //     product in those categories, each named on its card.
+  //   - The Featured Products sheet: red chilli powder. Its Dehydrated Banana
+  //     and Ragi Flour are not in the catalogue; its Dehydrated Mango, Mango
+  //     Pickle and Gongura Pickle are superseded by the category sheets.
+  //   - The Powders, Flakes, Dehydrated Fruits and Pickles sheets: every
+  //     card, one per product in those categories, each named on its card.
+  //     The pickle jars' labels are part of the generated image, not real
+  //     packaging.
   // Alt text describes what each photograph shows, and nothing more.
   products: Object.fromEntries(
     [
@@ -111,9 +113,14 @@ export const imagery: {
       ["dehydrated-fruits-pineapple", "Wooden bowl of dried pineapple rings with a fresh pineapple"],
       ["dehydrated-fruits-sapota", "Wooden bowl of dried sapota slices with fresh sapota"],
       ["dehydrated-fruits-honey", "Jar of honey with a bowl of honey, a honey dipper, honeycomb and white flowers"],
-      ["mango-pickle", "Jar of Mango Pickle with fresh mango and dried chillies"],
+      ["tomato-pickle", "Jar of Tomato Pickle and a bowl of it, with fresh tomatoes"],
+      ["gongura-pickle", "Jar of Gongura Pickle and a bowl of it, with gongura leaves"],
+      ["garlic-pickle", "Jar of Garlic Pickle and a bowl of it, with garlic bulbs and cloves"],
+      ["mango-pickle", "Jar of Mango Pickle and a bowl of it, with green mangoes"],
+      ["chicken-pickle", "Jar of Chicken Pickle and a bowl of it, with raw chicken, red chillies and peppercorns"],
+      ["prawns-pickle", "Jar of Prawns Pickle and a bowl of it, with prawns, red chillies and peppercorns"],
+      ["mutton-pickle", "Jar of Mutton Pickle and a bowl of it, with raw mutton, red chillies and peppercorns"],
       ["red-chilli-powder", "Wooden bowl of red chilli powder with dried red chillies"],
-      ["gongura-pickle", "Jar of Gongura Pickle with gongura leaves and red chillies"],
       ["moringa-powder", "Wooden bowl of moringa powder with moringa leaves"],
       ["banana-powder", "Wooden bowl of banana powder with bananas and banana slices"],
       ["lemon-powder", "Wooden bowl of lemon powder with lemons and lemon slices"],

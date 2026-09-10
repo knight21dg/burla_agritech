@@ -31,13 +31,12 @@ os.makedirs(OUT, exist_ok=True)
 TOP, BOTTOM = 94, 686
 # Named for the catalogue's product slugs. The sheet's Dehydrated Banana
 # (x 728-1078) and Ragi Flour (x 1444-1793) are not in the catalogue of
-# 2026-09-10 and are not extracted. Its Dehydrated Mango (x 14-363) is
-# superseded by the Dehydrated Fruits sheet's Mango card, so the six fruits
-# share one set; see extract_product_sheets.py.
+# 2026-09-10 and are not extracted. Its Dehydrated Mango (x 14-363), Mango
+# Pickle (x 376-715) and Gongura Pickle (x 1805-2157) are superseded by the
+# Dehydrated Fruits and Pickles sheets, so each category shares one set; see
+# extract_product_sheets.py.
 CARDS = [
-    ("mango-pickle", (376, 715)),
     ("red-chilli-powder", (1090, 1431)),
-    ("gongura-pickle", (1805, 2157)),
 ]
 
 TILE = 600      # square, matching the product card's image area, ~2x its size
