@@ -11,6 +11,7 @@ import {
   categoryBySlug,
   productHref,
   productsByCategory,
+  productsByType,
   typesOf,
 } from "@/data/catalog";
 import { site } from "@/lib/site";
@@ -62,6 +63,18 @@ export default async function CategoryPage({
   const list = productsByCategory(c.slug);
   const types = typesOf(c.slug);
   const others = categories.filter((x) => x.slug !== c.slug);
+
+  // Where the types genuinely group the products — Veg and Non-Veg Pickles,
+  // Powders and Flakes — the list is split under one heading per type, as
+  // the client's sheets present them. Where every type holds a single product
+  // (Millet Powders), headings would only repeat the product names, so the
+  // list stays flat. So does any category with a product outside its types.
+  const groups = types
+    .map((type) => ({ type, items: productsByType(c.slug, type.slug) }))
+    .filter((group) => group.items.length > 0);
+  const grouped =
+    groups.some((group) => group.items.length > 1) &&
+    list.every((p) => p.typeSlug);
 
   const itemListJsonLd = {
     "@context": "https://schema.org",
@@ -120,6 +133,31 @@ export default async function CategoryPage({
                   Contact us
                 </ButtonLink>
               </div>
+            </div>
+          ) : grouped ? (
+            <div className="mt-8 space-y-14">
+              {groups.map(({ type, items }) => (
+                <section key={type.slug} aria-labelledby={`type-${type.slug}`}>
+                  <div className="flex items-baseline justify-between gap-4">
+                    <h3 id={`type-${type.slug}`} className="t-h3">
+                      <Link
+                        href={`/products/${c.slug}/${type.slug}`}
+                        className="transition-colors hover:text-green-700"
+                      >
+                        {type.name}
+                      </Link>
+                    </h3>
+                    <p className="text-[0.875rem] text-ink-3">
+                      {items.length} {items.length === 1 ? "product" : "products"}
+                    </p>
+                  </div>
+                  <div className="mt-5 grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3 lg:grid-cols-4">
+                    {items.map((p) => (
+                      <ProductCard key={p.id} product={p} />
+                    ))}
+                  </div>
+                </section>
+              ))}
             </div>
           ) : (
             <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3 lg:grid-cols-4">
