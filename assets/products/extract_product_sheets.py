@@ -7,6 +7,7 @@ Input   assets/products/powders-supplied.png       13 cards (2092 x 752)
         assets/products/flakes-supplied.png        7 cards (2092 x 752)
         assets/products/fruits-supplied.png        6 cards (1774 x 887)
         assets/products/pickles-supplied.png       7 cards (1536 x 1024)
+        assets/products/dal-powders-supplied.png   4 cards (2092 x 752)
 Output  apps/web/public/images/products/{slug}.webp  one square image each
 
 Same method as extract_featured.py: card edges measured from the sheet's own
@@ -88,11 +89,21 @@ PICKLES = [
     ("mutton-pickle", (1024, 1518), P_ROW_2),
 ]
 
+# Dal Powders sheet: a "Dal Powders" band over one row of four cards.
+DAL_ROW = (110, 723)
+DAL_POWDERS = [
+    ("kandi-powder", (20, 521), DAL_ROW),
+    ("chana-powder", (537, 1038), DAL_ROW),
+    ("avise-powder", (1054, 1555), DAL_ROW),
+    ("sesame-seed-nuvvulu", (1571, 2072), DAL_ROW),  # sheet: "Sesame Seed / Nuvvulu"
+]
+
 SHEETS = [
     ("powders-supplied.png", POWDERS),
     ("flakes-supplied.png", FLAKES),
     ("fruits-supplied.png", FRUITS),
     ("pickles-supplied.png", PICKLES),
+    ("dal-powders-supplied.png", DAL_POWDERS),
 ]
 
 TILE = 600      # square, matching the product card's image area, ~2x its size

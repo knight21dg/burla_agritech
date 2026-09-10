@@ -95,13 +95,14 @@ export const imagery: {
       { src: `/images/categories/${slug}.webp`, alt: alt!, width: 480, height: 360 },
     ]),
   ),
-  // Supplied by the client, 2026-09-10, as five sheets; each photo cut out
+  // Supplied by the client, 2026-09-10, as six sheets; each photo cut out
   // and re-centred at one scale (assets/products/).
   //   - The Featured Products sheet: red chilli powder. Its Dehydrated Banana
   //     and Ragi Flour are not in the catalogue; its Dehydrated Mango, Mango
   //     Pickle and Gongura Pickle are superseded by the category sheets.
-  //   - The Powders, Flakes, Dehydrated Fruits and Pickles sheets: every
-  //     card, one per product in those categories, each named on its card.
+  //   - The Powders, Flakes, Dehydrated Fruits, Pickles and Dal Powders
+  //     sheets: every card, one per product in those categories, each named
+  //     on its card.
   //     The pickle jars' labels are part of the generated image, not real
   //     packaging.
   // Alt text describes what each photograph shows, and nothing more.
@@ -120,6 +121,10 @@ export const imagery: {
       ["chicken-pickle", "Jar of Chicken Pickle and a bowl of it, with raw chicken, red chillies and peppercorns"],
       ["prawns-pickle", "Jar of Prawns Pickle and a bowl of it, with prawns, red chillies and peppercorns"],
       ["mutton-pickle", "Jar of Mutton Pickle and a bowl of it, with raw mutton, red chillies and peppercorns"],
+      ["kandi-powder", "Wooden bowl of kandi powder with a sack of split yellow lentils"],
+      ["chana-powder", "Wooden bowl of chana powder with a sack of chickpeas"],
+      ["avise-powder", "Wooden bowl of avise powder with a scoop of brown seeds and blue flowers"],
+      ["sesame-seed-nuvvulu", "Wooden bowl of powder with a bowl and a scoop of sesame seeds"],
       ["red-chilli-powder", "Wooden bowl of red chilli powder with dried red chillies"],
       ["moringa-powder", "Wooden bowl of moringa powder with moringa leaves"],
       ["banana-powder", "Wooden bowl of banana powder with bananas and banana slices"],
