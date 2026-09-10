@@ -95,16 +95,22 @@ export const imagery: {
       { src: `/images/categories/${slug}.webp`, alt: alt!, width: 480, height: 360 },
     ]),
   ),
-  // Supplied by the client, 2026-09-10, as three sheets; each photo cut out
+  // Supplied by the client, 2026-09-10, as four sheets; each photo cut out
   // and re-centred at one scale (assets/products/).
-  //   - The Featured Products sheet: only the four that picture a product in
-  //     the catalogue are used; its Dehydrated Banana and Ragi Flour are not.
-  //   - The Powders and Flakes sheets: all thirteen and all seven, one per
-  //     product under Dehydrated Powders & Flakes, each named on its card.
+  //   - The Featured Products sheet: mango pickle, red chilli powder and
+  //     gongura pickle. Its Dehydrated Banana and Ragi Flour are not in the
+  //     catalogue; its Dehydrated Mango is superseded by the fruits sheet.
+  //   - The Powders, Flakes and Dehydrated Fruits sheets: every card, one per
+  //     product in those categories, each named on its card.
   // Alt text describes what each photograph shows, and nothing more.
   products: Object.fromEntries(
     [
-      ["dehydrated-fruits-mango", "Dehydrated Mango pouch with dried mango slices and fresh mangoes"],
+      ["dehydrated-fruits-apple", "Wooden bowl of dried apple slices with fresh apples"],
+      ["dehydrated-fruits-papaya", "Wooden bowl of dried papaya strips with a halved papaya"],
+      ["dehydrated-fruits-mango", "Wooden bowl of dried mango slices with a fresh mango, cut and whole"],
+      ["dehydrated-fruits-pineapple", "Wooden bowl of dried pineapple rings with a fresh pineapple"],
+      ["dehydrated-fruits-sapota", "Wooden bowl of dried sapota slices with fresh sapota"],
+      ["dehydrated-fruits-honey", "Jar of honey with a bowl of honey, a honey dipper, honeycomb and white flowers"],
       ["mango-pickle", "Jar of Mango Pickle with fresh mango and dried chillies"],
       ["red-chilli-powder", "Wooden bowl of red chilli powder with dried red chillies"],
       ["gongura-pickle", "Jar of Gongura Pickle with gongura leaves and red chillies"],

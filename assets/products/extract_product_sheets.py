@@ -1,10 +1,11 @@
 """
-Cut the Powders and Flakes photographs out of the client's two sheets.
+Cut the product photographs out of the client's per-category sheets.
 
-    python assets/products/extract_powders_flakes.py
+    python assets/products/extract_product_sheets.py
 
 Input   assets/products/powders-supplied.png       13 cards (2092 x 752)
         assets/products/flakes-supplied.png        7 cards (2092 x 752)
+        assets/products/fruits-supplied.png        6 cards (1774 x 887)
 Output  apps/web/public/images/products/{slug}.webp  one square image each
 
 Same method as extract_featured.py: card edges measured from the sheet's own
@@ -58,7 +59,24 @@ FLAKES = [
     ("beetroot-flakes", (1121, 1638), F_ROW_2),
 ]
 
-SHEETS = [("powders-supplied.png", POWDERS), ("flakes-supplied.png", FLAKES)]
+# Dehydrated Fruits sheet: three cards in each row. Its Mango card replaces
+# the Featured sheet's (see extract_featured.py), so the six fruits match.
+D_ROW_1 = (12, 436)
+D_ROW_2 = (452, 874)
+FRUITS = [
+    ("dehydrated-fruits-apple", (11, 584), D_ROW_1),
+    ("dehydrated-fruits-papaya", (601, 1173), D_ROW_1),
+    ("dehydrated-fruits-mango", (1190, 1762), D_ROW_1),
+    ("dehydrated-fruits-pineapple", (11, 584), D_ROW_2),
+    ("dehydrated-fruits-sapota", (601, 1173), D_ROW_2),
+    ("dehydrated-fruits-honey", (1190, 1762), D_ROW_2),  # sheet: "Honey (Confirmation Required)"
+]
+
+SHEETS = [
+    ("powders-supplied.png", POWDERS),
+    ("flakes-supplied.png", FLAKES),
+    ("fruits-supplied.png", FRUITS),
+]
 
 TILE = 600      # square, matching the product card's image area, ~2x its size
 FILL = 0.9
@@ -107,6 +125,12 @@ for sheet, (slug, (x0, x1), (top, bottom)) in CARDS:
             if gap >= LABEL_GAP:
                 break
         else:
+            # A narrower gap still ends the label if what sits above it is
+            # coloured: the Honey card's photo is only 11 rows above its
+            # name — the same spacing as ABC's two label lines, which are
+            # text, and colourless.
+            if gap >= 4 and coloured[max(0, y - 7):y + 1].any():
+                break
             gap, text_top = 0, y
     photo = card[: text_top - 8]
 
