@@ -193,13 +193,59 @@ for L in LEAVES:
 
 Image.fromarray(clean).save(CLEAN, optimize=True)
 
-# The hero as served: pre-encoded responsive WebP, so the most important image
-# on the site never depends on on-the-fly optimisation.
-for width in (768, 1152, 1536):
-    img = Image.fromarray(clean)
-    if width != W:
-        img = img.resize((width, round(H * width / W)), Image.LANCZOS)
-    img.save(os.path.join(PUBLIC, f"hero-{width}.webp"), "WEBP", quality=86, method=6)
+# The hero as served: a WIDE canvas, pre-encoded.
+#
+# The supplied image is 3:2; screens are wider (a 1920px desktop band under
+# the header is about 2.6:1). Stretching distorts it and a plain cover-crop
+# cuts the logo or the products. So the canvas is widened instead:
+#
+#   - rows CROP_TOP..CROP_BOTTOM only: the content spans rows 107-916, and
+#     the rest is empty white margin, so trimming it lets the content itself
+#     render larger in a short band;
+#   - PAD_X of matched backdrop added on each side, so the hero can fill any
+#     width edge to edge with no seam. The backdrop at both edges is a
+#     uniform near-white (the edge leaves have already been removed), so each
+#     row is extended with a smoothed median of its outermost columns, and the
+#     last FEATHER columns of the original are blended toward it.
+#
+# The page shows this canvas with object-fit: cover. The leaf sprites keep
+# source-image coordinates; the page maps them with PAD_X and CROP_TOP.
+CROP_TOP, CROP_BOTTOM, PAD_X, EDGE, FEATHER = 70, 950, 768, 10, 24
+band = clean[CROP_TOP:CROP_BOTTOM].astype(np.float32)
+bh = band.shape[0]
+left_ext = ndimage.gaussian_filter1d(np.median(band[:, :EDGE], axis=1), 6, axis=0)
+right_ext = ndimage.gaussian_filter1d(np.median(band[:, -EDGE:], axis=1), 6, axis=0)
+ramp = np.linspace(1.0, 0.0, FEATHER)[None, :, None]   # 1 at the edge, 0 inward
+band[:, :FEATHER] = band[:, :FEATHER] * (1 - ramp) + left_ext[:, None, :] * ramp
+band[:, -FEATHER:] = band[:, -FEATHER:] * (1 - ramp[:, ::-1]) + right_ext[:, None, :] * ramp[:, ::-1]
+# Veins in the marble at the very edge would otherwise run out across the
+# whole margin as thin horizontal streaks. Moving away from the seam, each
+# extension column eases from the lightly smoothed edge toward a heavily
+# smoothed one, so the floor dissolves into a soft gradient.
+def extension(edge_rows, flip):
+    near = edge_rows
+    far = ndimage.gaussian_filter1d(edge_rows, 28, axis=0)
+    k = np.minimum(np.arange(PAD_X) / 240.0, 1.0)[None, :, None]
+    if flip:
+        k = k[:, ::-1]
+    return near[:, None, :] * (1 - k) + far[:, None, :] * k
+
+wide = np.concatenate([
+    extension(left_ext, flip=True),
+    band,
+    extension(right_ext, flip=False),
+], axis=1)
+wide = np.clip(np.round(wide), 0, 255).astype(np.uint8)
+for old_name in ("hero-768.webp", "hero-1152.webp", "hero-1536.webp"):
+    stale = os.path.join(PUBLIC, old_name)
+    if os.path.exists(stale):
+        os.remove(stale)
+for width in (1536, 3072):
+    img = Image.fromarray(wide)
+    if width != wide.shape[1]:
+        img = img.resize((width, round(bh * width / wide.shape[1])), Image.LANCZOS)
+    img.save(os.path.join(PUBLIC, f"hero-wide-{width}.webp"), "WEBP", quality=86, method=6)
+print("wide canvas", wide.shape[1], "x", wide.shape[0])
 
 diff = np.abs(recon - f)
 mse = float((diff ** 2).mean())
