@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
+import { CONTENTS_FOR_CATEGORY } from "@/components/art/Bowl";
 import {
   availabilityLabel,
   defaultVariant,
@@ -10,8 +11,8 @@ import { formatPrice } from "@/lib/utils";
 import { ProductImage } from "@/components/ui/ProductImage";
 
 /**
- * Product card, following the client's mockup: image, name, the pack sizes
- * listed together, price, and an add-to-bag button.
+ * Product card, following the client's final mockup: image, name, every pack
+ * size on one line, the price, and a green cart icon at the right.
  *
  * ## Why the card is not simply wrapped in a link
  *
@@ -24,9 +25,11 @@ import { ProductImage } from "@/components/ui/ProductImage";
  * sibling raised above it. One tab stop for the product, one for the button,
  * and no nesting.
  *
- * No star rating: the mockups show one, but no reviews exist. Inventing social
- * proof is both a policy violation and a consumer-law problem, so it is left
- * out until there is something real to show.
+ * The cart icon is drawn bare, as in the mockup, but its hit area is still a
+ * full 44px square.
+ *
+ * No star rating: no reviews exist, and inventing social proof is both a
+ * policy violation and a consumer-law problem.
  */
 export function ProductCard({ product }: { product: Product }) {
   const variant = defaultVariant(product);
@@ -34,11 +37,13 @@ export function ProductCard({ product }: { product: Product }) {
   const sizes = product.variants.map((v) => v.label).join(" | ");
 
   return (
-    <article className="group relative flex h-full flex-col rounded-md border border-line bg-white transition-shadow duration-200 hover:shadow-[0_2px_14px_-6px_rgba(23,23,23,0.25)]">
-      <div className="relative overflow-hidden rounded-t-md">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-line bg-white transition duration-300 ease-out hover:-translate-y-0.5 hover:border-green-700/30 hover:shadow-[0_14px_30px_-16px_rgba(15,74,44,0.38)]">
+      <div className="relative overflow-hidden">
         <ProductImage
           name={product.name}
-          className="transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+          tone={product.tone}
+          contents={CONTENTS_FOR_CATEGORY[product.categorySlug] ?? "powder"}
+          className="transition-transform duration-500 ease-out group-hover:scale-[1.05]"
         />
         {soldOut && (
           <span className="absolute inset-x-0 bottom-0 bg-white/90 py-1.5 text-center text-[0.75rem] font-semibold text-ink-2">
@@ -47,8 +52,8 @@ export function ProductCard({ product }: { product: Product }) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-3.5">
-        <h3 className="text-[0.9375rem] font-semibold leading-snug text-ink">
+      <div className="flex flex-1 flex-col px-3.5 pb-2 pt-2.5">
+        <h3 className="text-[0.875rem] font-semibold leading-snug text-ink">
           <Link
             href={productHref(product)}
             className="after:absolute after:inset-0 after:content-[''] hover:text-green-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
@@ -57,10 +62,10 @@ export function ProductCard({ product }: { product: Product }) {
           </Link>
         </h3>
 
-        <p className="mt-1 text-[0.8125rem] text-ink-3">{sizes}</p>
+        <p className="mt-0.5 text-[0.75rem] text-ink-3">{sizes}</p>
 
-        <div className="mt-auto flex items-end justify-between gap-2 pt-3">
-          <p className="text-[1.0625rem] font-semibold tabular-nums text-ink">
+        <div className="mt-auto flex items-center justify-between gap-2 pt-1.5">
+          <p className="text-[1rem] font-bold tabular-nums text-ink">
             {formatPrice(variant.priceMinor)}
           </p>
           <button
@@ -68,9 +73,9 @@ export function ProductCard({ product }: { product: Product }) {
             disabled={soldOut}
             aria-label={`Add ${product.name} to bag`}
             // Raised above the stretched link so it stays independently clickable
-            className="relative z-10 grid size-11 shrink-0 place-items-center rounded-md border border-line text-green-700 transition-colors hover:border-green-700 hover:bg-green-50 disabled:opacity-35 disabled:hover:border-line disabled:hover:bg-transparent"
+            className="relative z-10 -mr-2 grid size-11 shrink-0 place-items-center rounded-full text-green-700 transition-colors hover:bg-green-50 disabled:opacity-35 disabled:hover:bg-transparent"
           >
-            <ShoppingCart className="size-[1.05rem]" aria-hidden="true" />
+            <ShoppingCart className="size-[1.2rem]" strokeWidth={2} aria-hidden="true" />
           </button>
         </div>
       </div>

@@ -1,58 +1,52 @@
+import Image from "next/image";
 import Link from "next/link";
+import { CONTENTS_FOR_CATEGORY } from "@/components/art/Bowl";
 import { ProductImage } from "@/components/ui/ProductImage";
-import { productsByCategory, type Category, type Tone } from "@/data/catalog";
-import { cn } from "@/lib/utils";
+import type { Category } from "@/data/catalog";
+import { imagery } from "@/lib/imagery";
 
 /**
- * Category tile — DESIGN-SYSTEM §7.3.
+ * Category tile, as in the client's final mockup: a white card, the category's
+ * photograph filling the top, its name centred beneath in two short lines.
  *
- * Each category carries a light produce-derived tint behind its image, which
- * is where the site's colour lives. Product grids stay white; a coloured
- * ground behind a grid of food photographs fights the products.
+ * White rather than tinted. The previous pass put each category on a produce
+ * tint; the mockup keeps the tiles white and lets the photograph carry the
+ * colour, which also keeps ten tiles in a row from turning into a paint chart.
  *
- * The tints are light enough that --color-ink stays above 12:1 on them, so a
- * tile label is never the weak link. Once real photography lands the tint sits
- * behind the image as a frame rather than filling the tile.
+ * Until photography arrives the image is the illustrated bowl for that
+ * category. Set `imagery.categories[slug]` and the photograph takes its place.
  */
-const TINTS: Record<Tone, string> = {
-  turmeric: "bg-tint-turmeric",
-  mango: "bg-tint-mango",
-  chilli: "bg-tint-chilli",
-  leaf: "bg-tint-leaf",
-  grain: "bg-tint-grain",
-  berry: "bg-tint-berry",
-  earth: "bg-tint-earth",
-  cream: "bg-tint-cream",
-};
-
 export function CategoryCard({ category }: { category: Category }) {
-  const count = productsByCategory(category.slug).length;
+  const photo = imagery.categories[category.slug];
 
   return (
     <Link
       href={`/products/${category.slug}`}
-      className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+      className="group flex h-full flex-col overflow-hidden rounded-lg border border-line bg-white shadow-[0_1px_2px_rgba(23,23,23,0.04)] transition duration-300 ease-out hover:-translate-y-1 hover:border-green-700/40 hover:shadow-[0_12px_28px_-14px_rgba(15,74,44,0.35)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
     >
-      <div
-        className={cn(
-          "overflow-hidden rounded-md border border-line transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-green-700",
-          TINTS[category.tone],
+      <div className="relative overflow-hidden">
+        {photo ? (
+          <Image
+            src={photo.src}
+            alt=""
+            width={photo.width}
+            height={photo.height}
+            sizes="(min-width: 1024px) 120px, 36vw"
+            className="aspect-4/3 w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.05]"
+          />
+        ) : (
+          <ProductImage
+            name={category.name}
+            ratio="landscape"
+            tone={category.tone}
+            contents={CONTENTS_FOR_CATEGORY[category.slug] ?? "powder"}
+            className="transition-transform duration-500 ease-out group-hover:scale-[1.05]"
+          />
         )}
-      >
-        <ProductImage
-          name={category.name}
-          showLabel={false}
-          className="bg-transparent"
-        />
       </div>
-      <h3 className="mt-2.5 text-center text-[0.8125rem] font-medium leading-snug text-ink transition-colors group-hover:text-green-700">
+      <h3 className="flex flex-1 items-center justify-center px-2 pb-3 pt-1 text-center text-[0.78rem] font-medium leading-snug text-ink transition-colors group-hover:text-green-700">
         {category.name}
       </h3>
-      {count > 0 && (
-        <p className="mt-0.5 text-center text-[0.75rem] text-ink-3">
-          {count} {count === 1 ? "product" : "products"}
-        </p>
-      )}
     </Link>
   );
 }

@@ -1,48 +1,80 @@
 import { ImageIcon } from "lucide-react";
+import { Bowl, type Contents } from "@/components/art/Bowl";
+import { seedFrom } from "@/components/art/random";
 import { cn } from "@/lib/utils";
+import type { Tone } from "@/types/catalog";
 
 /**
  * Stand-in for a real photograph.
  *
- * Deliberately plain. The previous version drew a stand-up pouch with a leaf
- * mark on it, which was **invented packaging** — the brief rules that out
- * alongside stock and AI-generated imagery, and it risks implying a product
- * looks a way we have not verified.
+ * Two forms:
  *
- * So this is a light grey panel with a camera glyph and the product name. It
- * does not pretend to be a photograph. An obvious gap is honest; a convincing
- * fake is not.
+ *  - **Illustrated**, when the caller says what the thing is made of (`tone`
+ *    and `contents`): a drawn wooden bowl of the raw ingredient, on white, as
+ *    the client's mockup sets its product tiles on white. It suggests the
+ *    category without depicting a product, a package, a label or a logo —
+ *    the brief rules out inventing what Burla's packaging looks like.
+ *  - **Plain**, otherwise: a light panel with a camera glyph and the name.
  *
- * Replaced by `<Image>` as soon as real photography lands
- * (`docs/IMAGE-ASSET-REQUIREMENTS.md`).
+ * Either way it announces itself to assistive technology as a pending
+ * photograph, not as a picture of the product. Replaced by `<Image>` when real
+ * photography lands (`docs/IMAGE-ASSET-REQUIREMENTS.md`, `lib/imagery.ts`).
  */
 export function ProductImage({
   name,
   className,
   ratio = "square",
   showLabel = true,
+  tone,
+  contents,
 }: {
-  /** Used for the visible caption, so the tile still identifies the product. */
+  /** Used for the caption and the accessible label. */
   name?: string;
   className?: string;
   ratio?: "square" | "landscape" | "portrait";
   showLabel?: boolean;
+  tone?: Tone;
+  contents?: Contents;
 }) {
+  const label = name ? `${name} — photograph pending` : "Photograph pending";
+  const aspect = {
+    square: "aspect-square",
+    landscape: "aspect-4/3",
+    portrait: "aspect-4/5",
+  }[ratio];
+
+  if (tone && contents) {
+    const key = name ?? `${tone}-${contents}`;
+    return (
+      <div
+        role="img"
+        aria-label={label}
+        className={cn(
+          "relative flex items-center justify-center overflow-hidden bg-white",
+          aspect,
+          className,
+        )}
+      >
+        <Bowl
+          uid={`pi-${seedFrom(key).toString(36)}`}
+          contents={contents}
+          tone={tone}
+          seed={seedFrom(key)}
+          className="h-auto w-[92%]"
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(
         "relative flex items-center justify-center overflow-hidden bg-surface-2",
-        {
-          square: "aspect-square",
-          landscape: "aspect-4/3",
-          portrait: "aspect-4/5",
-        }[ratio],
+        aspect,
         className,
       )}
       role="img"
-      aria-label={
-        name ? `${name} — photograph pending` : "Photograph pending"
-      }
+      aria-label={label}
     >
       <div className="flex flex-col items-center gap-2 px-4 text-center">
         <ImageIcon

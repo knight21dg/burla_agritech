@@ -78,7 +78,7 @@ export function ProductCarousel({
             onClick={() => scrollBy(-1)}
             disabled={atStart}
             aria-label="Scroll products left"
-            className="absolute -left-4 top-1/2 z-10 hidden size-9 -translate-y-1/2 place-items-center rounded-full border border-line bg-white text-ink shadow-[0_2px_10px_-3px_rgba(23,23,23,0.3)] transition-opacity hover:border-green-700 hover:text-green-700 disabled:pointer-events-none disabled:opacity-0 lg:grid"
+            className="absolute -left-5 top-[38%] z-10 hidden size-10 -translate-y-1/2 place-items-center rounded-full border border-line bg-white text-ink shadow-[0_6px_18px_-6px_rgba(23,23,23,0.35)] transition hover:scale-105 hover:border-green-700 hover:text-green-700 disabled:pointer-events-none disabled:opacity-0 lg:grid"
           >
             <ChevronLeft className="size-4" aria-hidden="true" />
           </button>
@@ -87,7 +87,7 @@ export function ProductCarousel({
             onClick={() => scrollBy(1)}
             disabled={atEnd}
             aria-label="Scroll products right"
-            className="absolute -right-4 top-1/2 z-10 hidden size-9 -translate-y-1/2 place-items-center rounded-full border border-line bg-white text-ink shadow-[0_2px_10px_-3px_rgba(23,23,23,0.3)] transition-opacity hover:border-green-700 hover:text-green-700 disabled:pointer-events-none disabled:opacity-0 lg:grid"
+            className="absolute -right-5 top-[38%] z-10 hidden size-10 -translate-y-1/2 place-items-center rounded-full border border-line bg-white text-ink shadow-[0_6px_18px_-6px_rgba(23,23,23,0.35)] transition hover:scale-105 hover:border-green-700 hover:text-green-700 disabled:pointer-events-none disabled:opacity-0 lg:grid"
           >
             <ChevronRight className="size-4" aria-hidden="true" />
           </button>
@@ -104,8 +104,10 @@ export function ProductCarousel({
         {products.map((p) => (
           <li
             key={p.id}
-            // Widths leave a partial next card visible at every breakpoint
-            className="rail-item flex w-[46vw] max-w-[14rem] sm:w-[32vw] md:w-[24vw] lg:w-[15.5rem]"
+            // A partial next card below lg, so it is obvious more exist;
+            // exactly six across from lg up, as in the mockup, with the
+            // arrows doing the work of saying there is more.
+            className="rail-item flex w-[46vw] max-w-[14rem] sm:w-[31vw] md:w-[23vw] lg:w-[calc((100%-5rem)/6)] lg:max-w-none"
           >
             <div className="flex w-full"><ProductCard product={p} /></div>
           </li>
