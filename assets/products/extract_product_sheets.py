@@ -9,6 +9,7 @@ Input   assets/products/powders-supplied.png       13 cards (2092 x 752)
         assets/products/pickles-supplied.png       7 cards (1536 x 1024)
         assets/products/dal-powders-supplied.png   4 cards (2092 x 752)
         assets/products/crisps-dry-fruits-supplied.png  8 cards (1536 x 1024)
+        assets/products/millet-tea-coffee-supplied.png  9 cards (1536 x 1024)
 Output  apps/web/public/images/products/{slug}.webp  one square image each
 
 Same method as extract_featured.py: card edges measured from the sheet's own
@@ -115,6 +116,24 @@ CRISPS_DRY_FRUITS = [
     ("dates", (1149, 1520), N_ROW),
 ]
 
+# Millet and Tea / Coffee sheet: five cards under "Millet Powders", four
+# under "Tea / Coffee Powders". Its cards add "Powder" and "Tea Powder" to
+# the names ("Foxtail / Korralu Powder", "Herbal Tea Powder"); the
+# catalogue's names are kept, and the files follow its slugs.
+M_ROW = (81, 491)       # Millet Powders
+T_ROW = (581, 969)      # Tea / Coffee
+MILLET_TEA_COFFEE = [
+    ("foxtail-korralu", (15, 313), M_ROW),
+    ("little-samalu", (320, 617), M_ROW),
+    ("kodo-arikalu", (623, 918), M_ROW),
+    ("barnyard-udalu", (924, 1219), M_ROW),
+    ("andukorralu", (1225, 1521), M_ROW),
+    ("tea-coffee-herbal", (15, 385), T_ROW),
+    ("tea-coffee-masala", (393, 764), T_ROW),
+    ("tea-coffee-lemon", (772, 1146), T_ROW),
+    ("tea-coffee-green", (1153, 1521), T_ROW),
+]
+
 SHEETS = [
     ("powders-supplied.png", POWDERS),
     ("flakes-supplied.png", FLAKES),
@@ -122,6 +141,7 @@ SHEETS = [
     ("pickles-supplied.png", PICKLES),
     ("dal-powders-supplied.png", DAL_POWDERS),
     ("crisps-dry-fruits-supplied.png", CRISPS_DRY_FRUITS),
+    ("millet-tea-coffee-supplied.png", MILLET_TEA_COFFEE),
 ]
 
 TILE = 600      # square, matching the product card's image area, ~2x its size
@@ -175,11 +195,15 @@ for sheet, (slug, (x0, x1), (top, bottom)) in CARDS:
         while y < h and not blank[y]:
             y += 1
         blocks.append((start, y - 1))
+    # "Colour" for a block is vivid colour. The Millet sheet prints its names
+    # in dark navy, whose anti-aliased edges reach a saturation of 54 — over
+    # the per-row threshold of 50 — while produce runs to 140 and beyond.
+    vivid = (ink & (sat > 80)).sum(axis=1)
     last_line = max(yy for yy in range(h) if textlike[yy])
     label = [b for b in blocks if b[0] <= last_line]
     text_top = label[-1][0]
     for above, below in zip(label[-2::-1], label[:0:-1]):
-        if below[0] - above[1] - 1 >= LABEL_GAP or coloured[above[0]:above[1] + 1].any():
+        if below[0] - above[1] - 1 >= LABEL_GAP or vivid[above[0]:above[1] + 1].any():
             break
         text_top = above[0]
     photo = card[: text_top - 8]

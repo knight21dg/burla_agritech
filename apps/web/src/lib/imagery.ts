@@ -95,14 +95,17 @@ export const imagery: {
       { src: `/images/categories/${slug}.webp`, alt: alt!, width: 480, height: 360 },
     ]),
   ),
-  // Supplied by the client, 2026-09-10, as seven sheets; each photo cut out
+  // Supplied by the client, 2026-09-10, as eight sheets; each photo cut out
   // and re-centred at one scale (assets/products/).
   //   - The Featured Products sheet: red chilli powder. Its Dehydrated Banana
   //     and Ragi Flour are not in the catalogue; its Dehydrated Mango, Mango
   //     Pickle and Gongura Pickle are superseded by the category sheets.
-  //   - The Powders, Flakes, Dehydrated Fruits, Pickles, Dal Powders, and
-  //     Crisps and Dry Fruits sheets: every card, one per product in those
-  //     categories, each named on its card.
+  //   - The Powders, Flakes, Dehydrated Fruits, Pickles, Dal Powders, Crisps
+  //     and Dry Fruits, and Millet and Tea / Coffee sheets: every card, one
+  //     per product in those categories, each named on its card.
+  //     The last sheet names its cards "Foxtail / Korralu Powder", "Herbal
+  //     Tea Powder" and so on; the catalogue's names and TODO notes stand
+  //     until the client confirms (see data/catalog.ts).
   //     The pickle jars' labels are part of the generated image, not real
   //     packaging.
   // Alt text describes what each photograph shows, and nothing more.
@@ -133,6 +136,15 @@ export const imagery: {
       ["pista", "Wooden bowl of pistachios in their shells"],
       ["cashews", "Wooden bowl of cashews with green leaves"],
       ["dates", "Wooden bowl of dates with green leaves"],
+      ["foxtail-korralu", "Wooden bowl of Foxtail / Korralu powder with millet stalks and a scoop of grain"],
+      ["little-samalu", "Wooden bowl of Little / Samalu powder with millet stalks and a scoop of grain"],
+      ["kodo-arikalu", "Wooden bowl of Kodo / Arikalu powder with millet stalks and a scoop of grain"],
+      ["barnyard-udalu", "Wooden bowl of Barnyard / Udalu powder with millet stalks and a scoop of grain"],
+      ["andukorralu", "Wooden bowl of Andukorralu powder with millet stalks and a scoop of grain"],
+      ["tea-coffee-herbal", "Wooden bowl of green-brown powder with ginger, lemongrass, fresh leaves and loose dried leaves"],
+      ["tea-coffee-masala", "Wooden bowl of brown powder with cinnamon, cardamom, cloves and ginger"],
+      ["tea-coffee-lemon", "Wooden bowl of pale brown powder with lemons and loose dried leaves"],
+      ["tea-coffee-green", "Wooden bowl of green powder with fresh leaves and loose dried leaves"],
       ["red-chilli-powder", "Wooden bowl of red chilli powder with dried red chillies"],
       ["moringa-powder", "Wooden bowl of moringa powder with moringa leaves"],
       ["banana-powder", "Wooden bowl of banana powder with bananas and banana slices"],
