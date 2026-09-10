@@ -1,16 +1,34 @@
 /**
- * DEMO CATALOGUE — SAMPLE DATA ONLY.
+ * BURLA PRODUCT CATALOGUE — as supplied by the client, 2026-09-10.
  *
- * ⚠️  Every product name, price, weight and description below is a
- *     PLACEHOLDER for demonstration purposes. Nothing here is client-supplied.
- *     No ingredients, shelf life, origin, nutrition or certification data is
- *     included, because inventing those for a food product is not acceptable
- *     (see docs/CONTENT-INVENTORY.md §3 and docs/OPEN-QUESTIONS.md OQ-016).
+ * Every category, type and product name below is exactly as written in the
+ * client's catalogue. Nothing has been renamed, corrected or added.
  *
- * This module's shape mirrors the production schema in docs/DATABASE.md so the
- * swap to real database queries is a one-file change.
+ * What the catalogue does NOT provide is left empty rather than invented:
+ *   - prices and pack sizes      → `variants: []`; the UI shows "to be confirmed"
+ *   - descriptions               → `""`; the UI shows a placeholder
+ *   - images                     → only the client-supplied photographs in
+ *                                  `lib/imagery.ts`; otherwise the illustrated
+ *                                  placeholder
+ *   - ingredients, shelf life, certifications and every other legal field
+ *                                → rendered as "To be confirmed" on the product page
+ *
+ * Items the client marked "confirmation required", and items whose meaning is
+ * ambiguous as written, carry a `confirmation` note (TODO) and are kept
+ * exactly as written.
+ *
+ * `tone` is presentational only — the tint of the placeholder illustration —
+ * and is set per category, so it implies nothing about how a product looks.
+ *
+ * This module's shape mirrors the production schema (docs/DATABASE-DESIGN.md)
+ * so the move to database queries stays a one-file change (Phase 8).
  */
 
+/**
+ * The site is still a demo: the names are real, but no prices, pack sizes,
+ * descriptions or legally required product details have been supplied, so
+ * nothing here may be published as a live, orderable catalogue.
+ */
 export const IS_SAMPLE_DATA = true;
 
 export type Availability = "in_stock" | "low_stock" | "out_of_stock" | "enquire_only";
@@ -30,17 +48,23 @@ export interface Variant {
 export interface Product {
   id: string;
   slug: string;
+  /** Exactly as written in the client's catalogue. */
   name: string;
   /** Always the top-level category, so breadcrumbs never need a recursive walk. */
   categorySlug: string;
   /** The type within that category, where one exists. */
   typeSlug?: string;
+  /** Not supplied yet — empty until the client provides it. */
   shortDescriptor: string;
+  /** Not supplied yet — empty until the client provides it. */
   description: string;
+  /** Pack sizes and prices. Empty until the client provides them. */
   variants: Variant[];
   featured?: boolean;
-  /** Visual seed for the placeholder image treatment. */
+  /** Placeholder illustration tint; set per category. */
   tone: Tone;
+  /** TODO — why this item needs the client's confirmation. */
+  confirmation?: string;
 }
 
 export type Tone =
@@ -55,172 +79,94 @@ export type Tone =
 
 export interface Category {
   slug: string;
+  /** Exactly as written in the client's catalogue. */
   name: string;
+  /** Header navigation label, where the full name does not fit. */
   shortName: string;
   order: number;
+  /** Not supplied yet. */
   heroHeadline: string;
+  /** Not supplied yet — empty until the client provides it. */
   description: string;
   tone: Tone;
-  /**
-   * Present = this row is a TYPE sitting under that category.
-   *
-   * Types are modelled as categories with a parent rather than as a separate
-   * entity, so a category can gain or lose a type layer without a migration
-   * and staff see one concept, not two (PRODUCT-TAXONOMY §4).
-   */
+  /** Present = this row is a TYPE sitting under that category. */
   parentSlug?: string;
+  /** TODO — why this item needs the client's confirmation. */
+  confirmation?: string;
 }
 
 /* --------------------------------------------------------------------------
-   Categories — the ten from the client's handwritten sheet, in their order.
-   Names and slugs are PROVISIONAL pending OQ-011 / OQ-012 / OQ-013.
+   Categories — the ten in the client's catalogue, in its order.
    -------------------------------------------------------------------------- */
 
+function category(
+  slug: string,
+  name: string,
+  order: number,
+  tone: Tone,
+  shortName = name,
+): Category {
+  return { slug, name, shortName, order, heroHeadline: "", description: "", tone };
+}
+
 export const categories: Category[] = [
-  {
-    slug: "dehydrated-powders-flakes",
-    name: "Dehydrated Powders & Flakes",
-    shortName: "Powders & Flakes",
-    order: 1,
-    heroHeadline: "Concentrated by sunlight, not by shortcuts.",
-    description:
-      "Vegetables and greens dried at low temperature and milled to a fine, even powder. Long shelf life, quick to use, and made to keep the colour and character of the raw ingredient intact.",
-    tone: "turmeric",
-  },
-  {
-    slug: "dehydrated-fruits",
-    name: "Dehydrated Fruits",
-    shortName: "Dehydrated Fruits",
-    order: 2,
-    heroHeadline: "Nature, preserved beautifully.",
-    description:
-      "Ripe fruit, sliced and gently dried to hold its natural sweetness and colour. Nothing added to make it look better than it is.",
-    tone: "mango",
-  },
-  {
-    slug: "pickles",
-    name: "Pickles",
-    shortName: "Pickles",
-    order: 3,
-    heroHeadline: "Cured slowly, the way it has always been done.",
-    description:
-      "Seasonal produce, salt, spice and time. Made in small batches to traditional regional recipes.",
-    tone: "chilli",
-  },
-  {
-    slug: "spiced-dal-powders",
-    name: "Spiced Dal Powders",
-    shortName: "Dal Powders",
-    order: 4,
-    heroHeadline: "The everyday podi, done properly.",
-    description:
-      "Roasted lentils ground with spice — the accompaniment that turns rice, idli or dosa into a meal.",
-    tone: "earth",
-  },
-  {
-    slug: "sun-dried-crisps",
-    name: "Sun-Dried Crisps (Vadiyalu)",
-    shortName: "Vadiyalu",
-    order: 5,
-    heroHeadline: "Vadiyalu — sun and patience.",
-    description:
-      "Shaped by hand, dried in open sun over several days, ready to fry. A regional staple that no machine has improved on.",
-    tone: "cream",
-  },
-  {
-    slug: "dry-fruits",
-    name: "Dry Fruits",
-    shortName: "Dry Fruits",
-    order: 6,
-    heroHeadline: "Selected, graded, packed.",
-    description:
-      "Whole nuts and dried fruit, sorted by size and quality, packed to keep them fresh.",
-    tone: "berry",
-  },
-  {
-    slug: "millets",
-    name: "Millets",
-    shortName: "Millets",
-    order: 7,
-    heroHeadline: "The grains that came first.",
-    description:
-      "Cleaned, graded millets — the everyday grains of Indian farming, back on the everyday table.",
-    tone: "grain",
-  },
-  {
-    slug: "herbal-tea-coffee",
-    name: "Herbal Tea & Coffee",
-    shortName: "Tea & Coffee",
-    order: 8,
-    heroHeadline: "Leaves, roots and roast.",
-    description:
-      "Herbal infusions and coffee blends built from whole ingredients rather than flavouring.",
-    tone: "leaf",
-  },
-  {
-    slug: "masala-powders",
-    name: "Masala Powders",
-    shortName: "Masala Powders",
-    order: 9,
-    heroHeadline: "Ground for a dish, not for a shelf.",
-    description:
-      "Spice blends roasted and ground in small batches, so what reaches you still smells of what it is.",
-    tone: "chilli",
-  },
-  {
-    slug: "combo-packs",
-    name: "Combo Packs",
-    shortName: "Combo Packs",
-    order: 10,
-    heroHeadline: "A good place to begin.",
-    description:
-      "Curated sets across our range — for a first order, a full pantry, or a gift.",
-    tone: "cream",
-  },
+  // "Powders & Flakes" in the header, where the full name does not fit.
+  category("dehydrated-powders-flakes", "Dehydrated Powders & Flakes", 1, "turmeric", "Powders & Flakes"),
+  category("dehydrated-fruits", "Dehydrated Fruits", 2, "mango"),
+  category("pickles", "Pickles", 3, "chilli"),
+  category("dal-powders", "Dal Powders", 4, "earth"),
+  category("crisps", "Crisps", 5, "cream"),
+  category("dry-fruits", "Dry Fruits", 6, "berry"),
+  category("millet-powders", "Millet Powders", 7, "grain"),
+  category("tea-coffee", "Tea / Coffee", 8, "leaf"),
+  category("masala-powders", "Masala Powders", 9, "chilli"),
+  category("spices", "Spices", 10, "earth"),
 ];
 
-/**
- * SAMPLE type layer — shape only.
- *
- * These demonstrate the Category > Type > Product browsing the client asked
- * for. The real list per category is blocked on OQ-049; nothing here is
- * client-supplied. Categories not listed simply have no types, which the
- * interface handles by showing products directly.
- */
-export const productTypes: Category[] = [
-  t("pickles", "mango", "Mango", 1, "Raw mango, cured in season.", "chilli"),
-  t("pickles", "lemon", "Lemon", 2, "Cured in salt over weeks.", "turmeric"),
-  t("pickles", "gongura", "Gongura", 3, "Sorrel leaves, sharp and tart.", "leaf"),
+/* --------------------------------------------------------------------------
+   Types — only where the catalogue groups products. Categories without a
+   type layer show their products directly.
+   -------------------------------------------------------------------------- */
 
-  t("dehydrated-fruits", "mango", "Mango", 1, "Ripe mango, gently dried.", "mango"),
-  t("dehydrated-fruits", "pineapple", "Pineapple", 2, "Bright and tart.", "turmeric"),
-  t("dehydrated-fruits", "banana", "Banana", 3, "Sliced ripe banana.", "cream"),
-  t("dehydrated-fruits", "guava", "Guava", 4, "Soft, fragrant, seasonal.", "leaf"),
-
-  t("millets", "ragi", "Ragi", 1, "Finger millet, cleaned and graded.", "grain"),
-  t("millets", "foxtail", "Foxtail", 2, "Cleaned and graded.", "grain"),
-  t("millets", "little", "Little Millet", 3, "Small grain, quick to cook.", "grain"),
-];
-
-function t(
+function type(
   parentSlug: string,
   slug: string,
   name: string,
   order: number,
-  description: string,
-  tone: Tone,
+  confirmation?: string,
 ): Category {
+  const parent = categories.find((c) => c.slug === parentSlug)!;
   return {
     slug,
     name,
     shortName: name,
     order,
     heroHeadline: "",
-    description,
-    tone,
+    description: "",
+    tone: parent.tone,
     parentSlug,
+    ...(confirmation ? { confirmation } : {}),
   };
 }
+
+const MILLET_TYPE_NOTE =
+  "Modelled as a type, as the catalogue's required hierarchy shows " +
+  "(Millet Powders → Foxtail / Korralu → Product). The products within each " +
+  "millet are not listed yet — confirm them.";
+
+export const productTypes: Category[] = [
+  type("dehydrated-powders-flakes", "powders", "Powders", 1),
+  type("dehydrated-powders-flakes", "flakes", "Flakes", 2),
+
+  type("pickles", "veg-pickles", "Veg Pickles", 1),
+  type("pickles", "non-veg-pickles", "Non-Veg Pickles", 2),
+
+  type("millet-powders", "foxtail-korralu", "Foxtail / Korralu", 1, MILLET_TYPE_NOTE),
+  type("millet-powders", "little-samalu", "Little / Samalu", 2, MILLET_TYPE_NOTE),
+  type("millet-powders", "kodo-arikalu", "Kodo / Arikalu", 3, MILLET_TYPE_NOTE),
+  type("millet-powders", "barnyard-udalu", "Barnyard / Udalu", 4, MILLET_TYPE_NOTE),
+  type("millet-powders", "andukorralu", "Andukorralu", 5, MILLET_TYPE_NOTE),
+];
 
 /** Top-level categories only — what the nav and the category grid show. */
 export const topCategories = () => categories;
@@ -240,363 +186,164 @@ export const categoryBySlug = (slug: string) =>
   categories.find((c) => c.slug === slug);
 
 /* --------------------------------------------------------------------------
-   Products — SAMPLE. See warning at the top of this file.
+   Products — names exactly as in the client's catalogue.
+
+   Slugs are the name in URL form. Where a name is a single generic word that
+   only has meaning inside its category ("Apple", "Herbal", "Non-Veg"), the
+   slug carries the category too, so a URL is never ambiguous on its own. The
+   product's name is unchanged either way.
    -------------------------------------------------------------------------- */
 
-let seq = 0;
-const v = (
-  label: string,
-  priceMinor: number,
-  grams: number,
-  availability: Availability = "in_stock",
-  isDefault = false,
-): Variant => ({
-  id: `var_${++seq}`,
-  label,
-  sku: `BGA-SAMPLE-${String(seq).padStart(4, "0")}`,
-  priceMinor,
-  netWeightGrams: grams,
-  availability,
-  isDefault,
-});
+function product(
+  categorySlug: string,
+  slug: string,
+  name: string,
+  options: { typeSlug?: string; featured?: boolean; confirmation?: string } = {},
+): Product {
+  const parent = categories.find((c) => c.slug === categorySlug)!;
+  return {
+    id: slug,
+    slug,
+    name,
+    categorySlug,
+    ...(options.typeSlug ? { typeSlug: options.typeSlug } : {}),
+    shortDescriptor: "",
+    description: "",
+    variants: [],
+    ...(options.featured ? { featured: true } : {}),
+    tone: parent.tone,
+    ...(options.confirmation ? { confirmation: options.confirmation } : {}),
+  };
+}
+
+const CONFIRMATION_REQUIRED = "Marked “confirmation required” in the client catalogue.";
+const TEA_OR_COFFEE =
+  "Listed under Tea / Coffee as written; the catalogue does not say whether " +
+  "this is a tea or a coffee.";
+
+const powders = (slug: string, name: string, confirmation?: string) =>
+  product("dehydrated-powders-flakes", slug, name, { typeSlug: "powders", confirmation });
+const flakes = (slug: string, name: string) =>
+  product("dehydrated-powders-flakes", slug, name, { typeSlug: "flakes" });
+
+/**
+ * Featured on the homepage: the products that appear both in this catalogue
+ * and on the client's Featured Products sheet (2026-09-10) — Mango, Mango
+ * Pickle, Gongura Pickle and Red Chilli Powder. The sheet's other two items
+ * (Dehydrated Banana, Ragi Flour) are not in this catalogue.
+ */
+const FEATURED = { featured: true } as const;
 
 export const products: Product[] = [
-  {
-    id: "p1",
-    slug: "turmeric-powder",
-    name: "Turmeric Powder",
-    categorySlug: "masala-powders",
-    shortDescriptor: "Stone-ground, deep colour, unmistakable aroma",
-    description:
-      "Whole turmeric fingers, cleaned and ground in small batches. Colour and aroma come from the root itself — nothing is added to brighten it.",
-    variants: [v("100g", 25000, 100, "in_stock", true), v("250g", 55000, 250)],
-    tone: "turmeric",
-  },
-  {
-    id: "p2",
-    slug: "dehydrated-mango",
-    name: "Dehydrated Mango",
-    categorySlug: "dehydrated-fruits",
-    typeSlug: "mango",
-    shortDescriptor: "Ripe mango, sliced and gently dried",
-    description:
-      "Fruit is sliced at peak ripeness and dried slowly so the sugars concentrate without scorching. Soft, chewy, and the colour of the fruit it came from.",
-    variants: [
-      v("100g", 32000, 100, "in_stock", true),
-      v("250g", 74000, 250),
-      v("500g", 140000, 500),
-    ],
-    featured: true,
-    tone: "mango",
-  },
-  {
-    id: "p3",
-    slug: "mango-pickle",
-    name: "Mango Pickle",
-    categorySlug: "pickles",
-    typeSlug: "mango",
-    shortDescriptor: "Raw mango cured in salt, chilli and oil",
-    description:
-      "Made once a season, when raw mango is at its best. Cut, salted, spiced and left to mature.",
-    variants: [
-      v("250g", 28000, 250, "in_stock", true),
-      v("500g", 54000, 500),
-      v("1kg", 102000, 1000),
-    ],
-    featured: true,
-    tone: "chilli",
-  },
-  {
-    id: "p4",
-    slug: "ragi-millet",
-    name: "Ragi Millet",
-    categorySlug: "millets",
-    typeSlug: "ragi",
-    shortDescriptor: "Cleaned and graded finger millet",
-    description:
-      "Whole finger millet, cleaned, de-stoned and graded. For porridge, rotis or malt.",
-    variants: [v("1kg", 18000, 1000, "in_stock", true)],
-    tone: "grain",
-  },
-  {
-    id: "p5",
-    slug: "curry-leaf-powder",
-    name: "Curry Leaf Powder",
-    categorySlug: "dehydrated-powders-flakes",
-    shortDescriptor: "Shade-dried leaves, milled fine",
-    description:
-      "Leaves are dried away from direct sun to hold their green, then milled to a fine powder.",
-    variants: [v("100g", 22000, 100, "in_stock", true), v("250g", 48000, 250)],
-    tone: "leaf",
-  },
-  {
-    id: "p6",
-    slug: "beetroot-powder",
-    name: "Beetroot Powder",
-    categorySlug: "dehydrated-powders-flakes",
-    shortDescriptor: "Deep colour, no additives",
-    description: "Beetroot, dried and milled. One ingredient.",
-    variants: [v("100g", 24000, 100, "in_stock", true)],
-    tone: "berry",
-  },
-  {
-    id: "p7",
-    slug: "drumstick-leaf-powder",
-    name: "Drumstick Leaf Powder",
-    categorySlug: "dehydrated-powders-flakes",
-    shortDescriptor: "Moringa leaves, shade-dried",
-    description: "Moringa leaves, shade-dried and milled fine.",
-    variants: [v("100g", 26000, 100, "in_stock", true)],
-    tone: "leaf",
-  },
-  {
-    id: "p8",
-    slug: "tomato-flakes",
-    name: "Tomato Flakes",
-    categorySlug: "dehydrated-powders-flakes",
-    shortDescriptor: "Sliced and dried, ready to rehydrate",
-    description: "Ripe tomato, sliced and dried into flakes.",
-    variants: [v("100g", 21000, 100, "low_stock", true)],
-    tone: "chilli",
-  },
-  {
-    id: "p9",
-    slug: "dehydrated-pineapple",
-    name: "Dehydrated Pineapple",
-    categorySlug: "dehydrated-fruits",
-    typeSlug: "pineapple",
-    shortDescriptor: "Bright, tart, naturally sweet",
-    description: "Pineapple rings dried slowly to hold their tartness.",
-    variants: [v("100g", 28000, 100, "in_stock", true)],
-    tone: "turmeric",
-  },
-  {
-    id: "p10",
-    slug: "dehydrated-banana",
-    name: "Dehydrated Banana",
-    categorySlug: "dehydrated-fruits",
-    typeSlug: "banana",
-    shortDescriptor: "Sliced ripe banana, gently dried",
-    description: "Ripe banana, sliced and dried.",
-    variants: [v("100g", 30000, 100, "in_stock", true), v("250g", 70000, 250)],
-    featured: true,
-    tone: "cream",
-  },
-  {
-    id: "p29",
-    slug: "red-chilli-powder",
-    name: "Red Chilli Powder",
-    categorySlug: "masala-powders",
-    shortDescriptor: "Dried red chillies, ground fine",
-    description: "Whole dried red chillies, ground to a fine powder.",
-    variants: [
-      v("100g", 18000, 100, "in_stock", true),
-      v("250g", 42000, 250),
-      v("500g", 80000, 500),
-    ],
-    featured: true,
-    tone: "chilli",
-  },
-  {
-    id: "p30",
-    slug: "ragi-flour",
-    name: "Ragi Flour",
-    categorySlug: "millets",
-    typeSlug: "ragi",
-    shortDescriptor: "Finger millet, milled to flour",
-    description: "Whole finger millet, cleaned and milled into flour.",
-    variants: [v("500g", 26000, 500, "in_stock", true), v("1kg", 49000, 1000)],
-    featured: true,
-    tone: "grain",
-  },
-  {
-    id: "p11",
-    slug: "dehydrated-guava",
-    name: "Dehydrated Guava",
-    categorySlug: "dehydrated-fruits",
-    typeSlug: "guava",
-    shortDescriptor: "Soft, fragrant, seasonal",
-    description: "Guava, sliced and dried in season.",
-    variants: [v("100g", 27000, 100, "in_stock", true)],
-    tone: "leaf",
-  },
-  {
-    id: "p12",
-    slug: "lemon-pickle",
-    name: "Lemon Pickle",
-    categorySlug: "pickles",
-    typeSlug: "lemon",
-    shortDescriptor: "Cured in salt over weeks",
-    description: "Lemon, salt, chilli and time.",
-    variants: [v("200g", 24000, 200, "in_stock", true)],
-    tone: "turmeric",
-  },
-  {
-    id: "p13",
-    slug: "gongura-pickle",
-    name: "Gongura Pickle",
-    categorySlug: "pickles",
-    typeSlug: "gongura",
-    shortDescriptor: "Sorrel leaves, sharp and tart",
-    description: "Gongura leaves cooked down with spice.",
-    variants: [v("250g", 30000, 250, "in_stock", true), v("500g", 56000, 500)],
-    featured: true,
-    tone: "chilli",
-  },
-  {
-    id: "p14",
-    slug: "garlic-podi",
-    name: "Garlic Podi",
-    categorySlug: "spiced-dal-powders",
-    shortDescriptor: "Roasted lentils and garlic",
-    description: "Lentils roasted with garlic and chilli, coarsely ground.",
-    variants: [v("100g", 19000, 100, "in_stock", true), v("250g", 42000, 250)],
-    tone: "earth",
-  },
-  {
-    id: "p15",
-    slug: "idli-podi",
-    name: "Idli Podi",
-    categorySlug: "spiced-dal-powders",
-    shortDescriptor: "The everyday accompaniment",
-    description: "Roasted lentils, chilli and sesame, ground coarse.",
-    variants: [v("100g", 18000, 100, "in_stock", true)],
-    tone: "earth",
-  },
-  {
-    id: "p16",
-    slug: "curry-leaf-podi",
-    name: "Curry Leaf Podi",
-    categorySlug: "spiced-dal-powders",
-    shortDescriptor: "Dark, aromatic, lightly bitter",
-    description: "Curry leaves roasted with lentils and ground.",
-    variants: [v("100g", 20000, 100, "in_stock", true)],
-    tone: "leaf",
-  },
-  {
-    id: "p17",
-    slug: "rice-vadiyalu",
-    name: "Rice Vadiyalu",
-    categorySlug: "sun-dried-crisps",
-    shortDescriptor: "Hand-shaped, sun-dried, ready to fry",
-    description:
-      "Rice batter shaped by hand and dried in open sun across several days.",
-    variants: [v("200g", 22000, 200, "in_stock", true)],
-    tone: "cream",
-  },
-  {
-    id: "p18",
-    slug: "sabudana-vadiyalu",
-    name: "Sabudana Vadiyalu",
-    categorySlug: "sun-dried-crisps",
-    shortDescriptor: "Light, crisp, traditional",
-    description: "Sago batter, hand-shaped and sun-dried.",
-    variants: [v("200g", 24000, 200, "in_stock", true)],
-    tone: "cream",
-  },
-  {
-    id: "p19",
-    slug: "cashews",
-    name: "Cashews",
-    categorySlug: "dry-fruits",
-    shortDescriptor: "Whole, graded W240",
-    description: "Whole cashew kernels, graded and packed.",
-    variants: [v("250g", 42000, 250, "in_stock", true), v("500g", 80000, 500)],
-    tone: "cream",
-  },
-  {
-    id: "p20",
-    slug: "almonds",
-    name: "Almonds",
-    categorySlug: "dry-fruits",
-    shortDescriptor: "Whole, sorted by size",
-    description: "Whole almonds, sorted and packed.",
-    variants: [v("250g", 38000, 250, "in_stock", true)],
-    tone: "earth",
-  },
-  {
-    id: "p21",
-    slug: "foxtail-millet",
-    name: "Foxtail Millet",
-    categorySlug: "millets",
-    typeSlug: "foxtail",
-    shortDescriptor: "Cleaned and graded",
-    description: "Whole foxtail millet, cleaned and graded.",
-    variants: [v("1kg", 16000, 1000, "in_stock", true)],
-    tone: "grain",
-  },
-  {
-    id: "p22",
-    slug: "little-millet",
-    name: "Little Millet",
-    categorySlug: "millets",
-    typeSlug: "little",
-    shortDescriptor: "Small grain, quick to cook",
-    description: "Whole little millet, cleaned and graded.",
-    variants: [v("1kg", 17000, 1000, "in_stock", true)],
-    tone: "grain",
-  },
-  {
-    id: "p23",
-    slug: "lemongrass-tea",
-    name: "Lemongrass Tea",
-    categorySlug: "herbal-tea-coffee",
-    shortDescriptor: "Cut and dried whole leaf",
-    description: "Lemongrass, cut and dried. Nothing else.",
-    variants: [v("100g", 23000, 100, "in_stock", true)],
-    tone: "leaf",
-  },
-  {
-    id: "p24",
-    slug: "hibiscus-tea",
-    name: "Hibiscus Tea",
-    categorySlug: "herbal-tea-coffee",
-    shortDescriptor: "Whole dried petals",
-    description: "Whole hibiscus petals, dried.",
-    variants: [v("100g", 25000, 100, "in_stock", true)],
-    tone: "berry",
-  },
-  {
-    id: "p25",
-    slug: "sambar-powder",
-    name: "Sambar Powder",
-    categorySlug: "masala-powders",
-    shortDescriptor: "Roasted and ground in small batches",
-    description: "Spices and lentils roasted together, then ground.",
-    variants: [v("100g", 20000, 100, "in_stock", true)],
-    tone: "chilli",
-  },
-  {
-    id: "p26",
-    slug: "rasam-powder",
-    name: "Rasam Powder",
-    categorySlug: "masala-powders",
-    shortDescriptor: "Pepper-forward, freshly ground",
-    description: "Pepper, cumin and lentils, roasted and ground.",
-    variants: [v("100g", 20000, 100, "in_stock", true)],
-    tone: "earth",
-  },
-  {
-    id: "p27",
-    slug: "pantry-starter-combo",
-    name: "Pantry Starter Combo",
-    categorySlug: "combo-packs",
-    shortDescriptor: "Five everyday essentials in one box",
-    description:
-      "A set built for a first order — a masala, a podi, a pickle, a millet and a dried fruit.",
-    variants: [v("Set of 5", 129000, 750, "in_stock", true)],
-    tone: "cream",
-  },
-  {
-    id: "p28",
-    slug: "festive-gift-box",
-    name: "Festive Gift Box",
-    categorySlug: "combo-packs",
-    shortDescriptor: "A considered set, ready to give",
-    description: "A gift set across the range, packed to be given.",
-    variants: [v("Set of 6", 159000, 900, "in_stock", true)],
-    tone: "berry",
-  },
+  // 1. Dehydrated Powders & Flakes → Powders
+  powders("moringa-powder", "Moringa Powder"),
+  powders("banana-powder", "Banana Powder"),
+  powders("lemon-powder", "Lemon Powder"),
+  powders("tomato-powder", "Tomato Powder"),
+  powders("ginger-powder", "Ginger Powder"),
+  powders("garlic-powder", "Garlic Powder"),
+  powders("onion-powder", "Onion Powder"),
+  powders("carrot-powder", "Carrot Powder"),
+  powders("beetroot-powder", "Beetroot Powder"),
+  // TODO: written as "Curry Leaves" (without "Powder") under Powders — kept as written.
+  powders("curry-leaves", "Curry Leaves"),
+  powders("amla-powder", "Amla Powder"),
+  powders("abc-powder", "ABC Powder", CONFIRMATION_REQUIRED),
+  powders("spinach-powder", "Spinach Powder"),
+
+  // 1. Dehydrated Powders & Flakes → Flakes
+  flakes("mango-flakes", "Mango Flakes"),
+  flakes("tomato-flakes", "Tomato Flakes"),
+  flakes("ginger-flakes", "Ginger Flakes"),
+  flakes("garlic-flakes", "Garlic Flakes"),
+  flakes("onion-flakes", "Onion Flakes"),
+  flakes("carrot-flakes", "Carrot Flakes"),
+  flakes("beetroot-flakes", "Beetroot Flakes"),
+
+  // 2. Dehydrated Fruits
+  product("dehydrated-fruits", "dehydrated-fruits-apple", "Apple"),
+  product("dehydrated-fruits", "dehydrated-fruits-papaya", "Papaya"),
+  product("dehydrated-fruits", "dehydrated-fruits-mango", "Mango", FEATURED),
+  product("dehydrated-fruits", "dehydrated-fruits-pineapple", "Pineapple"),
+  product("dehydrated-fruits", "dehydrated-fruits-sapota", "Sapota"),
+  product("dehydrated-fruits", "dehydrated-fruits-honey", "Honey", {
+    confirmation: CONFIRMATION_REQUIRED,
+  }),
+
+  // 3. Pickles → Veg Pickles
+  product("pickles", "tomato-pickle", "Tomato Pickle", { typeSlug: "veg-pickles" }),
+  product("pickles", "gongura-pickle", "Gongura Pickle", { typeSlug: "veg-pickles", ...FEATURED }),
+  product("pickles", "garlic-pickle", "Garlic Pickle", { typeSlug: "veg-pickles" }),
+  product("pickles", "mango-pickle", "Mango Pickle", { typeSlug: "veg-pickles", ...FEATURED }),
+
+  // 3. Pickles → Non-Veg Pickles
+  product("pickles", "chicken-pickle", "Chicken Pickle", { typeSlug: "non-veg-pickles" }),
+  product("pickles", "prawns-pickle", "Prawns Pickle", { typeSlug: "non-veg-pickles" }),
+  product("pickles", "mutton-pickle", "Mutton Pickle", { typeSlug: "non-veg-pickles" }),
+
+  // 4. Dal Powders
+  product("dal-powders", "kandi-powder", "Kandi Powder"),
+  product("dal-powders", "chana-powder", "Chana Powder"),
+  product("dal-powders", "avise-powder", "Avise Powder"),
+  product("dal-powders", "sesame-seed-nuvvulu", "Sesame Seed / Nuvvulu"),
+
+  // 5. Crisps
+  product("crisps", "rice-vadialu", "Rice Vadialu"),
+  product("crisps", "gummadi-vadialu", "Gummadi Vadialu"),
+  product("crisps", "saggubiyyam", "Saggubiyyam"),
+  product("crisps", "minapa-vadialu", "Minapa Vadialu"),
+
+  // 6. Dry Fruits
+  product("dry-fruits", "badam", "Badam"),
+  product("dry-fruits", "pista", "Pista"),
+  product("dry-fruits", "cashews", "Cashews"),
+  product("dry-fruits", "dates", "Dates"),
+
+  // 7. Millet Powders — each millet a type, per the required hierarchy, with
+  // one product of the same name until the client lists what is inside it.
+  product("millet-powders", "foxtail-korralu", "Foxtail / Korralu", {
+    typeSlug: "foxtail-korralu",
+    confirmation: MILLET_TYPE_NOTE,
+  }),
+  product("millet-powders", "little-samalu", "Little / Samalu", {
+    typeSlug: "little-samalu",
+    confirmation: MILLET_TYPE_NOTE,
+  }),
+  product("millet-powders", "kodo-arikalu", "Kodo / Arikalu", {
+    typeSlug: "kodo-arikalu",
+    confirmation: MILLET_TYPE_NOTE,
+  }),
+  product("millet-powders", "barnyard-udalu", "Barnyard / Udalu", {
+    typeSlug: "barnyard-udalu",
+    confirmation: MILLET_TYPE_NOTE,
+  }),
+  product("millet-powders", "andukorralu", "Andukorralu", {
+    typeSlug: "andukorralu",
+    confirmation: MILLET_TYPE_NOTE,
+  }),
+
+  // 8. Tea / Coffee
+  product("tea-coffee", "tea-coffee-herbal", "Herbal", { confirmation: TEA_OR_COFFEE }),
+  product("tea-coffee", "tea-coffee-masala", "Masala", { confirmation: TEA_OR_COFFEE }),
+  product("tea-coffee", "tea-coffee-lemon", "Lemon", { confirmation: TEA_OR_COFFEE }),
+  product("tea-coffee", "tea-coffee-green", "Green", { confirmation: TEA_OR_COFFEE }),
+
+  // 9. Masala Powders
+  product("masala-powders", "masala-powders-non-veg", "Non-Veg", {
+    confirmation:
+      "The client catalogue asks to confirm whether “Non-Veg” is a product or " +
+      "a grouping of the items that follow it. Kept as a product, as written.",
+  }),
+  product("masala-powders", "masala-powders-chicken-biryani", "Chicken Biryani"),
+  product("masala-powders", "masala-powders-mutton-biryani", "Mutton Biryani"),
+  product("masala-powders", "masala-powders-fish-curry", "Fish Curry"),
+
+  // 10. Spices
+  product("spices", "turmeric-powder", "Turmeric Powder"),
+  product("spices", "red-chilli-powder", "Red Chilli Powder", FEATURED),
+  product("spices", "coriander-powder", "Coriander Powder"),
+  product("spices", "black-pepper-powder", "Black Pepper Powder"),
+  product("spices", "rasam-powder", "Rasam Powder"),
 ];
 
 /* ---------------------------------- queries -------------------------------- */
@@ -626,8 +373,12 @@ export function trailFor(p: Product) {
 
 export const featuredProducts = () => products.filter((p) => p.featured);
 
-export const defaultVariant = (p: Product) =>
-  p.variants.find((x) => x.isDefault) ?? p.variants[0]!;
+/**
+ * The pack size a product page opens on — undefined while a product has no
+ * pack sizes, which is every product until the client supplies them.
+ */
+export const defaultVariant = (p: Product): Variant | undefined =>
+  p.variants.find((x) => x.isDefault) ?? p.variants[0];
 
 /** Same type first, then the rest of the category. Never the product itself. */
 export const relatedProducts = (p: Product, limit = 4) => {
@@ -643,12 +394,18 @@ export const relatedProducts = (p: Product, limit = 4) => {
   return [...sameType, ...sameCategory].slice(0, limit);
 };
 
+/**
+ * Search over the product name, its category and its type, so "non-veg" finds
+ * the non-veg pickles and "millet" finds the millet powders.
+ */
 export function searchProducts(q: string) {
   const term = q.trim().toLowerCase();
   if (term.length < 2) return [];
   return products.filter((p) => {
-    const cat = categoryBySlug(p.categorySlug)?.name ?? "";
-    return `${p.name} ${p.shortDescriptor} ${cat}`.toLowerCase().includes(term);
+    const { category, type } = trailFor(p);
+    return `${p.name} ${p.shortDescriptor} ${category?.name ?? ""} ${type?.name ?? ""}`
+      .toLowerCase()
+      .includes(term);
   });
 }
 

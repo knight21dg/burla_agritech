@@ -33,7 +33,11 @@ export function ProductBuyPanel({
   const [qty, setQty] = useState(1);
   const [active, setActive] = useState(0);
 
-  const soldOut = variant.availability === "out_of_stock";
+  // No pack sizes or prices have been supplied yet, so there may be no
+  // variant at all: the price, pack size and availability then read "to be
+  // confirmed", and only the WhatsApp enquiry is offered.
+  const soldOut = variant?.availability === "out_of_stock";
+  const orderable = Boolean(variant) && !soldOut;
   const images = Array.from({ length: Math.max(1, imageCount) });
 
   return (
@@ -71,19 +75,27 @@ export function ProductBuyPanel({
       {/* Buy panel */}
       <div className="lg:col-span-5">
         <h1 className="t-h1">{product.name}</h1>
-        <p className="t-lead mt-3">{product.shortDescriptor}</p>
+        {product.shortDescriptor && (
+          <p className="t-lead mt-3">{product.shortDescriptor}</p>
+        )}
 
         {/* No star rating: no real reviews exist, and inventing them is both a
             policy violation and a consumer-law problem. */}
 
-        <p className="mt-6 flex items-baseline gap-3">
-          <span className="text-[1.625rem] font-semibold tabular-nums text-ink">
-            {formatPrice(variant.priceMinor)}
-          </span>
-          <span className="text-[0.875rem] text-ink-3">
-            {variant.label} · inclusive of all taxes
-          </span>
-        </p>
+        {variant ? (
+          <p className="mt-6 flex items-baseline gap-3">
+            <span className="text-[1.625rem] font-semibold tabular-nums text-ink">
+              {formatPrice(variant.priceMinor)}
+            </span>
+            <span className="text-[0.875rem] text-ink-3">
+              {variant.label} · inclusive of all taxes
+            </span>
+          </p>
+        ) : (
+          <p className="mt-6 text-[1.0625rem] font-medium text-ink-3">
+            Price and pack sizes to be confirmed
+          </p>
+        )}
 
         {product.variants.length > 1 && (
           <fieldset className="mt-7">
@@ -94,11 +106,11 @@ export function ProductBuyPanel({
                   key={v.id}
                   type="button"
                   onClick={() => setVariant(v)}
-                  aria-pressed={v.id === variant.id}
+                  aria-pressed={v.id === variant?.id}
                   disabled={v.availability === "out_of_stock"}
                   className={cn(
                     "rounded-sm border px-4 py-2 text-[0.875rem] font-medium transition-colors",
-                    v.id === variant.id
+                    v.id === variant?.id
                       ? "border-green-700 bg-green-50 text-green-700"
                       : "border-line bg-white text-ink hover:border-line-strong",
                     v.availability === "out_of_stock" &&
@@ -116,12 +128,12 @@ export function ProductBuyPanel({
           <span
             className={cn(
               "size-2 rounded-full",
-              soldOut ? "bg-ink-3" : "bg-green-700",
+              soldOut || !variant ? "bg-ink-3" : "bg-green-700",
             )}
             aria-hidden="true"
           />
-          <span className={soldOut ? "text-ink-2" : "text-ink"}>
-            {availabilityLabel[variant.availability]}
+          <span className={soldOut || !variant ? "text-ink-2" : "text-ink"}>
+            {variant ? availabilityLabel[variant.availability] : "Availability to be confirmed"}
           </span>
         </p>
 
@@ -154,7 +166,7 @@ export function ProductBuyPanel({
             </button>
           </div>
 
-          <Button disabled={soldOut} className="min-w-[10rem] flex-1">
+          <Button disabled={!orderable} className="min-w-[10rem] flex-1">
             <ShoppingBag className="size-4" aria-hidden="true" />
             Add to bag
           </Button>
@@ -162,7 +174,7 @@ export function ProductBuyPanel({
 
         <ButtonLink
           href={whatsappLink(
-            productEnquiry(product.name, variant.label, product.slug),
+            productEnquiry(product.name, variant?.label, product.slug),
           )}
           external
           variant="whatsapp"

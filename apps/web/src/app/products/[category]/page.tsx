@@ -29,11 +29,15 @@ export async function generateMetadata({
   const { category } = await params;
   const c = categoryBySlug(category);
   if (!c) return {};
+  // No category description has been supplied yet; describe the page by
+  // what it is rather than inventing copy.
+  const description =
+    c.description.slice(0, 155) || `${c.name} from ${site.name}.`;
   return {
     title: c.name,
-    description: c.description.slice(0, 155),
+    description,
     alternates: { canonical: `/products/${c.slug}` },
-    openGraph: { title: `${c.name} — ${site.shortName}`, description: c.description },
+    openGraph: { title: `${c.name} — ${site.shortName}`, description },
   };
 }
 
@@ -81,7 +85,7 @@ export default async function CategoryPage({
           />
           <div className="mt-6 max-w-2xl">
             <h1 className="t-h1">{c.name}</h1>
-            <p className="t-lead mt-3">{c.description}</p>
+            {c.description && <p className="t-lead mt-3">{c.description}</p>}
           </div>
 
           {types.length > 0 && (

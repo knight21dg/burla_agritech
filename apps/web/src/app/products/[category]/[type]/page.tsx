@@ -33,9 +33,10 @@ export async function generateMetadata({
   const t = typeBySlug(category, type);
   if (!c || !t) return {};
 
-  // "Mango Pickles" reads better and matches search intent more closely than
-  // either name alone — SEO.md §1.
-  const title = `${t.name} ${c.name}`;
+  // The catalogue's type names carry their own context ("Veg Pickles",
+  // "Foxtail / Korralu"), so the category is appended after a separator
+  // rather than run on: "Veg Pickles · Pickles", not "Veg Pickles Pickles".
+  const title = `${t.name} · ${c.name}`;
   return {
     title,
     description: t.description || `${t.name} from Burla's ${c.name} range.`,
@@ -68,7 +69,7 @@ export default async function TypePage({
   const itemListJsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: `${t.name} ${c.name}`,
+    name: `${t.name} · ${c.name}`,
     numberOfItems: list.length,
     itemListElement: list.map((p, i) => ({
       "@type": "ListItem",

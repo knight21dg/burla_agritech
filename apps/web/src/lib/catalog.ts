@@ -29,12 +29,12 @@ export function typeHref(categorySlug: string, typeSlug: string): string {
  *
  * The database enforces at most one default per product (a partial unique
  * index), but not that there is one — a product may legitimately have a single
- * variant nobody flagged. Falling back to the first is correct, and the
- * non-null assertion is safe only because callers hold a product that came
- * from a service, and a product with no variants cannot be published.
+ * variant nobody flagged, so the first is the fallback. Undefined when a
+ * product has no pack sizes yet, which is every product in the client's
+ * catalogue of 2026-09-10 until prices and sizes are supplied.
  */
-export function defaultVariant(product: Product): Variant {
-  return product.variants.find((v) => v.isDefault) ?? product.variants[0]!;
+export function defaultVariant(product: Product): Variant | undefined {
+  return product.variants.find((v) => v.isDefault) ?? product.variants[0];
 }
 
 export const availabilityLabel: Record<Availability, string> = {

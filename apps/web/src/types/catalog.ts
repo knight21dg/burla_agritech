@@ -61,6 +61,12 @@ export interface Product {
   variants: Variant[];
   featured?: boolean;
   tone: Tone;
+  /**
+   * TODO note for an item awaiting the client's confirmation. Carried by the
+   * catalogue module only — the database has no column for it, so it is not
+   * served from Postgres.
+   */
+  confirmation?: string;
 }
 
 export interface Category {
@@ -73,6 +79,8 @@ export interface Category {
   tone: Tone;
   /** Present = this row is a TYPE sitting under that category. */
   parentSlug?: string;
+  /** TODO note; catalogue module only (see Product.confirmation). */
+  confirmation?: string;
 }
 
 /**

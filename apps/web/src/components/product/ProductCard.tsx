@@ -32,8 +32,12 @@ import { ProductPhoto } from "./ProductPhoto";
  */
 export function ProductCard({ product }: { product: Product }) {
   const variant = defaultVariant(product);
-  const soldOut = variant.availability === "out_of_stock";
+  const soldOut = variant?.availability === "out_of_stock";
   const sizes = product.variants.map((v) => v.label).join(" | ");
+  // No pack sizes or prices have been supplied yet, so a product may have no
+  // variant at all. It keeps its place in the grid, says so plainly, and
+  // cannot be added to the bag.
+  const orderable = Boolean(variant) && !soldOut;
 
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-line bg-white transition duration-300 ease-out hover:-translate-y-0.5 hover:border-green-700/30 hover:shadow-[0_14px_30px_-16px_rgba(15,74,44,0.38)]">
@@ -60,15 +64,21 @@ export function ProductCard({ product }: { product: Product }) {
           </Link>
         </h3>
 
-        <p className="mt-0.5 text-[0.75rem] text-ink-3">{sizes}</p>
+        {sizes && <p className="mt-0.5 text-[0.75rem] text-ink-3">{sizes}</p>}
 
         <div className="mt-auto flex items-center justify-between gap-2 pt-1.5">
-          <p className="text-[1rem] font-bold tabular-nums text-ink">
-            {formatPrice(variant.priceMinor)}
-          </p>
+          {variant ? (
+            <p className="text-[1rem] font-bold tabular-nums text-ink">
+              {formatPrice(variant.priceMinor)}
+            </p>
+          ) : (
+            <p className="text-[0.8125rem] font-medium text-ink-3">
+              Price to be confirmed
+            </p>
+          )}
           <button
             type="button"
-            disabled={soldOut}
+            disabled={!orderable}
             aria-label={`Add ${product.name} to bag`}
             // Raised above the stretched link so it stays independently clickable
             className="relative z-10 -mr-2 grid size-11 shrink-0 place-items-center rounded-full text-green-700 transition-colors hover:bg-green-50 disabled:opacity-35 disabled:hover:bg-transparent"

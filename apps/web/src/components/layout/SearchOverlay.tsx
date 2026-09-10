@@ -180,9 +180,11 @@ export function SearchOverlay({
                             {categoryBySlug(p.categorySlug)?.name}
                           </span>
                         </span>
-                        <span className="shrink-0 text-[0.875rem] tabular-nums text-ink-2">
-                          {formatPrice(variant.priceMinor)}
-                        </span>
+                        {variant && (
+                          <span className="shrink-0 text-[0.875rem] tabular-nums text-ink-2">
+                            {formatPrice(variant.priceMinor)}
+                          </span>
+                        )}
                       </Link>
                     </li>
                   );

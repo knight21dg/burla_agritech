@@ -8,7 +8,7 @@ import { categories, products } from "@/data/catalog";
 export const metadata: Metadata = {
   title: "All Products",
   description:
-    "Every Burla range — dehydrated powders and flakes, dehydrated fruits, pickles, spiced dal powders, sun-dried crisps (vadiyalu), dry fruits, millets, herbal tea and coffee, masala powders and combo packs.",
+    "Every Burla range — dehydrated powders and flakes, dehydrated fruits, pickles, dal powders, crisps, dry fruits, millet powders, tea and coffee, masala powders and spices.",
   alternates: { canonical: "/products" },
 };
 

@@ -43,13 +43,17 @@ export async function generateMetadata({
   const p = productBySlug(slug);
   if (!p) return {};
   const variant = defaultVariant(p);
+  const { category } = trailFor(p);
+  // No descriptor has been supplied yet; describe the page by what it is.
+  const description =
+    p.shortDescriptor || `${p.name} — ${category?.name ?? "Products"} from ${site.name}.`;
   return {
-    title: `${p.name} ${variant.label}`,
-    description: p.shortDescriptor,
+    title: variant ? `${p.name} ${variant.label}` : p.name,
+    description,
     alternates: { canonical: productHref(p) },
     openGraph: {
       title: `${p.name} — ${site.shortName}`,
-      description: p.shortDescriptor,
+      description,
     },
   };
 }
@@ -101,7 +105,7 @@ export default async function ProductPage({
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    description: product.shortDescriptor,
+    ...(product.shortDescriptor ? { description: product.shortDescriptor } : {}),
     category: category?.name,
     brand: { "@type": "Brand", name: site.shortName },
     url: `${site.url}${productHref(product)}`,
@@ -123,9 +127,22 @@ export default async function ProductPage({
           <div className="grid gap-10 border-t border-line pt-10 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-7">
               <h2 className="t-h2">About this product</h2>
-              <p className="measure mt-4 text-[0.9375rem] leading-relaxed text-ink-2">
-                {product.description}
-              </p>
+              {product.description ? (
+                <p className="measure mt-4 text-[0.9375rem] leading-relaxed text-ink-2">
+                  {product.description}
+                </p>
+              ) : (
+                <p className="measure mt-4 text-[0.9375rem] leading-relaxed text-ink-3">
+                  Product description to be confirmed.
+                </p>
+              )}
+              {/* TODO surfaced for the client's review: items the catalogue
+                  marks for confirmation, or leaves ambiguous as written. */}
+              {product.confirmation && (
+                <p className="measure mt-3 text-[0.8125rem] leading-relaxed text-ink-3">
+                  To confirm: {product.confirmation}
+                </p>
+              )}
 
               <h2 className="t-h2 mt-10">Quality</h2>
               <p className="measure mt-4 text-[0.9375rem] leading-relaxed text-ink-2">

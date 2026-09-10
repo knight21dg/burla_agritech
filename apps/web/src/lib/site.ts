@@ -22,7 +22,7 @@ export const site = {
   tagline: "From Nature to Your Table",
   subTagline: "Pure Products · Healthy People · A Greener Tomorrow",
   description:
-    "Indian agricultural produce carefully processed into everyday foods — dehydrated powders and flakes, pickles, spiced dal powders, sun-dried crisps, dry fruits, millets, herbal infusions and masalas.",
+    "Indian agricultural produce carefully processed into everyday foods — dehydrated powders and flakes, dehydrated fruits, pickles, dal powders, crisps, dry fruits, millet powders, tea and coffee, masala powders and spices.",
   url: clientEnv.NEXT_PUBLIC_SITE_URL,
 
   /**
@@ -110,6 +110,13 @@ export function whatsappLink(message: string) {
   return `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message)}`;
 }
 
-export function productEnquiry(name: string, packSize: string, slug: string) {
-  return `Hi Burla, I'd like to know more about ${name} (${packSize}).\n${site.url}/products/${slug}`;
+/**
+ * The pre-filled WhatsApp message for a product. The pack size is optional:
+ * none have been supplied yet. The link is the product's real page,
+ * /products/p/{slug} — it previously pointed at /products/{slug}, which is a
+ * category URL and returned 404 for every product.
+ */
+export function productEnquiry(name: string, packSize: string | undefined, slug: string) {
+  const what = packSize ? `${name} (${packSize})` : name;
+  return `Hi Burla, I'd like to know more about ${what}.\n${site.url}/products/p/${slug}`;
 }

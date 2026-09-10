@@ -105,8 +105,8 @@ function toVariant(row: VariantRow): Variant {
  * Joins products to their variants.
  *
  * Two queries, not one: a join would repeat every product column once per
- * variant, and assembling 34 variant rows into 28 products in JavaScript is
- * cheaper than shipping the duplication over the wire. It is still O(1)
+ * variant, and assembling the variant rows into their products in JavaScript
+ * is cheaper than shipping the duplication over the wire. It is still O(1)
  * queries regardless of how many products come back, which is the thing that
  * matters.
  *
@@ -137,25 +137,26 @@ async function withVariants(rows: ProductRow[]): Promise<Product[]> {
     else byProduct.set(row.productId, [toVariant(row)]);
   }
 
-  return rows
-    .map((row) => ({
-      id: row.id,
-      slug: row.slug,
-      name: row.name,
-      // Non-null: `products.category_id` is NOT NULL and a trigger holds it to
-      // a top-level category, so the join always matches.
-      categorySlug: row.categorySlug!,
-      ...(row.typeSlug ? { typeSlug: row.typeSlug } : {}),
-      shortDescriptor: row.shortDescriptor,
-      description: row.description,
-      variants: byProduct.get(row.id) ?? [],
-      ...(row.featured ? { featured: true } : {}),
-      tone: row.tone,
-    }))
-    // A product with no active variant has no price to show and cannot be
-    // bought. Filtered here rather than in a component, so every surface
-    // agrees — and so the count on a category card matches its grid.
-    .filter((product) => product.variants.length > 0);
+  // Products with no active variant are returned, with `variants: []`, not
+  // filtered out. The client's catalogue (2026-09-10) names every product but
+  // supplies no pack sizes or prices yet, so dropping variant-less products
+  // would serve an empty site. The interface shows "price to be confirmed"
+  // and disables ordering for them; the publish guard still keeps anything
+  // without a price and its legal fields from going live.
+  return rows.map((row) => ({
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    // Non-null: `products.category_id` is NOT NULL and a trigger holds it to
+    // a top-level category, so the join always matches.
+    categorySlug: row.categorySlug!,
+    ...(row.typeSlug ? { typeSlug: row.typeSlug } : {}),
+    shortDescriptor: row.shortDescriptor,
+    description: row.description,
+    variants: byProduct.get(row.id) ?? [],
+    ...(row.featured ? { featured: true } : {}),
+    tone: row.tone,
+  }));
 }
 
 /** The base select, joined to both taxonomy levels and filtered to published. */
@@ -294,7 +295,7 @@ export async function listRelated(
  *
  *   - Category and type names are not in `search_vector`, because a generated
  *     column cannot see another table. They are matched through the join.
- *   - Stemming will not connect "vadiyaalu" to "vadiyalu". Trigram similarity
+ *   - Stemming will not connect "vadiyalu" to "vadialu". Trigram similarity
  *     will, which is why `pg_trgm` is installed.
  *
  * Ranking puts a full-text hit above a fuzzy one, so an exact match is never
