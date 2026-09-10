@@ -120,13 +120,13 @@ PRODUCTS
   Dehydrated Powders & Flakes
   Dehydrated Fruits
   Pickles
-  Spiced Dal Powders
-  Sandige / Crisps / Vadiyalu
+  Dal Powders
+  Crisps
   Dry Fruits
-  Millets
-  Herbal Tea & Coffee
+  Millet Powders
+  Tea / Coffee
   Masala Powders
-  Combo Packs
+  Spices
   ─────────────────
   View all products →
 

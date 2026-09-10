@@ -51,58 +51,58 @@ instruction expressed as a rule the code can follow.
 
 ## 2. Categories — confirmed
 
-These ten come from the client's handwritten sheet and the approved mockup.
-**No category has been added or removed.**
+These ten come from the client's product catalogue of 2026-09-10, which
+replaced the handwritten sheet's list (Spiced Dal Powders, Sun-Dried Crisps,
+Millets, Herbal Tea & Coffee and Combo Packs are gone; Spices is new).
+Names are exactly as the client wrote them. The full list, with the items
+awaiting confirmation, is in `docs/PRODUCT-DOMAIN.md` §3.
 
-| # | Category | Proposed slug | Types expected? |
+| # | Category | Slug | Types |
 |---|---|---|---|
-| 1 | Dehydrated Powders & Flakes | `dehydrated-powders-flakes` | Likely — by source vegetable/leaf |
-| 2 | Dehydrated Fruits | `dehydrated-fruits` | Likely — by fruit |
-| 3 | Pickles | `pickles` | **Yes — client gave this example** |
-| 4 | Spiced Dal Powders | `spiced-dal-powders` | Possibly — by base |
-| 5 | Sandige / Crisps / Vadiyalu | *pending `OQ-012`* | Possibly — by base grain |
-| 6 | Dry Fruits | `dry-fruits` | Likely — by nut/fruit |
-| 7 | Millets | `millets` | Likely — by millet, and by whole/flour |
-| 8 | Herbal Tea & Coffee | `herbal-tea-coffee` | Possibly — tea vs coffee |
-| 9 | Masala Powders | `masala-powders` | Likely — by dish |
-| 10 | Combo Packs | `combo-packs` | Unlikely — flat |
+| 1 | Dehydrated Powders & Flakes | `dehydrated-powders-flakes` | Powders, Flakes |
+| 2 | Dehydrated Fruits | `dehydrated-fruits` | Flat |
+| 3 | Pickles | `pickles` | Veg Pickles, Non-Veg Pickles |
+| 4 | Dal Powders | `dal-powders` | Flat |
+| 5 | Crisps | `crisps` | Flat |
+| 6 | Dry Fruits | `dry-fruits` | Flat |
+| 7 | Millet Powders | `millet-powders` | Five, one per millet — to confirm |
+| 8 | Tea / Coffee | `tea-coffee` | Flat |
+| 9 | Masala Powders | `masala-powders` | Flat |
+| 10 | Spices | `spices` | Flat |
 
 Slugs are **permanent** once published. `OQ-013` must be answered before any
 category page ships.
 
 ---
 
-## 3. Type layer — `[ILLUSTRATIVE]` only
+## 3. Type layer — from the client's catalogue
 
-The shapes below show the *kind* of structure the interface expects. **Every
-entry is a placeholder.** The client supplies the real list.
+The client's catalogue of 2026-09-10 divides three categories; the other seven
+list products directly, with no type in between.
 
 ```
-Pickles                          [ILLUSTRATIVE]
-├── Mango
-├── Lemon
-├── Gongura
-└── …
+Dehydrated Powders & Flakes
+├── Powders
+└── Flakes
 
-Dehydrated Fruits                [ILLUSTRATIVE]
-├── Mango
-├── Pineapple
-├── Banana
-└── …
+Pickles
+├── Veg Pickles
+└── Non-Veg Pickles
 
-Millets                          [ILLUSTRATIVE]
-├── Ragi
-├── Foxtail
-└── …
-   └── each possibly split whole grain / flour / rava
+Millet Powders                   [TO CONFIRM]
+├── Foxtail / Korralu
+├── Little / Samalu
+├── Kodo / Arikalu
+├── Barnyard / Udalu
+└── Andukorralu
 ```
 
-**Open question `OQ-049`:** for Millets and Dehydrated Powders, is the type
-axis the *ingredient* (Ragi, Foxtail) or the *form* (whole, flour, rava)? It
-cannot be both without a two-axis filter, which conflicts with the brief's
-"avoid complicated filters". Our recommendation is **ingredient as the type,
-form as a product variant**, because a customer looks for "ragi" before they
-look for "flour".
+**To confirm:** the five millet entries are modelled as types, following the
+hierarchy the client gave ("Millet Powders → Foxtail / Korralu → Product"),
+each holding one product of the same name until the client lists what is
+inside it. If they are products, the type layer under Millet Powders goes and
+the products stay. `OQ-049` (ingredient versus form as the type axis) is
+settled for now by the catalogue itself: the millet types are by ingredient.
 
 ---
 

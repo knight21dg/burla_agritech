@@ -1,6 +1,6 @@
 # Burla Global Agri Products
 
-Two web applications for Burla Global Agri Products — an Indian agricultural food-products brand producing dehydrated powders and flakes, dehydrated fruits, pickles, spiced dal powders, sun-dried crisps, dry fruits, millets, herbal tea and coffee, masala powders and combo packs.
+Two web applications for Burla Global Agri Products — an Indian agricultural food-products brand producing dehydrated powders and flakes, dehydrated fruits, pickles, dal powders, crisps, dry fruits, millet powders, tea and coffee, masala powders and spices.
 
 | App | Domain | Purpose |
 |---|---|---|

@@ -50,22 +50,31 @@ That is not a shortcut. They behave identically: both have a slug, a hero headli
 
 ## 3. The ten categories
 
-From the handwritten sheet supplied by the client. Names pending final confirmation (`OQ-013`).
+From the client's product catalogue of 2026-09-10, which replaced the handwritten sheet's list. Names are exactly as the client wrote them.
 
-| # | Category | Slug | Note |
+| # | Category | Slug | Types |
 |---|---|---|---|
-| 1 | Dehydrated Powders & Flakes | `dehydrated-powders-flakes` | Vegetable and leaf powders |
-| 2 | Dehydrated Fruits | `dehydrated-fruits` | |
-| 3 | Pickles | `pickles` | |
-| 4 | Spiced Dal Powders | `spiced-dal-powders` | Podi. A Telugu household staple |
-| 5 | Sun-Dried Crisps | `sun-dried-crisps` | **Vadiyalu** — see §4 |
-| 6 | Dry Fruits | `dry-fruits` | Traded, not manufactured |
-| 7 | Millets | `millets` | |
-| 8 | Herbal Tea & Coffee | `herbal-tea-coffee` | |
-| 9 | Masala Powders | `masala-powders` | |
-| 10 | Combo Packs | `combo-packs` | Composed of other products — see §6 |
+| 1 | Dehydrated Powders & Flakes | `dehydrated-powders-flakes` | Powders, Flakes |
+| 2 | Dehydrated Fruits | `dehydrated-fruits` | — |
+| 3 | Pickles | `pickles` | Veg Pickles, Non-Veg Pickles |
+| 4 | Dal Powders | `dal-powders` | — |
+| 5 | Crisps | `crisps` | — |
+| 6 | Dry Fruits | `dry-fruits` | — |
+| 7 | Millet Powders | `millet-powders` | Foxtail / Korralu, Little / Samalu, Kodo / Arikalu, Barnyard / Udalu, Andukorralu |
+| 8 | Tea / Coffee | `tea-coffee` | — |
+| 9 | Masala Powders | `masala-powders` | — |
+| 10 | Spices | `spices` | — |
 
-**The type layer is currently invented by us** (`OQ-049`). The ten types in `catalog.ts` demonstrate the UX and must not reach production. Real types come from the client, per category.
+**The type layer is the client's.** Only the three categories the catalogue itself divides have types; the rest list products directly. The five millet types each hold one product of the same name, pending confirmation that the catalogue meant them as types.
+
+**Items awaiting confirmation**, carried as `confirmation` notes in `catalog.ts`:
+
+- *ABC Powder* and *Honey* — marked "confirmation required" by the client.
+- *Non-Veg* under Masala Powders — the client asks whether it is a product or a grouping. Kept as a product until answered.
+- *Herbal, Masala, Lemon, Green* under Tea / Coffee — the catalogue does not say whether each is a tea or a coffee.
+- The five millet entries — whether they are types or products.
+
+No product in the catalogue has a price, pack size, description or photograph yet. Products are listed with "price to be confirmed" and cannot be ordered until those are supplied.
 
 ---
 
@@ -73,14 +82,18 @@ From the handwritten sheet supplied by the client. Names pending final confirmat
 
 The GSTIN prefix `37` and the Nellore address place the business in **Andhra Pradesh**, so the language is **Telugu**.
 
-| Term | Meaning | Why not the alternative |
-|---|---|---|
-| **Vadiyalu** | Sun-dried lentil or sago crisps, fried before eating | *Sandige* is the Kannada word; *Vadi / Badi* is northern. Vadiyalu is correct for AP |
-| **Podi** | Dry spiced powder eaten with rice or idli | Not "chutney powder", which is a marketing translation |
-| **Gongura** | Roselle leaf | No English equivalent in common use |
-| **Avakaya** | The specific AP mango pickle in mustard oil | Not interchangeable with mango pickle generally |
+The catalogue of 2026-09-10 uses these Telugu names, and they are kept exactly as written:
 
-These words appear in product names as the client uses them. Where a customer outside AP might not know a term, the short descriptor explains it; the name itself is not anglicised.
+| As written | Where |
+|---|---|
+| **Vadialu** | Crisps — Rice, Gummadi and Minapa Vadialu |
+| **Gongura** | Veg Pickles — Gongura Pickle |
+| **Kandi, Avise** | Dal Powders — Kandi Powder, Avise Powder |
+| **Saggubiyyam** | Crisps |
+| **Nuvvulu** | Dal Powders — Sesame Seed / Nuvvulu |
+| **Korralu, Samalu, Arikalu, Udalu, Andukorralu** | Millet Powders |
+
+The name itself is not anglicised or respelled. The catalogue writes "Vadialu"; "vadiyalu" is another common spelling, so the search keywords carry it and a customer typing either finds the products. Any explanation of a term belongs in the short descriptor, which the client has not yet supplied.
 
 ---
 
@@ -106,7 +119,7 @@ draft ──publish──► published ──unpublish──► draft
 
 ## 6. Combo packs
 
-Category 10 is structurally different: a combo contains other products.
+The client's catalogue of 2026-09-10 has no combo packs; the handwritten sheet listed them as category 10. This section records the design in case they return (`OQ-063`). A combo is structurally different: it contains other products.
 
 Modelled as a normal product with a `bundle_items` join to the variants it contains. That gives it its own price, photograph and stock behaviour while remaining traceable to its contents.
 
