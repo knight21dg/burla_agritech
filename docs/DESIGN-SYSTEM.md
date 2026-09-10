@@ -61,6 +61,36 @@ The one piece of continuous motion on the site, and only in the hero.
 Physics: `components/home/leafPhysics.ts` (pure, testable). Rendering:
 `components/home/FallingLeaves.tsx`.
 
+### 10b. The supplied hero image, and its own leaves (2026-09-10)
+
+The client then supplied the hero as a finished image and asked for it
+exactly. On desktop it is shown as-is — no button or other element added on
+top of it. Its words are repeated in the markup, visually hidden, for search
+and assistive technology.
+
+Its eleven floating leaves are lifted out of the image as transparent sprites,
+the ground behind them filled, and each placed back exactly where it was
+painted. The first frame is the supplied image; after a one-second hold the
+breeze eases in and the image's own leaves fall, on the same physics as 10a.
+
+- Sprites composite back to the original to within 30/255 everywhere except
+  the last six rows of one leaf tip (it met the pouch) and the outer 16px of
+  the four leaves the image border slices, which are feathered so their cut
+  edge never shows once they move
+- Larger leaves re-enter clear of the painted words — the headline is part of
+  the picture, so a leaf over it covers it. Measured: 0% of the time
+- Density holds: 8.5 of 11 leaves on screen on average
+- Leaves travel on across the white margin when the image is narrower than
+  the screen, rather than vanishing at the image border
+- Phones: real text above, and the image cropped square and right-anchored to
+  the products, which is where the painted words end
+
+The hero is served as pre-encoded WebP (48 / 89 / 136 KB), preloaded, rather
+than through next/image — the optimiser stalled on this file at 1920px in
+development, and the largest paint on the site should not depend on an
+on-the-fly encode. Masters and the extraction script: `assets/hero/`.
+
+
 ---
 
 ## 1. The one rule

@@ -62,9 +62,16 @@ import {
  */
 export function FallingLeaves({
   layer = "back",
+  instance,
   className,
 }: {
   layer?: Layer;
+  /**
+   * Distinguishes two layers of the same kind on one page. Leaf gradient ids
+   * are document-global, and a duplicate id resolves to the first element in
+   * the document, which may sit inside a hidden subtree.
+   */
+  instance?: string;
   className?: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -107,8 +114,13 @@ export function FallingLeaves({
     const measure = () => {
       W = container.clientWidth;
       H = container.clientHeight;
-      // Leaves hidden by the small-screen rule are skipped, not animated.
-      visible = leaves.map(({ el }) => getComputedStyle(el).display !== "none");
+      // A layer that is itself hidden (zero size, or inside display:none)
+      // animates nothing; within a shown layer, leaves trimmed by the
+      // small-screen rule are skipped.
+      const shown = W > 0 && H > 0 && container.getClientRects().length > 0;
+      visible = leaves.map(
+        ({ el }) => shown && getComputedStyle(el).display !== "none",
+      );
     };
     measure();
 
@@ -209,7 +221,7 @@ export function FallingLeaves({
             }}
           >
             <Leaf
-              uid={`leaf-${layer}-${i}`}
+              uid={`leaf-${instance ?? layer}-${i}`}
               shape={seed.shape}
               palette={seed.palette}
               className="block h-auto w-full"

@@ -1,9 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Globe, Heart, Leaf } from "lucide-react";
 import { StillLife } from "@/components/art/StillLife";
 import { imagery } from "@/lib/imagery";
 import { FallingLeaves } from "./FallingLeaves";
+import { PhotoHero } from "./PhotoHero";
 
 /**
  * Homepage hero, built to the client's final mockup (2026-09-10).
@@ -40,6 +40,11 @@ const PILLARS = [
 export function Hero() {
   const photo = imagery.hero;
 
+  // The client's supplied hero image is a complete composition — words,
+  // products and leaves — so when it is present it replaces this layout
+  // outright rather than filling the right-hand column.
+  if (photo) return <PhotoHero photo={photo} />;
+
   return (
     <section
       aria-labelledby="hero-title"
@@ -48,7 +53,14 @@ export function Hero() {
       {/* 1 — warm light seating the illustration */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-[10%] top-1/2 -z-10 hidden aspect-square w-[62%] -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,#fdf3df_0%,#fef9f0_55%,transparent_100%)] lg:block"
+        // Sized and placed against the content column, not the window, so on
+        // a very wide screen it stays behind the illustration instead of
+        // swelling toward the right edge.
+        style={{
+          width: "min(62%, 52rem)",
+          right: "max(-10%, calc((100% - var(--container-page)) / 2 - 8rem))",
+        }}
+        className="pointer-events-none absolute top-1/2 -z-10 hidden aspect-square -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,#fdf3df_0%,#fef9f0_55%,transparent_100%)] lg:block"
       />
 
       {/* 2 — leaves behind the content */}
@@ -121,19 +133,7 @@ export function Hero() {
           {/* 3 — the picture */}
           <div className="relative lg:col-span-7">
             <div className="enter-art relative">
-              {photo ? (
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  width={photo.width}
-                  height={photo.height}
-                  priority
-                  sizes="(min-width: 1024px) 58vw, 100vw"
-                  className="h-auto w-full"
-                />
-              ) : (
-                <StillLife className="h-auto w-full" />
-              )}
+              <StillLife className="h-auto w-full" />
             </div>
 
             <div

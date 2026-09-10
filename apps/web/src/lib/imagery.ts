@@ -26,6 +26,12 @@ export interface Photo {
   alt: string;
   width: number;
   height: number;
+  /**
+   * Pre-encoded sizes, when the image is served as-is rather than through
+   * next/image's on-the-fly optimiser. Used for the hero, which is the page's
+   * largest paint and should not wait on (or depend on) an encode.
+   */
+  sources?: { src: string; width: number }[];
 }
 
 export const imagery: {
@@ -36,7 +42,25 @@ export const imagery: {
   /** One per category slug, square, product on white. */
   categories: Partial<Record<string, Photo>>;
 } = {
-  hero: null,
+  // Supplied by the client, 2026-09-10 (a generated image; the packaging it
+  // shows is not yet a real product). Its floating leaves have been lifted out
+  // as sprites and removed from these files — they are placed back, and
+  // animated, by components/home/PhotoLeaves.tsx. Masters and the script that
+  // produced all of it: assets/hero/.
+  hero: {
+    src: "/images/home/hero-1536.webp",
+    sources: [
+      { src: "/images/home/hero-768.webp", width: 768 },
+      { src: "/images/home/hero-1152.webp", width: 1152 },
+      { src: "/images/home/hero-1536.webp", width: 1536 },
+    ],
+    alt:
+      "Burla dehydrated mango pouch and jars of mango pickle and spiced dal " +
+      "powder, with wooden bowls of dried mango slices, turmeric and red " +
+      "chilli powder, and dried red chillies",
+    width: 1536,
+    height: 1024,
+  },
   about: null,
   categories: {},
 };
