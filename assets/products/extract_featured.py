@@ -29,12 +29,13 @@ OUT = os.path.join(ROOT, "apps", "web", "public", "images", "products")
 os.makedirs(OUT, exist_ok=True)
 
 TOP, BOTTOM = 94, 686
+# Named for the catalogue's product slugs. The sheet's Dehydrated Banana
+# (x 728-1078) and Ragi Flour (x 1444-1793) are not in the catalogue of
+# 2026-09-10 and are not extracted.
 CARDS = [
-    ("dehydrated-mango", (14, 363)),
+    ("dehydrated-fruits-mango", (14, 363)),   # sheet: Dehydrated Mango
     ("mango-pickle", (376, 715)),
-    ("dehydrated-banana", (728, 1078)),
     ("red-chilli-powder", (1090, 1431)),
-    ("ragi-flour", (1444, 1793)),
     ("gongura-pickle", (1805, 2157)),
 ]
 

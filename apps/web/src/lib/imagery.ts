@@ -73,32 +73,37 @@ export const imagery: {
   // Supplied by the client, 2026-09-10, as one sheet of ten cards; each photo
   // cut out, its printed label left behind, and re-centred at one scale
   // (assets/categories/). Decorative in the tile, whose name is the label.
+  //
+  // Mapped onto the catalogue's categories by what each card showed. Spices
+  // has no card on the sheet, so it keeps the illustrated placeholder; the
+  // sheet's Combo Packs card has no category in the catalogue and is unused.
+  // TODO (confirm): the Millet Powders tile uses the sheet's "Millets" card,
+  // which shows whole millet grains rather than a powder.
   categories: Object.fromEntries(
     [
       ["dehydrated-powders-flakes", "A wooden bowl of dehydrated powder"],
       ["dehydrated-fruits", "A wooden bowl of dried mango slices"],
       ["pickles", "A jar of mango pickle"],
-      ["spiced-dal-powders", "A wooden bowl of spiced dal powder"],
-      ["sun-dried-crisps", "A wooden bowl of sun-dried crisps"],
+      ["dal-powders", "A wooden bowl of dal powder"],
+      ["crisps", "A wooden bowl of crisps"],
       ["dry-fruits", "A wooden bowl of mixed nuts"],
-      ["millets", "A wooden bowl of millet"],
-      ["herbal-tea-coffee", "A wooden bowl of loose herbal tea"],
+      ["millet-powders", "A wooden bowl of millet"],
+      ["tea-coffee", "A wooden bowl of loose tea leaves"],
       ["masala-powders", "A wooden bowl of masala powders"],
-      ["combo-packs", "A set of packs and jars"],
     ].map(([slug, alt]) => [
       slug!,
       { src: `/images/categories/${slug}.webp`, alt: alt!, width: 480, height: 360 },
     ]),
   ),
   // Supplied by the client, 2026-09-10, as the Featured Products sheet; each
-  // photo cut out and re-centred at one scale (assets/products/).
+  // photo cut out and re-centred at one scale (assets/products/). Only the
+  // four that picture a product in the catalogue are used; the sheet's
+  // Dehydrated Banana and Ragi Flour are not in it.
   products: Object.fromEntries(
     [
-      ["dehydrated-mango", "Dehydrated Mango pouch with dried mango slices and fresh mangoes"],
+      ["dehydrated-fruits-mango", "Dehydrated Mango pouch with dried mango slices and fresh mangoes"],
       ["mango-pickle", "Jar of Mango Pickle with fresh mango and dried chillies"],
-      ["dehydrated-banana", "Dehydrated Banana pouch with a bowl of banana chips"],
       ["red-chilli-powder", "Wooden bowl of red chilli powder with dried red chillies"],
-      ["ragi-flour", "Ragi Flour pouch with a bowl of ragi flour"],
       ["gongura-pickle", "Jar of Gongura Pickle with gongura leaves and red chillies"],
     ].map(([slug, alt]) => [
       slug!,

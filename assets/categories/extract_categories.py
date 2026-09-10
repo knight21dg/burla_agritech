@@ -25,18 +25,20 @@ SRC = os.path.join(HERE, "categories-supplied.png")
 OUT = os.path.join(ROOT, "apps", "web", "public", "images", "categories")
 os.makedirs(OUT, exist_ok=True)
 
-# Card boxes (x0, y0, x1, y1), from the sheet's border lines, in sheet order.
+# Card boxes (x0, y0, x1, y1), from the sheet's border lines, in sheet order,
+# each named for the catalogue category it pictures (the catalogue of
+# 2026-09-10 renamed several). The sheet's tenth card, Combo Packs, has no
+# category in the catalogue and is not extracted; Spices has no card.
 CARDS = [
     ("dehydrated-powders-flakes", (40, 12, 361, 354)),
     ("dehydrated-fruits", (381, 12, 712, 354)),
     ("pickles", (734, 12, 1069, 354)),
-    ("spiced-dal-powders", (1090, 12, 1412, 354)),
-    ("sun-dried-crisps", (1432, 12, 1784, 354)),
+    ("dal-powders", (1090, 12, 1412, 354)),        # sheet: Spiced Dal Powders
+    ("crisps", (1432, 12, 1784, 354)),              # sheet: Sandige / Crisps / Vadialu
     ("dry-fruits", (1807, 12, 2130, 354)),
-    ("millets", (50, 370, 378, 702)),
-    ("herbal-tea-coffee", (396, 370, 730, 702)),
+    ("millet-powders", (50, 370, 378, 702)),        # sheet: Millets (whole grains)
+    ("tea-coffee", (396, 370, 730, 702)),           # sheet: Herbal Tea & Coffee
     ("masala-powders", (749, 370, 1090, 702)),
-    ("combo-packs", (1104, 370, 1507, 702)),
 ]
 
 TILE_W, TILE_H = 480, 360   # 4:3, at 2-3x the size the tiles render

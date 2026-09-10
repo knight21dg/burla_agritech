@@ -37,8 +37,7 @@ export type Contents =
   | "grains"
   | "discs"
   | "nuts"
-  | "tea"
-  | "trio";
+  | "tea";
 
 interface Shades {
   base: string;
@@ -63,13 +62,13 @@ export const CONTENTS_FOR_CATEGORY: Record<string, Contents> = {
   "dehydrated-powders-flakes": "powder",
   "dehydrated-fruits": "slices",
   pickles: "chunks",
-  "spiced-dal-powders": "powder",
-  "sun-dried-crisps": "discs",
+  "dal-powders": "powder",
+  crisps: "discs",
   "dry-fruits": "nuts",
-  millets: "grains",
-  "herbal-tea-coffee": "tea",
+  "millet-powders": "powder",
+  "tea-coffee": "tea",
   "masala-powders": "powder",
-  "combo-packs": "trio",
+  spices: "powder",
 };
 
 // --- colour ------------------------------------------------------------------
@@ -177,7 +176,7 @@ function Filling({
   seed,
 }: {
   uid: string;
-  contents: Exclude<Contents, "trio">;
+  contents: Contents;
   shades: Shades;
   seed: number;
 }): ReactElement {
@@ -310,7 +309,7 @@ function Filling({
             <g key={i} transform={`translate(${p.x} ${p.y}) rotate(${r2(p.rot * 0.4)}) scale(${p.s})`}>
               <ellipse rx="12" ry="5.5" fill={vary(shades, rand)} />
               <ellipse rx="12" ry="5.5" fill="none" stroke={shades.dark} strokeOpacity="0.35" strokeWidth="0.8" />
-              {/* Sun-dried crisps blister as they dry */}
+              {/* Crisps blister as they dry */}
               <circle cx="-4" cy="-0.5" r="0.9" fill={shades.dark} opacity="0.35" />
               <circle cx="3" cy="1" r="0.7" fill={shades.dark} opacity="0.3" />
             </g>
@@ -351,7 +350,7 @@ export function BowlGroup({
   transform,
 }: {
   uid: string;
-  contents: Exclude<Contents, "trio">;
+  contents: Contents;
   tone: Tone;
   seed: number;
   transform?: string;
@@ -411,9 +410,7 @@ export function BowlGroup({
   );
 }
 
-/**
- * A standalone bowl illustration, or three small ones for the combo packs.
- */
+/** A standalone bowl illustration. */
 export function Bowl({
   uid,
   contents,
@@ -437,16 +434,7 @@ export function Bowl({
       aria-hidden="true"
       focusable="false"
     >
-      {contents === "trio" ? (
-        // A set across the range: turmeric, chilli and millet, back to front
-        <>
-          <BowlGroup uid={`${uid}-a`} contents="powder" tone="turmeric" seed={seed + 1} transform="translate(8 10) scale(0.52)" />
-          <BowlGroup uid={`${uid}-b`} contents="powder" tone="chilli" seed={seed + 2} transform="translate(88 10) scale(0.52)" />
-          <BowlGroup uid={`${uid}-c`} contents="grains" tone="grain" seed={seed + 3} transform="translate(46 66) scale(0.54)" />
-        </>
-      ) : (
-        <BowlGroup uid={uid} contents={contents} tone={tone} seed={seed} />
-      )}
+      <BowlGroup uid={uid} contents={contents} tone={tone} seed={seed} />
     </svg>
   );
 }
