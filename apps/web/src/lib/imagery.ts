@@ -95,16 +95,32 @@ export const imagery: {
       { src: `/images/categories/${slug}.webp`, alt: alt!, width: 480, height: 360 },
     ]),
   ),
-  // Supplied by the client, 2026-09-10, as the Featured Products sheet; each
-  // photo cut out and re-centred at one scale (assets/products/). Only the
-  // four that picture a product in the catalogue are used; the sheet's
-  // Dehydrated Banana and Ragi Flour are not in it.
+  // Supplied by the client, 2026-09-10, as two sheets; each photo cut out and
+  // re-centred at one scale (assets/products/).
+  //   - The Featured Products sheet: only the four that picture a product in
+  //     the catalogue are used; its Dehydrated Banana and Ragi Flour are not.
+  //   - The Powders sheet: all thirteen, one per product under Dehydrated
+  //     Powders & Flakes → Powders, each named on its card.
+  // Alt text describes what each photograph shows, and nothing more.
   products: Object.fromEntries(
     [
       ["dehydrated-fruits-mango", "Dehydrated Mango pouch with dried mango slices and fresh mangoes"],
       ["mango-pickle", "Jar of Mango Pickle with fresh mango and dried chillies"],
       ["red-chilli-powder", "Wooden bowl of red chilli powder with dried red chillies"],
       ["gongura-pickle", "Jar of Gongura Pickle with gongura leaves and red chillies"],
+      ["moringa-powder", "Wooden bowl of moringa powder with moringa leaves"],
+      ["banana-powder", "Wooden bowl of banana powder with bananas and banana slices"],
+      ["lemon-powder", "Wooden bowl of lemon powder with lemons and lemon slices"],
+      ["tomato-powder", "Wooden bowl of tomato powder with fresh tomatoes"],
+      ["ginger-powder", "Wooden bowl of ginger powder with fresh ginger"],
+      ["garlic-powder", "Wooden bowl of garlic powder with garlic bulbs and cloves"],
+      ["onion-powder", "Wooden bowl of onion powder with red onions"],
+      ["carrot-powder", "Wooden bowl of carrot powder with carrots"],
+      ["beetroot-powder", "Wooden bowl of beetroot powder with beetroot"],
+      ["curry-leaves", "Wooden bowl of powder with fresh curry leaves"],
+      ["amla-powder", "Wooden bowl of amla powder with fresh amla"],
+      ["abc-powder", "Wooden bowl of pink powder with an apple, a beetroot and a carrot"],
+      ["spinach-powder", "Wooden bowl of spinach powder with spinach leaves"],
     ].map(([slug, alt]) => [
       slug!,
       { src: `/images/products/${slug}.webp`, alt: alt!, width: 600, height: 600 },
