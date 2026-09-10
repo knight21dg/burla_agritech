@@ -95,12 +95,12 @@ export const imagery: {
       { src: `/images/categories/${slug}.webp`, alt: alt!, width: 480, height: 360 },
     ]),
   ),
-  // Supplied by the client, 2026-09-10, as two sheets; each photo cut out and
-  // re-centred at one scale (assets/products/).
+  // Supplied by the client, 2026-09-10, as three sheets; each photo cut out
+  // and re-centred at one scale (assets/products/).
   //   - The Featured Products sheet: only the four that picture a product in
   //     the catalogue are used; its Dehydrated Banana and Ragi Flour are not.
-  //   - The Powders sheet: all thirteen, one per product under Dehydrated
-  //     Powders & Flakes → Powders, each named on its card.
+  //   - The Powders and Flakes sheets: all thirteen and all seven, one per
+  //     product under Dehydrated Powders & Flakes, each named on its card.
   // Alt text describes what each photograph shows, and nothing more.
   products: Object.fromEntries(
     [
@@ -121,6 +121,13 @@ export const imagery: {
       ["amla-powder", "Wooden bowl of amla powder with fresh amla"],
       ["abc-powder", "Wooden bowl of pink powder with an apple, a beetroot and a carrot"],
       ["spinach-powder", "Wooden bowl of spinach powder with spinach leaves"],
+      ["mango-flakes", "Wooden bowl of mango flakes with a fresh mango, cut and whole"],
+      ["tomato-flakes", "Wooden bowl of tomato flakes with fresh tomatoes"],
+      ["ginger-flakes", "Wooden bowl of ginger flakes with fresh ginger"],
+      ["garlic-flakes", "Wooden bowl of garlic flakes with garlic bulbs and cloves"],
+      ["onion-flakes", "Wooden bowl of onion flakes with red onions"],
+      ["carrot-flakes", "Wooden bowl of carrot flakes with carrots"],
+      ["beetroot-flakes", "Wooden bowl of beetroot flakes with beetroot and its leaves"],
     ].map(([slug, alt]) => [
       slug!,
       { src: `/images/products/${slug}.webp`, alt: alt!, width: 600, height: 600 },

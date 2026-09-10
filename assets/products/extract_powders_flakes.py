@@ -1,18 +1,19 @@
 """
-Cut the thirteen Powders photographs out of the client's sheet.
+Cut the Powders and Flakes photographs out of the client's two sheets.
 
-    python assets/products/extract_powders.py
+    python assets/products/extract_powders_flakes.py
 
-Input   assets/products/powders-supplied.png       the client's sheet (2092 x 752)
+Input   assets/products/powders-supplied.png       13 cards (2092 x 752)
+        assets/products/flakes-supplied.png        7 cards (2092 x 752)
 Output  apps/web/public/images/products/{slug}.webp  one square image each
 
 Same method as extract_featured.py: card edges measured from the sheet's own
 border lines; the printed name under each photograph left behind; the product
 trimmed to its outline, shadow included, and re-centred on white at one fill.
 
-The sheet has two rows of different card widths — seven cards above, six
-below — so each card carries its own box. The cards are in the catalogue's
-order, and each is named for the product whose name is printed on it.
+Each sheet has two rows of different card widths, so each card carries its
+own box. The cards are in the catalogue's order, and each is named for the
+product whose name is printed on it.
 """
 import json
 import os
@@ -22,13 +23,13 @@ from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-SRC = os.path.join(HERE, "powders-supplied.png")
 OUT = os.path.join(ROOT, "apps", "web", "public", "images", "products")
 os.makedirs(OUT, exist_ok=True)
 
+# Powders sheet
 ROW_1 = (13, 367)
 ROW_2 = (381, 720)
-CARDS = [
+POWDERS = [
     ("moringa-powder", (12, 289), ROW_1),
     ("banana-powder", (305, 583), ROW_1),
     ("lemon-powder", (600, 879), ROW_1),
@@ -44,16 +45,35 @@ CARDS = [
     ("spinach-powder", (1702, 2028), ROW_2),
 ]
 
+# Flakes sheet: four wide cards above, three below.
+F_ROW_1 = (12, 367)
+F_ROW_2 = (379, 739)
+FLAKES = [
+    ("mango-flakes", (12, 514), F_ROW_1),
+    ("tomato-flakes", (534, 1037), F_ROW_1),
+    ("ginger-flakes", (1057, 1558), F_ROW_1),
+    ("garlic-flakes", (1579, 2081), F_ROW_1),
+    ("onion-flakes", (13, 518), F_ROW_2),
+    ("carrot-flakes", (537, 1101), F_ROW_2),
+    ("beetroot-flakes", (1121, 1638), F_ROW_2),
+]
+
+SHEETS = [("powders-supplied.png", POWDERS), ("flakes-supplied.png", FLAKES)]
+
 TILE = 600      # square, matching the product card's image area, ~2x its size
 FILL = 0.9
 INSET = 5       # just inside the border line
 EDGE_BAND = 16  # the rounded corners' border arcs reach this far in
 LABEL_GAP = 14  # blank rows between photo and label; label lines sit closer
 
-sheet = np.asarray(Image.open(SRC).convert("RGB"))
 report = []
+CARDS = [
+    (np.asarray(Image.open(os.path.join(HERE, name)).convert("RGB")), card)
+    for name, cards in SHEETS
+    for card in cards
+]
 
-for slug, (x0, x1), (top, bottom) in CARDS:
+for sheet, (slug, (x0, x1), (top, bottom)) in CARDS:
     card = sheet[top + INSET:bottom - INSET, x0 + INSET:x1 - INSET].astype(np.int32)
     h, w, _ = card.shape
 
