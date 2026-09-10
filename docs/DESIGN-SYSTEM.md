@@ -77,15 +77,22 @@ breeze eases in and the image's own leaves fall, on the same physics as 10a.
   the last six rows of one leaf tip (it met the pouch) and the outer 16px of
   the four leaves the image border slices, which are feathered so their cut
   edge never shows once they move
-- Larger leaves re-enter clear of the painted words — the headline is part of
-  the picture, so a leaf over it covers it. Measured: 0% of the time
-- Density holds: 8.5 of 11 leaves on screen on average
-- Leaves travel on across the white margin when the image is narrower than
-  the screen, rather than vanishing at the image border
-- Phones: real text above, and the image cropped square and right-anchored to
-  the products, which is where the painted words end
+- No leaf ever re-enters over the painted words (the headline is part of the
+  picture, so a leaf there covers it), and the three leaves the image paints
+  beside them fall straight down on their first pass. Simulated at frames
+  from 1009 to 2545px wide: leaves touching the words 0% of the time, about
+  8 of 11 leaves on screen
+- Full width at every size: the page shows a widened canvas — the image with
+  its empty top and bottom margin trimmed and matched backdrop extended at
+  both sides (3072 x 880) — with object-fit: cover, capped at the screen
+  height below the header and at native resolution. At 1904 x 912 the
+  content renders 1337px wide, up from 1131 letterboxed
+- Leaves are placed in CSS container units with the same arithmetic as
+  object-fit: cover, so the first paint is exact on every screen
+- Phones: real text above, and a 1024 x 880 window of the image on the
+  products, which is where the painted words end
 
-The hero is served as pre-encoded WebP (48 / 89 / 136 KB), preloaded, rather
+The hero is served as pre-encoded WebP (50 / 136 KB), preloaded, rather
 than through next/image — the optimiser stalled on this file at 1920px in
 development, and the largest paint on the site should not depend on an
 on-the-fly encode. Masters and the extraction script: `assets/hero/`.

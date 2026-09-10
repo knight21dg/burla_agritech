@@ -36,6 +36,30 @@ export interface HeroLeaf {
 
 export const HERO_SOURCE = { w: 1536, h: 1024 } as const;
 
+/**
+ * The canvas the page actually shows: the source cropped to rows
+ * `cropTop`..`cropTop + h` (the content spans rows 107-916; the rest was empty
+ * margin) and extended by `padX` of matched backdrop on each side, so it can
+ * fill a wide screen edge to edge. Produced by assets/hero/extract_leaves.py.
+ *
+ * A leaf at source (x, y) sits at canvas (x + padX, y - cropTop).
+ */
+export const HERO_CANVAS = { w: 3072, h: 880, padX: 768, cropTop: 70 } as const;
+
+/**
+ * Where the canvas is anchored when it is cropped (object-position), per
+ * layout. On phones the crop is a 1024-px-wide window of the source ending
+ * at its right edge — the products, not the painted words:
+ * (512 + padX) / (canvas.w - 1024) = 0.625.
+ */
+export const HERO_ANCHOR = {
+  phone: { x: 0.625, y: 0.5 },
+  desktop: { x: 0.5, y: 0.5 },
+} as const;
+
+/** The block of words painted into the image (logo to paragraph), source px. */
+export const PAINTED_TEXT = { left: 88, right: 470, bottom: 600 } as const;
+
 /** Drawn in this order: far first, so nearer leaves pass in front. */
 export const HERO_LEAVES: HeroLeaf[] = [
   { name: "a", x: 2, y: 126, w: 62, h: 88, depth: 0.18 },

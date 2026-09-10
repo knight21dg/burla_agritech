@@ -48,18 +48,20 @@ export const imagery: {
   // animated, by components/home/PhotoLeaves.tsx. Masters and the script that
   // produced all of it: assets/hero/.
   hero: {
-    src: "/images/home/hero-1536.webp",
+    // The widened canvas (3072 x 880): the supplied image with its empty top
+    // and bottom margin trimmed and matched backdrop added at both sides, so
+    // it fills the screen width without stretching or cropping content.
+    src: "/images/home/hero-wide-3072.webp",
     sources: [
-      { src: "/images/home/hero-768.webp", width: 768 },
-      { src: "/images/home/hero-1152.webp", width: 1152 },
-      { src: "/images/home/hero-1536.webp", width: 1536 },
+      { src: "/images/home/hero-wide-1536.webp", width: 1536 },
+      { src: "/images/home/hero-wide-3072.webp", width: 3072 },
     ],
     alt:
       "Burla dehydrated mango pouch and jars of mango pickle and spiced dal " +
       "powder, with wooden bowls of dried mango slices, turmeric and red " +
       "chilli powder, and dried red chillies",
-    width: 1536,
-    height: 1024,
+    width: 3072,
+    height: 880,
   },
   about: null,
   categories: {},

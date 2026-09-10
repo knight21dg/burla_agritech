@@ -1,73 +1,105 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { useEffect, useRef } from "react";
 import { between, seeded } from "@/components/art/random";
 import { cn } from "@/lib/utils";
-import { HERO_LEAVES, HERO_SOURCE, heroLeafSrc } from "./heroLeaves";
+import {
+  HERO_ANCHOR,
+  HERO_CANVAS,
+  HERO_LEAVES,
+  PAINTED_TEXT,
+  heroLeafSrc,
+} from "./heroLeaves";
 import { TAU, advance, character, type Motion, transformOf } from "./leafPhysics";
 
 /**
  * The hero image's own leaves, falling.
  *
  * Every leaf here is a sprite cut from the supplied image (`heroLeaves.ts`),
- * so they are exactly the leaves the client chose — the same shapes, the same
- * greens, the same out-of-focus blur on the near ones. At the first frame each
- * sits precisely where it was painted, so the hero is indistinguishable from
- * the original file. After a moment's stillness the breeze takes them.
+ * so they are exactly the leaves the client chose — the same shapes, greens
+ * and out-of-focus blur. At the first frame each sits precisely where it was
+ * painted, so the hero is indistinguishable from the supplied image. After a
+ * moment's stillness the breeze takes them, on the same physics as the
+ * illustrated leaves (`leafPhysics.ts`).
  *
- * The motion is the same physics as the illustrated leaves
- * (`leafPhysics.ts`): one shared wind whose gusts sweep across the scene,
- * pendulum-glide descent, banking, and turning under perspective. Near
- * leaves fall and drift faster than far ones.
+ * ## Placement, in CSS, exact at every size
+ *
+ * The image is shown with `object-fit: cover` in a frame whose shape depends
+ * on the screen, so where a painted pixel lands is only known from the
+ * frame's size. The frame is a size container, and each leaf is positioned
+ * with container units using the same arithmetic as `object-fit: cover`:
+ *
+ *   s    = max(frame width / canvas width, frame height / canvas height)
+ *   left = (frame width - canvas width x s) x anchorX + canvas x x s
+ *
+ * so the server render is already exact on every device, with no script and
+ * no flash. JavaScript then reads each leaf's rendered position and carries
+ * on from there.
  *
  * ## Continuity with the painted pose
  *
- * The physics is started from each leaf's exact drawn pose — no sway offset,
- * no rotation, no turn — so nothing visibly moves at the hand-over from the
- * server-rendered frame. Motion then eases in over the first seconds rather
- * than starting at full speed, which is how a still scene comes alive when a
- * breeze arrives.
+ * The physics starts from each leaf's exact drawn pose — no sway offset, no
+ * rotation, no turn — and eases in after a hold, which is how a still scene
+ * comes alive when a breeze arrives.
  *
- * ## Framing
- *
- * On desktop the frame shows the whole image, so positions are exact from the
- * server render, and leaves may drift on past the image into the band's white
- * margin. On phones the same image is cropped to the products (cover,
- * anchored right); the leaves are mapped through that crop in the
- * browser, and the layer fades in once they are placed so no leaf is ever
- * seen in the wrong spot.
- *
- * Re-entering leaves come back in at the top, upwind, with a fresh rotation,
- * so the scene keeps its density without repeating itself.
- */
-
-/** How long the scene holds still before the breeze arrives, and eases in. */
-const HOLD_SECONDS = 1.1;
-const EASE_IN_SECONDS = 2.6;
-
-/** Where the phone crop is anchored — must match PhotoHero's object-position. */
-const PHONE_ANCHOR = { x: 1, y: 0.5 };
-
-/**
- * The right edge of the words painted into the image, in source pixels.
+ * ## Keeping the words clear
  *
  * The headline is part of the picture, so a leaf cannot pass behind it the
- * way the illustrated leaves passed behind live text — anything drifting
- * across it covers it. Leaves re-entering from the top therefore come in to
- * the right of this line, where a rightward breeze carries them away from the
- * words. Only the smallest, faintest leaves may cross them, as they would.
+ * way the illustrated leaves passed behind live text — a leaf there covers
+ * it. So no leaf re-enters over the words: they come in to the right of
+ * them, from the upwind side below them, or down through the calm margin to
+ * their left, falling nearly straight. The two leaves the image paints beside
+ * the words are becalmed the same way on their first fall. Simulated at
+ * 1009-2545px frames: no leaf touches the painted words; 8 of 11 on screen.
  */
-const PAINTED_TEXT_RIGHT = 470;
-const PAINTED_TEXT_BOTTOM = 600;
-const FREE_TO_CROSS_TEXT_BELOW_DEPTH = 0.28;
 
-/** Share of re-entering leaves that arrive from the upwind side, not the top. */
+const HOLD_SECONDS = 1.1;
+const EASE_IN_SECONDS = 2.6;
+/** Share of re-entering leaves that arrive from the upwind side, below the words. */
 const SIDE_ENTRY_SHARE = 0.3;
+/** Share that fall through the calm white margin left of the words. */
+const MARGIN_ENTRY_SHARE = 0.25;
+
+/**
+ * Leaves in the lee of the words fall almost straight down: nearly all of
+ * the breeze is taken away and the swing kept short, so they drift down
+ * beside the text rather than being blown across it.
+ *
+ * `still` is for the two leaves the image paints right beside the words —
+ * one only ~20px from the logo — which get no drift at all on their first
+ * fall and a swing of a few pixels.
+ */
+function calm(m: Motion, still = false) {
+  m.windScale = still ? 0 : m.windScale * 0.03;
+  m.swayAmp = Math.min(m.swayAmp, still ? 8 : 12);
+}
+
+/** Room left for a leaf's own swing and slow drift, so it stays in its lane. */
+const DRIFT_ALLOWANCE = 60;
+
+/**
+ * How close to the painted words (source px) a painted leaf may sit and
+ * still be free to swing. Leaf "h" sits 31px past the end of the headline —
+ * about 18px on a small laptop, less than one swing.
+ */
+const BESIDE_TEXT = 60;
 
 const smooth = (t: number) => {
   const c = Math.min(1, Math.max(0, t));
   return c * c * (3 - 2 * c);
 };
+
+const { w: CW, h: CH, padX: PAD, cropTop: TOP } = HERO_CANVAS;
+
+/** The leaf's box, in container units — `object-fit: cover`, done by hand. */
+function placement(x: number, y: number, w: number): CSSProperties {
+  return {
+    left: `calc((100cqw - ${CW} * var(--spx)) * var(--ox) + ${x + PAD} * var(--spx))`,
+    top: `calc((100cqh - ${CH} * var(--spx)) * var(--oy) + ${y - TOP} * var(--spx))`,
+    width: `calc(${w} * var(--spx))`,
+  };
+}
 
 export function PhotoLeaves({ className }: { className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -76,43 +108,54 @@ export function PhotoLeaves({ className }: { className?: string }) {
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-
     const W0 = container.clientWidth;
     const H0 = container.clientHeight;
     if (!W0 || !H0) return;
 
-    // How the source image is fitted into this frame: the whole of it on
-    // desktop (the frame has the image's own ratio), cropped on phones.
     const desktop = window.matchMedia("(min-width: 768px)").matches;
-    const scale = desktop
-      ? W0 / HERO_SOURCE.w
-      : Math.max(W0 / HERO_SOURCE.w, H0 / HERO_SOURCE.h);
-    const offX = desktop ? 0 : (W0 - HERO_SOURCE.w * scale) * PHONE_ANCHOR.x;
-    const offY = desktop ? 0 : (H0 - HERO_SOURCE.h * scale) * PHONE_ANCHOR.y;
+    const anchor = desktop ? HERO_ANCHOR.desktop : HERO_ANCHOR.phone;
+
+    // The same cover arithmetic as the CSS, for the one thing CSS cannot
+    // give the physics: where the painted words are.
+    const fit = (W: number, H: number) => {
+      const s = Math.max(W / CW, H / CH);
+      return {
+        s,
+        offX: (W - CW * s) * anchor.x,
+        offY: (H - CH * s) * anchor.y,
+      };
+    };
 
     const leaves: { el: HTMLDivElement; m: Motion }[] = [];
+    const origin = container.getBoundingClientRect();
     HERO_LEAVES.forEach((leaf, i) => {
       const el = leafRefs.current[i];
       if (!el) return;
-      const width = leaf.w * scale;
-      const height = leaf.h * scale;
+      // Where the CSS put it — exact, and already on screen. Bounding boxes
+      // rather than offsetLeft/offsetWidth, which round to whole pixels and
+      // would nudge every leaf at the hand-over.
+      const box = el.getBoundingClientRect();
+      const x = box.left - origin.left;
+      const y = box.top - origin.top;
+      const width = box.width;
+      const height = width * (leaf.h / leaf.w);
+
       const c = character(leaf.depth, seeded(i * 7919 + 101));
       const phase = i % 2 === 0 ? 0 : Math.PI; // zero sway offset at t=0
       const bank = 16 + 10 * leaf.depth;
-
       leaves.push({
         el,
         m: {
           depth: leaf.depth,
           width,
           height,
-          x: offX + leaf.x * scale,
-          y: offY + leaf.y * scale,
+          x,
+          y,
           vx: 0,
           phase,
           bank,
           // Cancel every rotation term at t=0: the sprite is drawn in its
-          // painted orientation, and the first frame must match it exactly.
+          // painted orientation, and the first frame must match it.
           rest: -bank * Math.cos(phase),
           spin: 0,
           flutter: 0,
@@ -124,75 +167,71 @@ export function PhotoLeaves({ className }: { className?: string }) {
           flutterAmp: Math.min(c.flutterAmp, 52),
         },
       });
-
-      el.style.left = "0px";
-      el.style.top = "0px";
-      el.style.width = `${width.toFixed(2)}px`;
-      el.style.transform = transformOf({
-        x: offX + leaf.x * scale,
-        y: offY + leaf.y * scale,
-        rotZ: 0,
-        rotY: 0,
-        rotX: 0,
-      });
+      // The image paints three leaves right beside the words — by the logo,
+      // by the paragraph, and just past the end of the headline. On the
+      // breeze, or even on their own swing, they would cross the text, so on
+      // their first fall they drop straight down beside it instead.
+      if (
+        desktop &&
+        leaf.x < PAINTED_TEXT.right + BESIDE_TEXT &&
+        leaf.y < PAINTED_TEXT.bottom + 40
+      ) {
+        calm(leaves[leaves.length - 1]!.m, true);
+      }
     });
-
-    // Placed: safe to show (the phone layer starts hidden until now).
-    container.style.opacity = "1";
 
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (motionQuery.matches) return; // the still image is the design
 
-    // Where leaves may travel, in this layer's coordinates. On desktop the
-    // image is centred in a wider band, and a leaf should drift on across the
-    // white margin and leave at the edge of the band — not vanish mid-air at
-    // the image's invisible border. On phones the crop is the band.
-    const section = container.closest("section");
-    let bounds = { left: 0, right: W0, top: 0, bottom: H0 };
-    const measure = () => {
-      const c = container.getBoundingClientRect();
-      if (desktop && section) {
-        const s = section.getBoundingClientRect();
-        bounds = {
-          left: s.left - c.left,
-          right: s.right - c.left,
-          top: s.top - c.top,
-          bottom: s.bottom - c.top,
-        };
-      } else {
-        bounds = { left: 0, right: c.width, top: 0, bottom: c.height };
-      }
-    };
-    measure();
-    const resize = new ResizeObserver(measure);
+    // Hand over from CSS placement to transforms, in one frame, at the same
+    // position — nothing visibly moves.
+    for (const { el, m } of leaves) {
+      el.style.left = "0px";
+      el.style.top = "0px";
+      el.style.width = `${m.width.toFixed(2)}px`;
+      el.style.transform = transformOf({ x: m.x, y: m.y, rotZ: 0, rotY: 0, rotX: 0 });
+    }
+
+    let W = W0;
+    let H = H0;
+    const resize = new ResizeObserver(() => {
+      W = container.clientWidth;
+      H = container.clientHeight;
+    });
     resize.observe(container);
-    if (section) resize.observe(section);
 
     const reenter = (m: Motion) => {
       const rand = Math.random;
-      const span = bounds.right - bounds.left;
-      Object.assign(m, character(m.depth, rand), {
-        tumbler: false,
-      });
+      const { s, offX, offY } = fit(W, H);
+      Object.assign(m, character(m.depth, rand), { tumbler: false });
       m.flutterAmp = Math.min(m.flutterAmp, 52);
-      // Above the top of the band, upwind of a rightward breeze — and, for all
-      // but the faintest leaves, clear of the painted words (desktop only;
-      // the phone crop shows no painted text).
-      const clearOfText =
-        desktop && m.depth >= FREE_TO_CROSS_TEXT_BELOW_DEPTH
-          ? PAINTED_TEXT_RIGHT * scale
-          : bounds.left - 0.1 * span;
-      const bandH = bounds.bottom - bounds.top;
-      if (rand() < SIDE_ENTRY_SHARE) {
-        // Carried in from beside the scene on the breeze, as leaves are —
-        // below the painted words, so it never has to cross them.
-        const belowText = desktop ? PAINTED_TEXT_BOTTOM * scale : bounds.top;
-        m.x = bounds.left - m.width - between(rand, 0, 40);
-        m.y = between(rand, Math.max(belowText, bounds.top), bounds.top + bandH * 0.8);
+
+      // The painted words, in this frame. No leaf ever re-enters over them:
+      // they are part of the picture, so a leaf there covers them. (Phones
+      // crop the words out, so the whole frame is open.)
+      const textLeft = desktop ? offX + (PAINTED_TEXT.left + PAD) * s : 0;
+      const textRight = desktop ? offX + (PAINTED_TEXT.right + PAD) * s : 0;
+      const textBottom = desktop ? offY + (PAINTED_TEXT.bottom - TOP) * s : 0;
+      // The margin lane must leave room for the calm leaf's swing and its
+      // slow drift; the lane right of the words must start a full swing
+      // clear, since a swing carries a leaf left as well as right.
+      const marginRoom = textLeft - m.width - 12 - DRIFT_ALLOWANCE;
+      const roll = rand();
+
+      if (roll < SIDE_ENTRY_SHARE) {
+        // Carried in from beside the scene on the breeze — below the words.
+        m.x = -m.width - between(rand, 0, 40);
+        m.y = between(rand, Math.max(0, textBottom), H * 0.8);
+      } else if (desktop && marginRoom > 20 && roll < SIDE_ENTRY_SHARE + MARGIN_ENTRY_SHARE) {
+        // Down through the calm white margin left of the words, where the
+        // image itself has leaves.
+        m.x = between(rand, 0, marginRoom);
+        m.y = -m.height - between(rand, 0, H * 0.12);
+        calm(m);
       } else {
-        m.x = between(rand, clearOfText, bounds.left + 0.9 * span);
-        // Just above the band, so the scene never thins out while it waits.
-        m.y = bounds.top - m.height - between(rand, 0, bandH * 0.12);
+        // Just above the band, clear of the words, upwind of the breeze.
+        m.x = between(rand, Math.max(0, textRight + m.swayAmp + 8), 0.9 * W);
+        m.y = -m.height - between(rand, 0, H * 0.12);
       }
       m.vx = 0;
       m.phase = rand() * TAU;
@@ -211,7 +250,6 @@ export function PhotoLeaves({ className }: { className?: string }) {
       if (!started) started = now;
       const raw = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
       last = now;
-      // Hold, then ease the breeze in.
       const alive = smooth(((now - started) / 1000 - HOLD_SECONDS) / EASE_IN_SECONDS);
       const dt = raw * alive;
       const t = now / 1000;
@@ -221,12 +259,7 @@ export function PhotoLeaves({ className }: { className?: string }) {
           const pose = advance(leaf.m, dt, t);
           leaf.el.style.transform = transformOf(pose);
           const margin = leaf.m.height * 1.3;
-          const span = bounds.right - bounds.left;
-          if (
-            pose.y > bounds.bottom + margin ||
-            pose.x > bounds.right + margin ||
-            pose.x < bounds.left - span * 0.35
-          ) {
+          if (pose.y > H + margin || pose.x > W + margin || pose.x < -W * 0.35) {
             reenter(leaf.m);
           }
         }
@@ -250,7 +283,6 @@ export function PhotoLeaves({ className }: { className?: string }) {
       { rootMargin: "80px" },
     );
     io.observe(container);
-
     const onVisibility = () => (document.hidden ? stop() : start());
     document.addEventListener("visibilitychange", onVisibility);
     const onMotion = () => (motionQuery.matches ? stop() : start());
@@ -269,15 +301,10 @@ export function PhotoLeaves({ className }: { className?: string }) {
     <div
       ref={containerRef}
       aria-hidden="true"
-      className={cn(
-        // Not clipped here: on desktop leaves travel past the image into the
-        // band's white margin, and the section clips them at its edges.
-        "pointer-events-none absolute inset-0",
-        // Exact from the server on desktop; on phones the crop is only known
-        // in the browser, so the layer appears once the leaves are placed.
-        "opacity-0 transition-opacity duration-500 md:opacity-100",
-        className,
-      )}
+      // --spx: rendered px per canvas px, exactly as object-fit: cover
+      // computes it. Resolved against the frame, the nearest size container.
+      style={{ "--spx": `max(100cqw / ${CW}, 100cqh / ${CH})` } as CSSProperties}
+      className={cn("pointer-events-none absolute inset-0", className)}
     >
       {HERO_LEAVES.map((leaf, i) => (
         <div
@@ -286,11 +313,7 @@ export function PhotoLeaves({ className }: { className?: string }) {
             leafRefs.current[i] = el;
           }}
           className="absolute will-change-transform"
-          style={{
-            left: `${(leaf.x / HERO_SOURCE.w) * 100}%`,
-            top: `${(leaf.y / HERO_SOURCE.h) * 100}%`,
-            width: `${(leaf.w / HERO_SOURCE.w) * 100}%`,
-          }}
+          style={placement(leaf.x, leaf.y, leaf.w)}
         >
           {/* eslint-disable-next-line @next/next/no-img-element -- a 2-10KB
               pre-sized sprite positioned by transform; next/image's wrapper

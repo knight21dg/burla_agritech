@@ -1,9 +1,9 @@
-import type { CSSProperties } from "react";
 import { preload } from "react-dom";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import type { Photo } from "@/lib/imagery";
+import { cn } from "@/lib/utils";
 import { PhotoLeaves } from "./PhotoLeaves";
 
 /**
@@ -25,47 +25,41 @@ import { PhotoLeaves } from "./PhotoLeaves";
  *
  * ## Sizing
  *
- * The frame keeps the image's 3:2 ratio and is capped at the height of the
- * screen below the header, so the hero never runs off the bottom of the
- * viewport — the client asked for exactly that. When height is the limit the
- * image narrows and centres; its ground is white, so the margins are
- * invisible, and the leaves drift on across them. It is also capped at the
- * file's native width, because upscaling a photograph only softens it.
+ * The supplied image is 3:2; a desktop band under the header is closer to
+ * 2.6:1. Letterboxing left white bars down both sides, stretching distorts,
+ * and a plain cover-crop cuts the logo or the products. So the page shows a
+ * widened canvas (`HERO_CANVAS`): the image with its empty top and bottom
+ * margin trimmed and matched backdrop extended at both sides, with
+ * `object-fit: cover`. The hero fills the screen edge to edge, fits under the
+ * header without scrolling, and the content renders as large as the height
+ * allows.
  *
  * ## Phones
  *
  * At phone width the painted text would be about 8px tall. So below `md` the
  * words are rendered as real text, with an "Explore Our Products" action, and
- * the image is cropped to the products beneath them.
- *
- * The crop is square and anchored right. A 3:2 image in a 4:3 frame loses
- * only a sliver at the sides, which left the painted headline showing under
- * the real one; the painted words end about 455px into the 1536px source,
- * and a square frame covering the full height starts at about 512. There is one image
- * element for both layouts — a hidden `priority` image is still downloaded —
- * whose frame and crop change by breakpoint.
+ * the image is cropped to a 1024 x 880 window of the source — the products,
+ * not the painted words. There is one image element for both layouts (a
+ * hidden high-priority image is still downloaded), whose frame and crop
+ * change by breakpoint.
  */
 export function PhotoHero({ photo }: { photo: Photo }) {
-  const ratio = photo.width / photo.height;
-
   // Served pre-encoded rather than through next/image: the hero is the
   // page's largest paint, and an on-the-fly encode is both a first-visit
   // delay and — as found in development — a dependency that can stall.
   const sources = photo.sources ?? [{ src: photo.src, width: photo.width }];
   const srcSet = sources.map((s) => `${s.src} ${s.width}w`).join(", ");
-  const sizes = `(min-width: 768px) min(${photo.width}px, 100vw), 100vw`;
-  // Tell the browser about it in the document head, before it has parsed
-  // down to the <img>, so the right size starts downloading immediately.
+  // The content is about half the canvas width, so the full-size file is
+  // what keeps it sharp on desktop; on phones the crop shows a third of the
+  // canvas across the screen, so the canvas renders at about 3x the width.
+  const sizes = "(min-width: 768px) 3072px, 300vw";
+  // In the document head, before the parser reaches the <img>.
   preload(photo.src, {
     as: "image",
     imageSrcSet: srcSet,
     imageSizes: sizes,
     fetchPriority: "high",
   });
-  const frame = {
-    "--hero-w": `min(100%, ${photo.width}px, calc((100svh - var(--site-chrome)) * ${ratio}))`,
-    "--hero-ratio": `${photo.width} / ${photo.height}`,
-  } as CSSProperties;
 
   return (
     <section
@@ -110,11 +104,19 @@ export function PhotoHero({ photo }: { photo: Photo }) {
         </Link>
       </div>
 
-      {/* The image — one element, framed per breakpoint */}
+      {/* The image — one element, framed per breakpoint.
+          Desktop: the full width of the screen, as tall as the content's own
+          ratio allows but never taller than the screen below the header, and
+          never taller than the canvas (so it is never upscaled).
+          Phones: a 1024 x 880 window of the source — the products.
+          A size container, so the leaves can be placed in container units. */}
       <div
-        style={frame}
         data-hero-frame
-        className="relative mx-auto mt-4 aspect-square w-full overflow-hidden md:mt-0 md:aspect-(--hero-ratio) md:w-(--hero-w) md:overflow-visible"
+        className={cn(
+          "relative mt-4 w-full overflow-hidden bg-[#fefefe] [container-type:size]",
+          "aspect-[1024/880] [--ox:0.625] [--oy:0.5]",
+          "md:mt-0 md:aspect-[1536/880] md:max-h-[min(calc(100svh-var(--site-chrome)),880px)] md:[--ox:0.5]",
+        )}
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- served
             pre-encoded (see `photo.sources`), preloaded above */}
@@ -127,7 +129,7 @@ export function PhotoHero({ photo }: { photo: Photo }) {
           height={photo.height}
           fetchPriority="high"
           decoding="async"
-          className="absolute inset-0 h-full w-full object-cover object-right md:object-contain md:object-center"
+          className="absolute inset-0 h-full w-full object-cover object-[62.5%_50%] md:object-center"
         />
         <PhotoLeaves className="z-10" />
       </div>
