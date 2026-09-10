@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
-import { CONTENTS_FOR_CATEGORY } from "@/components/art/Bowl";
 import {
   availabilityLabel,
   defaultVariant,
@@ -8,7 +7,7 @@ import {
   type Product,
 } from "@/data/catalog";
 import { formatPrice } from "@/lib/utils";
-import { ProductImage } from "@/components/ui/ProductImage";
+import { ProductPhoto } from "./ProductPhoto";
 
 /**
  * Product card, following the client's final mockup: image, name, every pack
@@ -39,10 +38,9 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-line bg-white transition duration-300 ease-out hover:-translate-y-0.5 hover:border-green-700/30 hover:shadow-[0_14px_30px_-16px_rgba(15,74,44,0.38)]">
       <div className="relative overflow-hidden">
-        <ProductImage
-          name={product.name}
-          tone={product.tone}
-          contents={CONTENTS_FOR_CATEGORY[product.categorySlug] ?? "powder"}
+        <ProductPhoto
+          product={product}
+          decorative
           className="transition-transform duration-500 ease-out group-hover:scale-[1.05]"
         />
         {soldOut && (

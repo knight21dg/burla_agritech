@@ -121,6 +121,7 @@ export function PhotoHero({ photo }: { photo: Photo }) {
         {/* eslint-disable-next-line @next/next/no-img-element -- served
             pre-encoded (see `photo.sources`), preloaded above */}
         <img
+          data-hero-image
           src={photo.src}
           srcSet={srcSet}
           sizes={sizes}

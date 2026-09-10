@@ -69,7 +69,7 @@ export const products = pgTable(
     tone: toneEnum("tone").notNull().default("cream"),
 
     /**
-     * True for the 28 demonstration products. Every one of them — the names,
+     * True for the demonstration products. Every one of them — the names,
      * prices, SKUs and descriptions — was invented by us to show the interface
      * (OQ-016). None of it is client-supplied, and none of it may reach
      * production. `assertNoSampleData()` refuses to let it.

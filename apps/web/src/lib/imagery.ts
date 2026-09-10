@@ -41,6 +41,12 @@ export const imagery: {
   about: Photo | null;
   /** One per category slug, square, product on white. */
   categories: Partial<Record<string, Photo>>;
+  /**
+   * One per product slug, square, product on white. Until the catalogue is
+   * served from the database (Phase 8) and product photographs come from the
+   * `media` table, supplied product photographs are listed here.
+   */
+  products: Partial<Record<string, Photo>>;
 } = {
   // Supplied by the client, 2026-09-10 (a generated image; the packaging it
   // shows is not yet a real product). Its floating leaves have been lifted out
@@ -82,6 +88,21 @@ export const imagery: {
     ].map(([slug, alt]) => [
       slug!,
       { src: `/images/categories/${slug}.webp`, alt: alt!, width: 480, height: 360 },
+    ]),
+  ),
+  // Supplied by the client, 2026-09-10, as the Featured Products sheet; each
+  // photo cut out and re-centred at one scale (assets/products/).
+  products: Object.fromEntries(
+    [
+      ["dehydrated-mango", "Dehydrated Mango pouch with dried mango slices and fresh mangoes"],
+      ["mango-pickle", "Jar of Mango Pickle with fresh mango and dried chillies"],
+      ["dehydrated-banana", "Dehydrated Banana pouch with a bowl of banana chips"],
+      ["red-chilli-powder", "Wooden bowl of red chilli powder with dried red chillies"],
+      ["ragi-flour", "Ragi Flour pouch with a bowl of ragi flour"],
+      ["gongura-pickle", "Jar of Gongura Pickle with gongura leaves and red chillies"],
+    ].map(([slug, alt]) => [
+      slug!,
+      { src: `/images/products/${slug}.webp`, alt: alt!, width: 600, height: 600 },
     ]),
   ),
 };

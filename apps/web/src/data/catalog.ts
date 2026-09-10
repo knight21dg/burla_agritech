@@ -270,7 +270,6 @@ export const products: Product[] = [
     description:
       "Whole turmeric fingers, cleaned and ground in small batches. Colour and aroma come from the root itself — nothing is added to brighten it.",
     variants: [v("100g", 25000, 100, "in_stock", true), v("250g", 55000, 250)],
-    featured: true,
     tone: "turmeric",
   },
   {
@@ -282,7 +281,11 @@ export const products: Product[] = [
     shortDescriptor: "Ripe mango, sliced and gently dried",
     description:
       "Fruit is sliced at peak ripeness and dried slowly so the sugars concentrate without scorching. Soft, chewy, and the colour of the fruit it came from.",
-    variants: [v("100g", 32000, 100, "in_stock", true), v("250g", 74000, 250)],
+    variants: [
+      v("100g", 32000, 100, "in_stock", true),
+      v("250g", 74000, 250),
+      v("500g", 140000, 500),
+    ],
     featured: true,
     tone: "mango",
   },
@@ -295,7 +298,11 @@ export const products: Product[] = [
     shortDescriptor: "Raw mango cured in salt, chilli and oil",
     description:
       "Made once a season, when raw mango is at its best. Cut, salted, spiced and left to mature.",
-    variants: [v("200g", 28000, 200, "in_stock", true), v("500g", 62000, 500)],
+    variants: [
+      v("250g", 28000, 250, "in_stock", true),
+      v("500g", 54000, 500),
+      v("1kg", 102000, 1000),
+    ],
     featured: true,
     tone: "chilli",
   },
@@ -309,7 +316,6 @@ export const products: Product[] = [
     description:
       "Whole finger millet, cleaned, de-stoned and graded. For porridge, rotis or malt.",
     variants: [v("1kg", 18000, 1000, "in_stock", true)],
-    featured: true,
     tone: "grain",
   },
   {
@@ -372,8 +378,36 @@ export const products: Product[] = [
     typeSlug: "banana",
     shortDescriptor: "Sliced ripe banana, gently dried",
     description: "Ripe banana, sliced and dried.",
-    variants: [v("100g", 25000, 100, "in_stock", true)],
+    variants: [v("100g", 30000, 100, "in_stock", true), v("250g", 70000, 250)],
+    featured: true,
     tone: "cream",
+  },
+  {
+    id: "p29",
+    slug: "red-chilli-powder",
+    name: "Red Chilli Powder",
+    categorySlug: "masala-powders",
+    shortDescriptor: "Dried red chillies, ground fine",
+    description: "Whole dried red chillies, ground to a fine powder.",
+    variants: [
+      v("100g", 18000, 100, "in_stock", true),
+      v("250g", 42000, 250),
+      v("500g", 80000, 500),
+    ],
+    featured: true,
+    tone: "chilli",
+  },
+  {
+    id: "p30",
+    slug: "ragi-flour",
+    name: "Ragi Flour",
+    categorySlug: "millets",
+    typeSlug: "ragi",
+    shortDescriptor: "Finger millet, milled to flour",
+    description: "Whole finger millet, cleaned and milled into flour.",
+    variants: [v("500g", 26000, 500, "in_stock", true), v("1kg", 49000, 1000)],
+    featured: true,
+    tone: "grain",
   },
   {
     id: "p11",
@@ -405,7 +439,8 @@ export const products: Product[] = [
     typeSlug: "gongura",
     shortDescriptor: "Sorrel leaves, sharp and tart",
     description: "Gongura leaves cooked down with spice.",
-    variants: [v("200g", 30000, 200, "in_stock", true)],
+    variants: [v("250g", 30000, 250, "in_stock", true), v("500g", 56000, 500)],
+    featured: true,
     tone: "chilli",
   },
   {
@@ -416,7 +451,6 @@ export const products: Product[] = [
     shortDescriptor: "Roasted lentils and garlic",
     description: "Lentils roasted with garlic and chilli, coarsely ground.",
     variants: [v("100g", 19000, 100, "in_stock", true), v("250g", 42000, 250)],
-    featured: true,
     tone: "earth",
   },
   {
@@ -448,7 +482,6 @@ export const products: Product[] = [
     description:
       "Rice batter shaped by hand and dried in open sun across several days.",
     variants: [v("200g", 22000, 200, "in_stock", true)],
-    featured: true,
     tone: "cream",
   },
   {
@@ -552,7 +585,6 @@ export const products: Product[] = [
     description:
       "A set built for a first order — a masala, a podi, a pickle, a millet and a dried fruit.",
     variants: [v("Set of 5", 129000, 750, "in_stock", true)],
-    featured: true,
     tone: "cream",
   },
   {

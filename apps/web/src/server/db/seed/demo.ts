@@ -2,7 +2,7 @@
  * DEMONSTRATION SEED — MUST NEVER RUN IN PRODUCTION.
  *
  * Every row this file creates was invented by us to show how the interface
- * behaves: 10 product types (`OQ-049`), 28 products with their names, prices,
+ * behaves: 10 product types (`OQ-049`), 30 products with their names, prices,
  * SKUs, weights and descriptions (`OQ-016`). None of it is client-supplied.
  * A visitor cannot tell the difference, which is the whole problem.
  *

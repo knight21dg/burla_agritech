@@ -1,7 +1,7 @@
 /**
  * Guards that stand between demonstration data and a live site.
  *
- * The catalogue currently on the site — 10 product types, 28 products, every
+ * The catalogue currently on the site — 10 product types, 30 products, every
  * price, SKU and description — was invented by us to show the interface. None
  * of it is client-supplied (`OQ-016`, `OQ-049`). A visitor cannot tell the
  * difference, which is exactly why a comment saying "remember to remove this"

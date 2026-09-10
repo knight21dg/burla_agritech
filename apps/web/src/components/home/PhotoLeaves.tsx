@@ -180,6 +180,26 @@ export function PhotoLeaves({ className }: { className?: string }) {
       }
     });
 
+    // The leaves are small and arrive long before the hero photograph, and a
+    // leaf hanging over empty white is not the picture. So the layer stays
+    // hidden until the photograph has loaded, then fades in with it — and the
+    // hold before the breeze is counted from that moment, not from mount.
+    let revealedAt = 0;
+    const photo = container.parentElement?.querySelector<HTMLImageElement>(
+      "img[data-hero-image]",
+    );
+    const reveal = () => {
+      if (revealedAt) return;
+      revealedAt = performance.now();
+      container.style.opacity = "1";
+    };
+    if (!photo || (photo.complete && photo.naturalWidth > 0)) reveal();
+    else {
+      photo.addEventListener("load", reveal, { once: true });
+      // A photograph that fails to load must not take the leaves with it.
+      photo.addEventListener("error", reveal, { once: true });
+    }
+
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (motionQuery.matches) return; // the still image is the design
 
@@ -243,14 +263,15 @@ export function PhotoLeaves({ className }: { className?: string }) {
 
     let frame = 0;
     let last = 0;
-    let started = 0;
     let running = false;
 
     const step = (now: number) => {
-      if (!started) started = now;
       const raw = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
       last = now;
-      const alive = smooth(((now - started) / 1000 - HOLD_SECONDS) / EASE_IN_SECONDS);
+      // Still until the scene is visible; then the hold, then the breeze.
+      const alive = revealedAt
+        ? smooth(((now - revealedAt) / 1000 - HOLD_SECONDS) / EASE_IN_SECONDS)
+        : 0;
       const dt = raw * alive;
       const t = now / 1000;
 
@@ -300,12 +321,22 @@ export function PhotoLeaves({ className }: { className?: string }) {
   return (
     <div
       ref={containerRef}
+      data-photo-leaves
       aria-hidden="true"
       // --spx: rendered px per canvas px, exactly as object-fit: cover
       // computes it. Resolved against the frame, the nearest size container.
       style={{ "--spx": `max(100cqw / ${CW}, 100cqh / ${CH})` } as CSSProperties}
-      className={cn("pointer-events-none absolute inset-0", className)}
+      // Hidden until the hero photograph has loaded (see the effect). The
+      // <noscript> rule below shows the leaves anyway when there is no script
+      // to reveal them — they are part of the picture.
+      className={cn(
+        "pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500",
+        className,
+      )}
     >
+      <noscript>
+        <style>{`[data-photo-leaves]{opacity:1!important}`}</style>
+      </noscript>
       {HERO_LEAVES.map((leaf, i) => (
         <div
           key={leaf.name}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { MessageCircle, Minus, Plus, ShoppingBag } from "lucide-react";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { ProductImage } from "@/components/ui/ProductImage";
+import { ProductPhoto } from "./ProductPhoto";
 import {
   availabilityLabel,
   defaultVariant,
@@ -40,7 +41,7 @@ export function ProductBuyPanel({
       {/* Gallery */}
       <div className="lg:col-span-7">
         <div className="border border-line">
-          <ProductImage name={product.name} />
+          <ProductPhoto product={product} priority />
         </div>
 
         {images.length > 1 && (
