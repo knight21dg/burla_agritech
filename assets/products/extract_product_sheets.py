@@ -117,21 +117,20 @@ CRISPS_DRY_FRUITS = [
 ]
 
 # Millet and Tea / Coffee sheet: five cards under "Millet Powders", four
-# under "Tea / Coffee Powders". Its cards add "Powder" and "Tea Powder" to
-# the names ("Foxtail / Korralu Powder", "Herbal Tea Powder"); the
-# catalogue's names are kept, and the files follow its slugs.
+# under "Tea / Coffee Powders". The products were renamed from these cards
+# ("Foxtail / Korralu Powder", "Herbal Tea Powder"), and the slugs with them.
 M_ROW = (81, 491)       # Millet Powders
 T_ROW = (581, 969)      # Tea / Coffee
 MILLET_TEA_COFFEE = [
-    ("foxtail-korralu", (15, 313), M_ROW),
-    ("little-samalu", (320, 617), M_ROW),
-    ("kodo-arikalu", (623, 918), M_ROW),
-    ("barnyard-udalu", (924, 1219), M_ROW),
-    ("andukorralu", (1225, 1521), M_ROW),
-    ("tea-coffee-herbal", (15, 385), T_ROW),
-    ("tea-coffee-masala", (393, 764), T_ROW),
-    ("tea-coffee-lemon", (772, 1146), T_ROW),
-    ("tea-coffee-green", (1153, 1521), T_ROW),
+    ("foxtail-korralu-powder", (15, 313), M_ROW),
+    ("little-samalu-powder", (320, 617), M_ROW),
+    ("kodo-arikalu-powder", (623, 918), M_ROW),
+    ("barnyard-udalu-powder", (924, 1219), M_ROW),
+    ("andukorralu-powder", (1225, 1521), M_ROW),
+    ("herbal-tea-powder", (15, 385), T_ROW),
+    ("masala-tea-powder", (393, 764), T_ROW),
+    ("lemon-tea-powder", (772, 1146), T_ROW),
+    ("green-tea-powder", (1153, 1521), T_ROW),
 ]
 
 SHEETS = [

@@ -65,16 +65,16 @@ From the client's product catalogue of 2026-09-10, which replaced the handwritte
 | 9 | Masala Powders | `masala-powders` | — |
 | 10 | Spices | `spices` | — |
 
-**The type layer is the client's.** Only the three categories the catalogue itself divides have types; the rest list products directly. The five millet types each hold one product of the same name, pending confirmation that the catalogue meant them as types.
+**The type layer is the client's.** Only the three categories the catalogue itself divides have types; the rest list products directly. Each millet type holds its powder, as the client's hierarchy gives it: Millet Powders → Foxtail / Korralu → Foxtail / Korralu Powder.
+
+**Renamed from the client's product sheet (2026-09-10).** The catalogue wrote the millets by name alone ("Foxtail / Korralu") and the Tea / Coffee items as "Herbal", "Masala", "Lemon" and "Green". The client's product sheet names them "Foxtail / Korralu Powder" and so on, and "Herbal Tea Powder", "Masala Tea Powder", "Lemon Tea Powder" and "Green Tea Powder". The client confirmed the sheet's names, which settled both open questions.
 
 **Items awaiting confirmation**, carried as `confirmation` notes in `catalog.ts`:
 
 - *ABC Powder* and *Honey* — marked "confirmation required" by the client.
 - *Non-Veg* under Masala Powders — the client asks whether it is a product or a grouping. Kept as a product until answered.
-- *Herbal, Masala, Lemon, Green* under Tea / Coffee — the catalogue does not say whether each is a tea or a coffee.
-- The five millet entries — whether they are types or products.
 
-No product in the catalogue has a price, pack size, description or photograph yet. Products are listed with "price to be confirmed" and cannot be ordered until those are supplied.
+No product in the catalogue has a price, pack size or description yet. Products are listed with "price to be confirmed" and cannot be ordered until those are supplied.
 
 ---
 

@@ -65,7 +65,7 @@ awaiting confirmation, is in `docs/PRODUCT-DOMAIN.md` §3.
 | 4 | Dal Powders | `dal-powders` | Flat |
 | 5 | Crisps | `crisps` | Flat |
 | 6 | Dry Fruits | `dry-fruits` | Flat |
-| 7 | Millet Powders | `millet-powders` | Five, one per millet — to confirm |
+| 7 | Millet Powders | `millet-powders` | Five, one per millet |
 | 8 | Tea / Coffee | `tea-coffee` | Flat |
 | 9 | Masala Powders | `masala-powders` | Flat |
 | 10 | Spices | `spices` | Flat |
@@ -89,20 +89,19 @@ Pickles
 ├── Veg Pickles
 └── Non-Veg Pickles
 
-Millet Powders                   [TO CONFIRM]
-├── Foxtail / Korralu
-├── Little / Samalu
-├── Kodo / Arikalu
-├── Barnyard / Udalu
-└── Andukorralu
+Millet Powders
+├── Foxtail / Korralu    → Foxtail / Korralu Powder
+├── Little / Samalu      → Little / Samalu Powder
+├── Kodo / Arikalu       → Kodo / Arikalu Powder
+├── Barnyard / Udalu     → Barnyard / Udalu Powder
+└── Andukorralu          → Andukorralu Powder
 ```
 
-**To confirm:** the five millet entries are modelled as types, following the
-hierarchy the client gave ("Millet Powders → Foxtail / Korralu → Product"),
-each holding one product of the same name until the client lists what is
-inside it. If they are products, the type layer under Millet Powders goes and
-the products stay. `OQ-049` (ingredient versus form as the type axis) is
-settled for now by the catalogue itself: the millet types are by ingredient.
+The millets follow the hierarchy the client gave ("Millet Powders → Foxtail /
+Korralu → Product"): each millet is a type, holding its powder. The product
+names come from the client's product sheet (2026-09-10). `OQ-049` (ingredient
+versus form as the type axis) is settled by the catalogue itself: the millet
+types are by ingredient.
 
 ---
 

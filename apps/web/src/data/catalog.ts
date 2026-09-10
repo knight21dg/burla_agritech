@@ -2,7 +2,9 @@
  * BURLA PRODUCT CATALOGUE — as supplied by the client, 2026-09-10.
  *
  * Every category, type and product name below is exactly as written in the
- * client's catalogue. Nothing has been renamed, corrected or added.
+ * client's catalogue. Nothing has been corrected or added. The only renames
+ * are the client's own: the Millet Powders and Tea / Coffee products carry the
+ * fuller names from the client's product sheet of 2026-09-10, noted at each.
  *
  * What the catalogue does NOT provide is left empty rather than invented:
  *   - prices and pack sizes      → `variants: []`; the UI shows "to be confirmed"
@@ -149,11 +151,6 @@ function type(
   };
 }
 
-const MILLET_TYPE_NOTE =
-  "Modelled as a type, as the catalogue's required hierarchy shows " +
-  "(Millet Powders → Foxtail / Korralu → Product). The products within each " +
-  "millet are not listed yet — confirm them.";
-
 export const productTypes: Category[] = [
   type("dehydrated-powders-flakes", "powders", "Powders", 1),
   type("dehydrated-powders-flakes", "flakes", "Flakes", 2),
@@ -161,11 +158,13 @@ export const productTypes: Category[] = [
   type("pickles", "veg-pickles", "Veg Pickles", 1),
   type("pickles", "non-veg-pickles", "Non-Veg Pickles", 2),
 
-  type("millet-powders", "foxtail-korralu", "Foxtail / Korralu", 1, MILLET_TYPE_NOTE),
-  type("millet-powders", "little-samalu", "Little / Samalu", 2, MILLET_TYPE_NOTE),
-  type("millet-powders", "kodo-arikalu", "Kodo / Arikalu", 3, MILLET_TYPE_NOTE),
-  type("millet-powders", "barnyard-udalu", "Barnyard / Udalu", 4, MILLET_TYPE_NOTE),
-  type("millet-powders", "andukorralu", "Andukorralu", 5, MILLET_TYPE_NOTE),
+  // The catalogue's required hierarchy: Millet Powders → Foxtail / Korralu →
+  // Product. Each millet is a type holding its powder.
+  type("millet-powders", "foxtail-korralu", "Foxtail / Korralu", 1),
+  type("millet-powders", "little-samalu", "Little / Samalu", 2),
+  type("millet-powders", "kodo-arikalu", "Kodo / Arikalu", 3),
+  type("millet-powders", "barnyard-udalu", "Barnyard / Udalu", 4),
+  type("millet-powders", "andukorralu", "Andukorralu", 5),
 ];
 
 /** Top-level categories only — what the nav and the category grid show. */
@@ -189,7 +188,7 @@ export const categoryBySlug = (slug: string) =>
    Products — names exactly as in the client's catalogue.
 
    Slugs are the name in URL form. Where a name is a single generic word that
-   only has meaning inside its category ("Apple", "Herbal", "Non-Veg"), the
+   only has meaning inside its category ("Apple", "Non-Veg"), the
    slug carries the category too, so a URL is never ambiguous on its own. The
    product's name is unchanged either way.
    -------------------------------------------------------------------------- */
@@ -217,9 +216,6 @@ function product(
 }
 
 const CONFIRMATION_REQUIRED = "Marked “confirmation required” in the client catalogue.";
-const TEA_OR_COFFEE =
-  "Listed under Tea / Coffee as written; the catalogue does not say whether " +
-  "this is a tea or a coffee.";
 
 const powders = (slug: string, name: string, confirmation?: string) =>
   product("dehydrated-powders-flakes", slug, name, { typeSlug: "powders", confirmation });
@@ -299,34 +295,31 @@ export const products: Product[] = [
   product("dry-fruits", "cashews", "Cashews"),
   product("dry-fruits", "dates", "Dates"),
 
-  // 7. Millet Powders — each millet a type, per the required hierarchy, with
-  // one product of the same name until the client lists what is inside it.
-  product("millet-powders", "foxtail-korralu", "Foxtail / Korralu", {
+  // 7. Millet Powders — one powder in each millet's type. The catalogue wrote
+  // each millet's name alone ("Foxtail / Korralu"); the client's product
+  // sheet (2026-09-10) names the product "Foxtail / Korralu Powder".
+  product("millet-powders", "foxtail-korralu-powder", "Foxtail / Korralu Powder", {
     typeSlug: "foxtail-korralu",
-    confirmation: MILLET_TYPE_NOTE,
   }),
-  product("millet-powders", "little-samalu", "Little / Samalu", {
+  product("millet-powders", "little-samalu-powder", "Little / Samalu Powder", {
     typeSlug: "little-samalu",
-    confirmation: MILLET_TYPE_NOTE,
   }),
-  product("millet-powders", "kodo-arikalu", "Kodo / Arikalu", {
+  product("millet-powders", "kodo-arikalu-powder", "Kodo / Arikalu Powder", {
     typeSlug: "kodo-arikalu",
-    confirmation: MILLET_TYPE_NOTE,
   }),
-  product("millet-powders", "barnyard-udalu", "Barnyard / Udalu", {
+  product("millet-powders", "barnyard-udalu-powder", "Barnyard / Udalu Powder", {
     typeSlug: "barnyard-udalu",
-    confirmation: MILLET_TYPE_NOTE,
   }),
-  product("millet-powders", "andukorralu", "Andukorralu", {
+  product("millet-powders", "andukorralu-powder", "Andukorralu Powder", {
     typeSlug: "andukorralu",
-    confirmation: MILLET_TYPE_NOTE,
   }),
 
-  // 8. Tea / Coffee
-  product("tea-coffee", "tea-coffee-herbal", "Herbal", { confirmation: TEA_OR_COFFEE }),
-  product("tea-coffee", "tea-coffee-masala", "Masala", { confirmation: TEA_OR_COFFEE }),
-  product("tea-coffee", "tea-coffee-lemon", "Lemon", { confirmation: TEA_OR_COFFEE }),
-  product("tea-coffee", "tea-coffee-green", "Green", { confirmation: TEA_OR_COFFEE }),
+  // 8. Tea / Coffee — the catalogue wrote "Herbal", "Masala", "Lemon" and
+  // "Green"; the client's product sheet (2026-09-10) names them as teas.
+  product("tea-coffee", "herbal-tea-powder", "Herbal Tea Powder"),
+  product("tea-coffee", "masala-tea-powder", "Masala Tea Powder"),
+  product("tea-coffee", "lemon-tea-powder", "Lemon Tea Powder"),
+  product("tea-coffee", "green-tea-powder", "Green Tea Powder"),
 
   // 9. Masala Powders
   product("masala-powders", "masala-powders-non-veg", "Non-Veg", {
