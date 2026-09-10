@@ -3,8 +3,8 @@
 | Field | Value |
 |---|---|
 | Document | `docs/DESIGN-SYSTEM.md` |
-| Version | **1.3 — built to the client's mockup** |
-| Date | 2026-09-09 |
+| Version | **1.4 — built to the client's final mockup** |
+| Date | 2026-09-10 |
 | Status | Implemented for the design system, header, footer and homepage |
 | Supersedes | v0.2 (warm ivory / editorial direction), now withdrawn |
 
@@ -13,6 +13,53 @@
 > white, product-first site where the products supply the colour. The previous
 > palette (ivory, sand, terracotta, turmeric) and the display serif are
 > withdrawn.
+
+---
+
+## 0. v1.4 — the client's final mockup (2026-09-10)
+
+The client supplied a final homepage mockup and asked for it exactly. Four
+changes follow from it; everything else in this document stands.
+
+| Change | Detail | Where |
+|---|---|---|
+| **Serif headings** | Section headings, the hero wordmark and the hero tagline are set in **Source Serif 4** (optical sizes), against the Instrument Sans body. This reverses §4's single-family rule for headings only — the mockup is unambiguous, and it is the client's call | `--font-serif`, `.t-section`, `.t-serif` |
+| **Forest green** | `--color-forest #0F4A2C` for the pill buttons and the BURLA wordmark. White on it is 12.9:1 | `--color-forest` |
+| **White tiles, light footer** | Category tiles are white cards (not tinted); the footer is white (not green-900) | `CategoryCard`, `Footer` |
+| **Motion in the hero** | Leaves falling on a breeze — see §10a | `FallingLeaves` |
+
+### Imagery in v1.4
+
+The mockup's photographs are AI renders of Burla packaging carrying the real
+logo. §9 rules out invented packaging and AI imagery standing in for the
+product, so they are **not** reproduced. Every image slot instead shows an
+**illustration of the raw ingredient** — a wooden bowl of turmeric, a pile of
+dried mango, crop fields at sunrise — which is obviously drawn, and depicts no
+package, label or logo.
+
+Each slot switches to a real photograph with one line in `lib/imagery.ts`
+(hero, about band, per-category tiles). Product photographs come from the
+`media` table after the Phase 8 cutover. The layout is already sized for all
+of them.
+
+### 10a. Falling leaves
+
+The one piece of continuous motion on the site, and only in the hero.
+
+- A shared wind field with gusts that travel across the scene, so the leaves
+  answer the breeze together rather than looping independently
+- Pendulum-glide descent (fastest mid-swing, stalling at the ends), banking
+  into the direction of travel, 3D turning under perspective
+- Three depth bands — far leaves small, slow and soft; near leaves large, fast
+  and out of focus — with most leaves passing *behind* the headline
+- Measured in simulation: a median 20 s to cross the hero; 8–14 leaves on
+  screen at all times; near leaves over the headline 0% of the time; under
+  1.2 px of movement at the hand-over from server render to animation
+- Stops off-screen and in hidden tabs; `prefers-reduced-motion` gets the
+  server-rendered leaves as a still composition
+
+Physics: `components/home/leafPhysics.ts` (pure, testable). Rendering:
+`components/home/FallingLeaves.tsx`.
 
 ---
 

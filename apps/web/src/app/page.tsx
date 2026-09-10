@@ -1,156 +1,99 @@
+import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BadgeCheck,
-  Globe,
-  Leaf,
-  MessageCircle,
-  ShieldCheck,
-  Sparkles,
-  Users,
-} from "lucide-react";
-import { ButtonLink } from "@/components/ui/Button";
+import { ArrowRight, Gem, ShieldCheck, Sprout, Users } from "lucide-react";
+import { FarmLandscape } from "@/components/art/FarmLandscape";
+import { Hero } from "@/components/home/Hero";
 import { Container } from "@/components/ui/Section";
-import { ProductImage } from "@/components/ui/ProductImage";
 import { Reveal } from "@/components/ui/Reveal";
 import { CategoryCard } from "@/components/product/CategoryCard";
 import { ProductCarousel } from "@/components/product/ProductCarousel";
-import { categories, featuredProducts, products } from "@/data/catalog";
-import { whatsappLink } from "@/lib/site";
+import { categories, featuredProducts } from "@/data/catalog";
+import { imagery } from "@/lib/imagery";
 
 /**
- * Homepage, built to the client's mockup.
+ * Homepage, built to the client's final mockup (2026-09-10).
  *
- * The page is light — near-white throughout, with colour coming from the
- * category tiles, the green actions and (once it arrives) the product
- * photography. The heavy per-section tints of the previous pass are dropped:
- * the mockup is much quieter than that, and the products are meant to supply
- * the colour.
+ * Four bands on white, in the mockup's order: the hero, the ten categories in
+ * one row, featured products on a rail, and the "About Burla" band with its
+ * full-bleed image. The footer closes it.
  *
- * Order follows the mockup exactly: hero, categories, featured products,
- * about, then the footer. Products appear immediately after the hero.
- *
- * Motion is one short fade-and-rise per block, and the hero uses a pure-CSS
- * entrance so it never depends on JavaScript to become visible.
+ * Every image slot shows an illustration until the commissioned photography
+ * arrives, and switches to the photograph when `lib/imagery.ts` is filled in —
+ * the layout is already sized for it.
  */
 
-const heroPillars = [
-  { Icon: Leaf, label: "Pure & Natural" },
-  { Icon: ShieldCheck, label: "Quality Assured" },
-  { Icon: Globe, label: "Globally Trusted" },
+const ABOUT_POINTS = [
+  { Icon: Sprout, title: "Carefully Sourced", note: "From trusted farmers" },
+  {
+    Icon: ShieldCheck,
+    title: "Hygienically Processed",
+    note: "Ensuring purity and safety",
+  },
+  { Icon: Gem, title: "Quality Checked", note: "For your confidence" },
+  {
+    Icon: Users,
+    title: "For a Healthier Tomorrow",
+    note: "Good food for brighter lives",
+  },
 ];
 
-const aboutPoints = [
-  { Icon: Sparkles, title: "Carefully Sourced", note: "From trusted farmers" },
-  { Icon: ShieldCheck, title: "Hygienically Processed", note: "Ensuring purity and safety" },
-  { Icon: BadgeCheck, title: "Quality Checked", note: "For your confidence" },
-  { Icon: Users, title: "For a Healthier Tomorrow", note: "Good food for brighter lives" },
-];
+function SectionHead({
+  id,
+  title,
+  href,
+  action,
+}: {
+  id: string;
+  title: string;
+  href: string;
+  action: string;
+}) {
+  return (
+    <div className="mb-5 flex items-end justify-between gap-4">
+      <h2 id={id} className="t-section">
+        {title}
+      </h2>
+      <Link
+        href={href}
+        className="group inline-flex shrink-0 items-center gap-1.5 pb-1.5 text-[0.8125rem] font-medium text-green-700 underline-offset-4 hover:underline"
+      >
+        {action}
+        <ArrowRight
+          className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+          aria-hidden="true"
+        />
+      </Link>
+    </div>
+  );
+}
 
 export default function HomePage() {
   const featured = featuredProducts();
-  const newest = products.slice(-8);
+  const about = imagery.about;
 
   return (
     <>
-      {/* ---------------------------------------------------------------- Hero */}
-      <section className="border-b border-line bg-white">
-        <Container>
-          <div className="grid items-center gap-8 py-10 lg:grid-cols-2 lg:gap-12 lg:py-14">
-            <div className="enter">
-              <p className="t-label leading-relaxed text-ink-3">
-                Natural products
-                <br />
-                Healthy people
-                <br />A brighter tomorrow
-              </p>
-
-              <h1 className="t-display mt-5 text-green-700">
-                Pure Goodness from India&rsquo;s Soil
-                <span className="block text-ink">To Your Table</span>
-              </h1>
-
-              <p className="t-lead measure-tight mt-4">
-                Wholesome agricultural products, carefully processed for a
-                healthier, happier tomorrow.
-              </p>
-
-              <div className="mt-7 flex flex-wrap gap-3">
-                <ButtonLink href="/products" size="lg">
-                  Explore Our Products
-                  <ArrowRight className="size-4" aria-hidden="true" />
-                </ButtonLink>
-                <ButtonLink
-                  href={whatsappLink(
-                    "Hi Burla, I'd like to know more about your products.",
-                  )}
-                  external
-                  variant="secondary"
-                  size="lg"
-                >
-                  <MessageCircle className="size-4" aria-hidden="true" />
-                  Chat on WhatsApp
-                </ButtonLink>
-              </div>
-
-              <ul className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
-                {heroPillars.map(({ Icon, label }) => (
-                  <li key={label} className="flex items-center gap-2.5">
-                    <Icon
-                      className="size-5 text-green"
-                      strokeWidth={1.5}
-                      aria-hidden="true"
-                    />
-                    <span className="text-[0.875rem] font-medium text-ink">
-                      {label}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="enter enter-delay-1 relative">
-              {/* Awaiting the commissioned hero photograph — OQ-017 */}
-              <div className="overflow-hidden rounded-[10px] border border-line bg-white">
-                <ProductImage name="Hero photograph" ratio="landscape" />
-              </div>
-              <p
-                aria-hidden="true"
-                className="t-script pointer-events-none absolute -top-2 right-2 hidden text-[1.75rem] text-green-700 lg:block"
-              >
-                Good Food
-                <br />
-                Better Living
-              </p>
-            </div>
-          </div>
-        </Container>
-      </section>
+      <Hero />
 
       {/* ---------------------------------------------------------- Categories */}
-      <section className="bg-white py-10 md:py-12">
+      <section aria-labelledby="home-categories" className="bg-white pb-10 pt-6 md:pb-12">
         <Container>
           <Reveal>
-            <div className="mb-6 flex items-end justify-between gap-4">
-              <h2 className="t-h2">Our Product Categories</h2>
-              <Link
-                href="/products"
-                className="inline-flex shrink-0 items-center gap-1.5 pb-1 text-[0.875rem] font-semibold text-green-700 underline-offset-4 hover:underline"
-              >
-                View All Products
-                <ArrowRight className="size-4" aria-hidden="true" />
-              </Link>
-            </div>
+            <SectionHead
+              id="home-categories"
+              title="Our Product Categories"
+              href="/products"
+              action="View All Products"
+            />
 
-            {/* One line of ten, as in the mockup. A ten-column grid from lg
-                up so they always fit without scrolling; below that the row
-                scrolls horizontally rather than wrapping to a ragged second
-                line. */}
-            <ul className="rail items-stretch gap-3 py-1 lg:grid lg:grid-cols-10 lg:overflow-visible">
+            {/* One line of ten, as in the mockup: a ten-column grid from lg
+                up, so they always fit; below that the row scrolls rather than
+                wrapping to a ragged second line. */}
+            <ul className="rail -mx-1 items-stretch gap-3 px-1 py-2 lg:grid lg:grid-cols-10 lg:overflow-visible">
               {categories.map((c) => (
                 <li
                   key={c.slug}
-                  className="rail-item w-[36vw] max-w-[10.5rem] sm:w-[24vw] lg:w-auto lg:max-w-none"
+                  className="rail-item w-[34vw] max-w-[9.5rem] sm:w-[22vw] lg:w-auto lg:max-w-none"
                 >
                   <CategoryCard category={c} />
                 </li>
@@ -161,112 +104,114 @@ export default function HomePage() {
       </section>
 
       {/* --------------------------------------------------- Featured products */}
-      <section className="border-t border-line bg-white py-10 md:py-12">
+      <section aria-labelledby="home-featured" className="bg-white pb-12 pt-4 md:pb-16">
         <Container>
           <Reveal>
-            <div className="mb-6 flex items-end justify-between gap-4">
-              <h2 className="t-h2">Featured Products</h2>
-              <Link
-                href="/products"
-                className="inline-flex shrink-0 items-center gap-1.5 pb-1 text-[0.875rem] font-semibold text-green-700 underline-offset-4 hover:underline"
-              >
-                View All
-                <ArrowRight className="size-4" aria-hidden="true" />
-              </Link>
-            </div>
+            <SectionHead
+              id="home-featured"
+              title="Featured Products"
+              href="/products"
+              action="View All"
+            />
             <ProductCarousel products={featured} label="Featured products" />
           </Reveal>
         </Container>
       </section>
 
-      {/* --------------------------------------------------------- New arrivals */}
-      <section className="border-t border-line bg-white py-10 md:py-12">
-        <Container>
-          <Reveal>
-            <div className="mb-6 flex items-end justify-between gap-4">
-              <h2 className="t-h2">Recently Added</h2>
-              <Link
-                href="/products"
-                className="inline-flex shrink-0 items-center gap-1.5 pb-1 text-[0.875rem] font-semibold text-green-700 underline-offset-4 hover:underline"
-              >
-                View All
-                <ArrowRight className="size-4" aria-hidden="true" />
-              </Link>
-            </div>
-            <ProductCarousel products={newest} label="Recently added products" />
-          </Reveal>
-        </Container>
-      </section>
-
       {/* --------------------------------------------------------------- About */}
-      <section className="border-t border-line bg-surface py-10 md:py-12">
-        <Container>
-          <Reveal>
-            <div className="grid gap-8 lg:grid-cols-12 lg:items-center lg:gap-12">
-              <div className="relative lg:col-span-5">
-                <div className="overflow-hidden rounded-md border border-line bg-white">
-                  <ProductImage name="Farm photograph" ratio="landscape" />
-                </div>
-                <p
-                  aria-hidden="true"
-                  className="t-script pointer-events-none absolute right-4 top-4 text-[1.6rem] text-green-700"
-                >
-                  From Our Farms
-                  <br />
-                  To Your Family
-                </p>
-              </div>
+      <section
+        aria-labelledby="home-about"
+        className="relative overflow-hidden border-y border-line/70 bg-white"
+      >
+        <div className="grid lg:grid-cols-[minmax(0,44%)_minmax(0,1fr)]">
+          {/* Full-bleed to the left edge of the viewport, as in the mockup */}
+          <div className="relative min-h-[16rem] lg:min-h-[21rem]">
+            {about ? (
+              <Image
+                src={about.src}
+                alt={about.alt}
+                fill
+                sizes="(min-width: 1024px) 44vw, 100vw"
+                className="object-cover"
+              />
+            ) : (
+              <FarmLandscape className="absolute inset-0 h-full w-full" />
+            )}
+            <p
+              aria-hidden="true"
+              className="t-script pointer-events-none absolute right-[8%] top-[12%] rotate-[-10deg] text-[clamp(1.6rem,1.2rem+1.2vw,2.3rem)] leading-[1] text-forest"
+            >
+              From
+              <br />
+              <span className="ml-5">Our Farms</span>
+              <br />
+              <span className="ml-10">To Your Family</span>
+            </p>
+          </div>
 
-              <div className="lg:col-span-4">
-                <p className="t-label text-ink-3">About Burla</p>
-                <h2 className="t-h2 mt-2">
-                  Rooted in Values.
-                  <br />
-                  Growing for Tomorrow.
-                </h2>
-                <p className="mt-4 text-[0.9375rem] leading-relaxed text-ink-2">
-                  Burla works with produce India has always grown, and with the
-                  methods that have always suited it — drying, curing, roasting
-                  and milling. What we bring to those methods is consistency:
-                  careful grading, controlled processing and honest packing.
-                </p>
-                <p className="mt-3 text-[0.875rem] leading-relaxed text-ink-3">
-                  <em>
-                    Our founding story, sourcing relationships and processing
-                    detail are pending client confirmation. We do not invent
-                    company history.
-                  </em>
-                </p>
-                <div className="mt-6">
-                  <ButtonLink href="/about">
+          <div className="px-4 py-10 md:px-10 lg:py-12 lg:pl-10 lg:pr-[max(2rem,calc((100vw-var(--container-page))/2+2rem))]">
+            <Reveal>
+              <div className="grid gap-8 md:grid-cols-[minmax(0,1.25fr)_auto_minmax(0,1fr)] md:gap-8">
+                <div>
+                  <p className="font-serif text-[1.0625rem] text-ink">About Burla</p>
+                  <span aria-hidden="true" className="mt-2 block h-0.5 w-10 rounded-full bg-green-700" />
+
+                  <h2
+                    id="home-about"
+                    className="mt-5 font-serif text-[clamp(1.6rem,1.3rem+1vw,2rem)] font-medium leading-[1.18] tracking-[-0.015em] text-forest"
+                  >
+                    Rooted in Values.
+                    <br />
+                    Growing for Tomorrow.
+                  </h2>
+
+                  {/* Deliberately general. The founding story, sourcing
+                      relationships and processing detail are pending client
+                      confirmation (CONTENT-INVENTORY) and are not invented. */}
+                  <p className="mt-4 max-w-[46ch] text-[0.875rem] leading-[1.75] text-ink-2">
+                    Burla Global Agri Products brings the everyday foods of
+                    Indian farming — dried, cured, roasted and milled — from
+                    the field to your table, with careful grading and honest
+                    packing at every step.
+                  </p>
+
+                  <Link
+                    href="/about"
+                    className="group mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-forest px-6 text-[0.8125rem] font-semibold text-white shadow-[0_10px_22px_-12px_rgba(15,74,44,0.7)] transition duration-300 hover:bg-green-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+                  >
                     Our Story
-                    <ArrowRight className="size-4" aria-hidden="true" />
-                  </ButtonLink>
-                </div>
-              </div>
-
-              <ul className="space-y-5 lg:col-span-3">
-                {aboutPoints.map(({ Icon, title, note }) => (
-                  <li key={title} className="flex gap-3">
-                    <Icon
-                      className="mt-0.5 size-5 shrink-0 text-green"
-                      strokeWidth={1.5}
+                    <ArrowRight
+                      className="size-4 transition-transform duration-300 group-hover:translate-x-1"
                       aria-hidden="true"
                     />
-                    <span>
-                      <span className="block text-[0.9375rem] font-semibold text-ink">
-                        {title}
+                  </Link>
+                </div>
+
+                <span aria-hidden="true" className="hidden w-px bg-line md:block" />
+
+                <ul className="grid content-center gap-6">
+                  {ABOUT_POINTS.map(({ Icon, title, note }) => (
+                    <li key={title} className="flex items-start gap-3.5">
+                      <Icon
+                        className="mt-0.5 size-7 shrink-0 text-green-700"
+                        strokeWidth={1.25}
+                        aria-hidden="true"
+                      />
+                      <span>
+                        <span className="block text-[0.875rem] font-semibold text-green-700">
+                          {title}
+                        </span>
+                        <span className="block text-[0.75rem] text-ink-3">
+                          {note}
+                        </span>
                       </span>
-                      <span className="block text-[0.8125rem] text-ink-2">
-                        {note}
-                      </span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Reveal>
-        </Container>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+          </div>
+        </div>
       </section>
     </>
   );
