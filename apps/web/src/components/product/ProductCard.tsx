@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ShoppingCart } from "lucide-react";
+import { CardCartControl } from "@/components/cart/CardCartControl";
 import {
   availabilityLabel,
   defaultVariant,
@@ -25,7 +25,13 @@ import { ProductPhoto } from "./ProductPhoto";
  * and no nesting.
  *
  * The cart icon is drawn bare, as in the mockup, but its hit area is still a
- * full 44px square.
+ * full 44px square. Once the product is in the cart it becomes a − qty +
+ * stepper (`CardCartControl`) — the only interactive part, so the card itself
+ * stays a server component.
+ *
+ * A product with no pack sizes or prices yet keeps its place in the grid,
+ * says "Price to be confirmed", and can still go in the cart: the price is
+ * confirmed before checkout, never at the card.
  *
  * No star rating: no reviews exist, and inventing social proof is both a
  * policy violation and a consumer-law problem.
@@ -34,10 +40,6 @@ export function ProductCard({ product }: { product: Product }) {
   const variant = defaultVariant(product);
   const soldOut = variant?.availability === "out_of_stock";
   const sizes = product.variants.map((v) => v.label).join(" | ");
-  // No pack sizes or prices have been supplied yet, so a product may have no
-  // variant at all. It keeps its place in the grid, says so plainly, and
-  // cannot be added to the bag.
-  const orderable = Boolean(variant) && !soldOut;
 
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-line bg-white transition duration-300 ease-out hover:-translate-y-0.5 hover:border-green-700/30 hover:shadow-[0_14px_30px_-16px_rgba(15,74,44,0.38)]">
@@ -76,15 +78,7 @@ export function ProductCard({ product }: { product: Product }) {
               Price to be confirmed
             </p>
           )}
-          <button
-            type="button"
-            disabled={!orderable}
-            aria-label={`Add ${product.name} to bag`}
-            // Raised above the stretched link so it stays independently clickable
-            className="relative z-10 -mr-2 grid size-11 shrink-0 place-items-center rounded-full text-green-700 transition-colors hover:bg-green-50 disabled:opacity-35 disabled:hover:bg-transparent"
-          >
-            <ShoppingCart className="size-[1.2rem]" strokeWidth={2} aria-hidden="true" />
-          </button>
+          <CardCartControl product={product} />
         </div>
       </div>
     </article>

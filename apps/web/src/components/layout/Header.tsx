@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
+import { useCart } from "@/components/cart/cartStore";
 import { Logo } from "@/components/ui/Logo";
 import { categories } from "@/data/catalog";
 import { mainNav, site } from "@/lib/site";
@@ -15,7 +16,7 @@ import { SearchOverlay } from "./SearchOverlay";
  *
  * One band, two rows, with the stacked logo spanning both on the left:
  *
- *   logo  |                    About Us  Quality  Contact Us   search  account  bag
+ *   logo  |                    About Us  Quality  Contact Us   search  account  cart
  *         |  Home  Powders & Flakes  Dehydrated Fruits  Pickles  ...
  *
  * The category row is where a customer spends attention, so it gets the long
@@ -62,9 +63,8 @@ export function Header() {
   }, [mobileOpen]);
 
   const catActive = (slug: string) => pathname.startsWith(`/products/${slug}`);
-  // The bag is not built yet (OQ-001), so it is honestly empty. Typed as a
-  // number so the label logic is already correct when a real count arrives.
-  const bagCount: number = 0;
+  // Units in the cart, live: it moves the moment a card or product page adds.
+  const cartCount = useCart().count;
 
   const iconButton =
     "relative grid size-10 place-items-center rounded-full text-ink transition-colors hover:bg-surface hover:text-green-700";
@@ -149,14 +149,16 @@ export function Header() {
                 <Link
                   href="/cart"
                   className={iconButton}
-                  aria-label={`Your bag, ${bagCount} ${bagCount === 1 ? "item" : "items"}`}
+                  aria-label={`Your cart, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}
                 >
                   <ShoppingCart className="size-[1.2rem]" strokeWidth={1.75} aria-hidden="true" />
                   <span
+                    // Keyed on the count, so each change replays the bump.
+                    key={cartCount}
                     aria-hidden="true"
-                    className="absolute right-0.5 top-0.5 grid h-[1.05rem] min-w-[1.05rem] place-items-center rounded-full bg-green-700 px-1 text-[0.625rem] font-semibold leading-none text-white tabular-nums"
+                    className="animate-cart-bump absolute right-0.5 top-0.5 grid h-[1.05rem] min-w-[1.05rem] place-items-center rounded-full bg-green-700 px-1 text-[0.625rem] font-semibold leading-none text-white tabular-nums"
                   >
-                    {bagCount}
+                    {cartCount}
                   </span>
                 </Link>
 

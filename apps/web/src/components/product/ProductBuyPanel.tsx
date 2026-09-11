@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { MessageCircle, Minus, Plus, ShoppingBag } from "lucide-react";
+import { ArrowRight, Check, Minus, Plus, ShoppingCart } from "lucide-react";
+import { MAX_QTY, addToCart, useCart } from "@/components/cart/cartStore";
+import { QuantityStepper } from "@/components/cart/QuantityStepper";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { ProductImage } from "@/components/ui/ProductImage";
 import { ProductPhoto } from "./ProductPhoto";
@@ -10,7 +12,6 @@ import {
   defaultVariant,
   type Product,
 } from "@/data/catalog";
-import { productEnquiry, whatsappLink } from "@/lib/site";
 import { cn, formatPrice } from "@/lib/utils";
 
 /**
@@ -35,9 +36,9 @@ export function ProductBuyPanel({
 
   // No pack sizes or prices have been supplied yet, so there may be no
   // variant at all: the price, pack size and availability then read "to be
-  // confirmed", and only the WhatsApp enquiry is offered.
+  // confirmed", and the product can still go in the cart.
   const soldOut = variant?.availability === "out_of_stock";
-  const orderable = Boolean(variant) && !soldOut;
+  const inCart = useCart().qtyOf(product.slug, variant?.id);
   const images = Array.from({ length: Math.max(1, imageCount) });
 
   return (
@@ -137,60 +138,81 @@ export function ProductBuyPanel({
           </span>
         </p>
 
-        <div className="mt-7 flex flex-wrap items-center gap-3">
-          <div className="flex h-11 items-center rounded-md border border-line">
-            <button
+        {/* The Flipkart pattern: choose a quantity and add; once the product
+            is in the cart, the quantity is the cart's own (a live stepper)
+            and the button becomes "Go to cart". */}
+        {inCart > 0 ? (
+          <>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <QuantityStepper
+                slug={product.slug}
+                variantId={variant?.id}
+                qty={inCart}
+                name={product.name}
+              />
+              <ButtonLink href="/cart" size="md" className="min-w-[10rem] flex-1">
+                Go to cart
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </ButtonLink>
+            </div>
+            <p
+              className="mt-3 flex items-center gap-1.5 text-[0.875rem] font-medium text-green-700"
+              role="status"
+            >
+              <Check className="size-4" aria-hidden="true" />
+              In your cart
+            </p>
+          </>
+        ) : (
+          <div className="mt-7 flex flex-wrap items-center gap-3">
+            <div className="flex h-11 items-center rounded-md border border-line">
+              <button
+                type="button"
+                onClick={() => setQty((q) => Math.max(1, q - 1))}
+                disabled={qty <= 1}
+                aria-label="Decrease quantity"
+                className="grid h-full w-10 place-items-center text-ink disabled:opacity-35"
+              >
+                <Minus className="size-4" aria-hidden="true" />
+              </button>
+              <span
+                className="w-10 text-center text-[0.9375rem] font-semibold tabular-nums"
+                aria-live="polite"
+                aria-label={`Quantity ${qty}`}
+              >
+                {qty}
+              </span>
+              <button
+                type="button"
+                onClick={() => setQty((q) => Math.min(MAX_QTY, q + 1))}
+                disabled={qty >= MAX_QTY}
+                aria-label="Increase quantity"
+                className="grid h-full w-10 place-items-center text-ink disabled:opacity-35"
+              >
+                <Plus className="size-4" aria-hidden="true" />
+              </button>
+            </div>
+
+            <Button
               type="button"
-              onClick={() => setQty((q) => Math.max(1, q - 1))}
-              disabled={qty <= 1}
-              aria-label="Decrease quantity"
-              className="grid h-full w-10 place-items-center text-ink disabled:opacity-35"
+              disabled={soldOut}
+              onClick={() => {
+                addToCart(product.slug, variant?.id, qty);
+                setQty(1);
+              }}
+              className="min-w-[10rem] flex-1"
             >
-              <Minus className="size-4" aria-hidden="true" />
-            </button>
-            <span
-              className="w-10 text-center text-[0.9375rem] font-semibold tabular-nums"
-              aria-live="polite"
-              aria-label={`Quantity ${qty}`}
-            >
-              {qty}
-            </span>
-            <button
-              type="button"
-              onClick={() => setQty((q) => Math.min(20, q + 1))}
-              disabled={qty >= 20}
-              aria-label="Increase quantity"
-              className="grid h-full w-10 place-items-center text-ink disabled:opacity-35"
-            >
-              <Plus className="size-4" aria-hidden="true" />
-            </button>
+              <ShoppingCart className="size-4" aria-hidden="true" />
+              Add to cart
+            </Button>
           </div>
+        )}
 
-          <Button disabled={!orderable} className="min-w-[10rem] flex-1">
-            <ShoppingBag className="size-4" aria-hidden="true" />
-            Add to bag
-          </Button>
-        </div>
-
-        <ButtonLink
-          href={whatsappLink(
-            productEnquiry(product.name, variant?.label, product.slug),
-          )}
-          external
-          variant="whatsapp"
-          size="lg"
-          className="mt-3 w-full"
-          data-analytics="whatsapp_click"
-          data-source="pdp"
-        >
-          <MessageCircle className="size-4" aria-hidden="true" />
-          Ask about this product
-        </ButtonLink>
-
-        <p className="mt-4 text-[0.8125rem] leading-relaxed text-ink-3">
-          Checkout is not enabled in this demo. Ordering currently runs through
-          WhatsApp — see <code>OQ-001</code>.
-        </p>
+        {!variant && (
+          <p className="mt-4 text-[0.8125rem] leading-relaxed text-ink-3">
+            The price and pack size will be confirmed before checkout.
+          </p>
+        )}
       </div>
     </div>
   );

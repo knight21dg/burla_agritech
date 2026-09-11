@@ -66,6 +66,15 @@
   --container-page: 1280px;
 
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* The header's cart count, when it changes: a quick swell and settle, so
+     an add from a card lower down the page still registers up top. */
+  --animate-cart-bump: cart-bump 320ms var(--ease-standard);
+  @keyframes cart-bump {
+    40% {
+      transform: scale(1.35);
+    }
+  }
 }
 
 @layer base {

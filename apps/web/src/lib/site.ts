@@ -109,14 +109,3 @@ export const companyNav = [
 export function whatsappLink(message: string) {
   return `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message)}`;
 }
-
-/**
- * The pre-filled WhatsApp message for a product. The pack size is optional:
- * none have been supplied yet. The link is the product's real page,
- * /products/p/{slug} — it previously pointed at /products/{slug}, which is a
- * category URL and returned 404 for every product.
- */
-export function productEnquiry(name: string, packSize: string | undefined, slug: string) {
-  const what = packSize ? `${name} (${packSize})` : name;
-  return `Hi Burla, I'd like to know more about ${what}.\n${site.url}/products/p/${slug}`;
-}
