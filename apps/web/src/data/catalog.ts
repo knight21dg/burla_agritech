@@ -7,7 +7,8 @@
  * fuller names from the client's product sheet of 2026-09-10, noted at each.
  *
  * What the catalogue does NOT provide is left empty rather than invented:
- *   - prices and pack sizes      → `variants: []`; the UI shows "to be confirmed"
+ *   - prices and pack sizes      → SAMPLE rates, at the client's request, until
+ *                                  real ones arrive: see SAMPLE_PACKS below
  *   - descriptions               → `""`; the UI shows a placeholder
  *   - images                     → only the client-supplied photographs in
  *                                  `lib/imagery.ts`; otherwise the illustrated
@@ -27,9 +28,10 @@
  */
 
 /**
- * The site is still a demo: the names are real, but no prices, pack sizes,
- * descriptions or legally required product details have been supplied, so
- * nothing here may be published as a live, orderable catalogue.
+ * The site is still a demo: the names are real, but the prices and pack sizes
+ * are samples, and no descriptions or legally required product details have
+ * been supplied, so nothing here may be published as a live, orderable
+ * catalogue.
  */
 export const IS_SAMPLE_DATA = true;
 
@@ -193,6 +195,118 @@ export const categoryBySlug = (slug: string) =>
    product's name is unchanged either way.
    -------------------------------------------------------------------------- */
 
+/* --------------------------------------------------------------------------
+   SAMPLE PACK SIZES AND PRICES — NOT THE CLIENT'S.
+
+   TODO (client): replace every row with Burla's real pack sizes and prices.
+
+   Added at the client's request (2026-09-11) so the cart and checkout can be
+   exercised end to end before real prices exist. They are approximate Indian
+   retail rates for comparable products, set by us from general market
+   knowledge, not researched or quoted from any seller, and they are not
+   Burla's prices. No MRP is set, so no discount is ever shown. Stock is
+   "in stock" throughout for the same reason.
+
+   Everything seeded from this module is flagged is_sample, and a production
+   boot refuses to serve it (server/db/guards.ts), so these cannot go live.
+
+   [grams, rupees] per pack size; the first is the default.
+   -------------------------------------------------------------------------- */
+
+type Pack = readonly [grams: number, rupees: number];
+
+const SAMPLE_PACKS: Record<string, readonly Pack[]> = {
+  // Dehydrated Powders & Flakes → Powders
+  "moringa-powder": [[100, 179], [250, 399]],
+  "banana-powder": [[100, 149], [250, 329]],
+  "lemon-powder": [[100, 199], [250, 449]],
+  "tomato-powder": [[100, 179], [250, 399]],
+  "ginger-powder": [[100, 169], [250, 379]],
+  "garlic-powder": [[100, 159], [250, 349]],
+  "onion-powder": [[100, 149], [250, 329]],
+  "carrot-powder": [[100, 199], [250, 449]],
+  "beetroot-powder": [[100, 199], [250, 449]],
+  "curry-leaves": [[100, 129], [250, 289]],
+  "amla-powder": [[100, 129], [250, 289]],
+  "abc-powder": [[200, 299], [500, 699]],
+  "spinach-powder": [[100, 189], [250, 419]],
+  // Dehydrated Powders & Flakes → Flakes
+  "mango-flakes": [[100, 199], [250, 449]],
+  "tomato-flakes": [[100, 179], [250, 399]],
+  "ginger-flakes": [[100, 179], [250, 399]],
+  "garlic-flakes": [[100, 169], [250, 379]],
+  "onion-flakes": [[100, 149], [250, 329]],
+  "carrot-flakes": [[100, 179], [250, 399]],
+  "beetroot-flakes": [[100, 189], [250, 419]],
+  // Dehydrated Fruits
+  "dehydrated-fruits-apple": [[100, 249], [200, 469]],
+  "dehydrated-fruits-papaya": [[100, 199], [200, 369]],
+  "dehydrated-fruits-mango": [[100, 229], [200, 429]],
+  "dehydrated-fruits-pineapple": [[100, 219], [200, 409]],
+  "dehydrated-fruits-sapota": [[100, 219], [200, 409]],
+  "dehydrated-fruits-honey": [[250, 249], [500, 449]],
+  // Pickles → Veg Pickles
+  "tomato-pickle": [[250, 149], [500, 279]],
+  "gongura-pickle": [[250, 179], [500, 329]],
+  "garlic-pickle": [[250, 179], [500, 329]],
+  "mango-pickle": [[250, 169], [500, 309]],
+  // Pickles → Non-Veg Pickles
+  "chicken-pickle": [[250, 399], [500, 749]],
+  "prawns-pickle": [[250, 499], [500, 949]],
+  "mutton-pickle": [[250, 549], [500, 1049]],
+  // Dal Powders
+  "kandi-powder": [[200, 129], [500, 299]],
+  "chana-powder": [[200, 119], [500, 279]],
+  "avise-powder": [[200, 139], [500, 319]],
+  "sesame-seed-nuvvulu": [[200, 149], [500, 339]],
+  // Crisps
+  "rice-vadialu": [[200, 129], [500, 289]],
+  "gummadi-vadialu": [[200, 149], [500, 339]],
+  saggubiyyam: [[200, 139], [500, 309]],
+  "minapa-vadialu": [[200, 159], [500, 359]],
+  // Dry Fruits
+  badam: [[250, 349], [500, 679]],
+  pista: [[250, 449], [500, 879]],
+  cashews: [[250, 329], [500, 639]],
+  dates: [[250, 179], [500, 339]],
+  // Millet Powders
+  "foxtail-korralu-powder": [[500, 129], [1000, 239]],
+  "little-samalu-powder": [[500, 139], [1000, 259]],
+  "kodo-arikalu-powder": [[500, 129], [1000, 239]],
+  "barnyard-udalu-powder": [[500, 149], [1000, 279]],
+  "andukorralu-powder": [[500, 169], [1000, 319]],
+  // Tea / Coffee
+  "herbal-tea-powder": [[100, 199], [250, 449]],
+  "masala-tea-powder": [[100, 179], [250, 399]],
+  "lemon-tea-powder": [[100, 169], [250, 379]],
+  "green-tea-powder": [[100, 199], [250, 449]],
+  // Masala Powders
+  "masala-powders-non-veg": [[100, 79], [200, 149]],
+  "masala-powders-chicken-biryani": [[100, 89], [200, 169]],
+  "masala-powders-mutton-biryani": [[100, 99], [200, 189]],
+  "masala-powders-fish-curry": [[100, 89], [200, 169]],
+  // Spices
+  "turmeric-powder": [[200, 79], [500, 179]],
+  "red-chilli-powder": [[200, 99], [500, 229]],
+  "coriander-powder": [[200, 69], [500, 159]],
+  "black-pepper-powder": [[100, 149], [250, 349]],
+  "rasam-powder": [[100, 69], [200, 129]],
+};
+
+function sampleVariants(slug: string): Variant[] {
+  const packs = SAMPLE_PACKS[slug];
+  if (!packs) throw new Error(`catalog.ts: no sample pack sizes for "${slug}"`);
+  return packs.map(([grams, rupees], index) => ({
+    id: `${slug}-${grams}g`,
+    label: grams >= 1000 ? `${grams / 1000} kg` : `${grams} g`,
+    sku: `SAMPLE-${slug.toUpperCase()}-${grams}G`,
+    priceMinor: rupees * 100,
+    netWeightGrams: grams,
+    availability: "in_stock",
+    isDefault: index === 0,
+  }));
+}
+
 function product(
   categorySlug: string,
   slug: string,
@@ -208,7 +322,7 @@ function product(
     ...(options.typeSlug ? { typeSlug: options.typeSlug } : {}),
     shortDescriptor: "",
     description: "",
-    variants: [],
+    variants: sampleVariants(slug),
     ...(options.featured ? { featured: true } : {}),
     tone: parent.tone,
     ...(options.confirmation ? { confirmation: options.confirmation } : {}),

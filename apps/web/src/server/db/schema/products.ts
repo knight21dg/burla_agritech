@@ -70,10 +70,10 @@ export const products = pgTable(
 
     /**
      * True for products seeded by the demonstration seed. Their names are the
-     * client's (catalogue of 2026-09-10), but no prices, pack sizes,
-     * descriptions or legally required details exist for them, so none may
-     * reach production as they are. `assertNoSampleData()` refuses to let
-     * them.
+     * client's (catalogue of 2026-09-10), but their prices and pack sizes are
+     * samples and no descriptions or legally required details exist for
+     * them, so none may reach production as they are. `assertNoSampleData()`
+     * refuses to let them.
      */
     isSample: boolean("is_sample").notNull().default(false),
 

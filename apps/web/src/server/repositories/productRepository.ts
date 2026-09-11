@@ -138,11 +138,10 @@ async function withVariants(rows: ProductRow[]): Promise<Product[]> {
   }
 
   // Products with no active variant are returned, with `variants: []`, not
-  // filtered out. The client's catalogue (2026-09-10) names every product but
-  // supplies no pack sizes or prices yet, so dropping variant-less products
-  // would serve an empty site. The interface shows "price to be confirmed"
-  // and disables ordering for them; the publish guard still keeps anything
-  // without a price and its legal fields from going live.
+  // filtered out: a product listed before its pack sizes are priced keeps its
+  // page. The interface shows "price to be confirmed" for it and the order
+  // check refuses it; the publish guard still keeps anything without a price
+  // and its legal fields from going live.
   return rows.map((row) => ({
     id: row.id,
     slug: row.slug,

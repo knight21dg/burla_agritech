@@ -2,10 +2,11 @@
  * Guards that stand between demonstration data and a live site.
  *
  * The catalogue on the site — 9 product types and 63 products — is named
- * from the client's catalogue (2026-09-10), but carries no prices, pack
- * sizes, descriptions or legally required details yet. Rows seeded from it are
- * flagged `is_sample` so they cannot reach production until those exist; a
- * comment saying "remember to remove this" would not be a control.
+ * from the client's catalogue (2026-09-10), but its prices and pack sizes are
+ * samples set by us (catalog.ts, SAMPLE_PACKS) and it has no descriptions or
+ * legally required details yet. Rows seeded from it are flagged `is_sample`
+ * so they cannot reach production until real ones exist; a comment saying
+ * "remember to remove this" would not be a control.
  */
 import "server-only";
 import { count, eq, inArray } from "drizzle-orm";
@@ -66,8 +67,8 @@ export async function assertNoSampleData(db: Database): Promise<void> {
     `Refusing to run: production contains demonstration data — ` +
       `${report.sampleProducts} product(s) and ${report.sampleCategories} ` +
       `category/type row(s) flagged is_sample.\n` +
-      `Those rows have no prices, pack sizes, descriptions or legal ` +
-      `details and must not be published as they are.\n` +
+      `Their prices and pack sizes are samples, and they have no ` +
+      `descriptions or legal details: they must not be published.\n` +
       `Remove them with: npm run db:seed -- --purge-demo\n` +
       `See docs/DATABASE-DESIGN.md §10.`,
   );

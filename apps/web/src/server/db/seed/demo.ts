@@ -2,9 +2,10 @@
  * DEMONSTRATION SEED — MUST NEVER RUN IN PRODUCTION.
  *
  * Seeds the catalogue module's types and products: 9 types and 63 products,
- * named from the client's catalogue (2026-09-10). What the client has not
- * supplied — prices, pack sizes, descriptions, legal details — is absent, so
- * these rows are incomplete and must not reach production as they are.
+ * named from the client's catalogue (2026-09-10), with the sample pack sizes
+ * and prices from catalog.ts (SAMPLE_PACKS — not the client's). What the
+ * client has not supplied — descriptions, legal details — is absent, so these
+ * rows are incomplete and must not reach production as they are.
  *
  * Three things stop it reaching a live site:
  *

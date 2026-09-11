@@ -34,9 +34,9 @@ export function ProductBuyPanel({
   const [qty, setQty] = useState(1);
   const [active, setActive] = useState(0);
 
-  // No pack sizes or prices have been supplied yet, so there may be no
-  // variant at all: the price, pack size and availability then read "to be
-  // confirmed", and the product can still go in the cart.
+  // A product may have no pack sizes yet, so there may be no variant at all:
+  // the price, pack size and availability then read "to be confirmed", and
+  // the product can still go in the cart.
   const soldOut = variant?.availability === "out_of_stock";
   const inCart = useCart().qtyOf(product.slug, variant?.id);
   const images = Array.from({ length: Math.max(1, imageCount) });

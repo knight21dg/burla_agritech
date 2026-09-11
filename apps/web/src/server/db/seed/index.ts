@@ -69,7 +69,7 @@ async function main(): Promise<void> {
   if (isProduction) {
     throw new Error(
       "--demo is refused when APP_ENV=production.\n" +
-        "The products it would create have no prices, pack sizes, " +
+        "The products it would create carry sample prices and no " +
         "descriptions or legal details, and must not be published.",
     );
   }
@@ -83,8 +83,8 @@ async function main(): Promise<void> {
         : ""),
   );
   console.log(
-    "\n⚠  This catalogue is INCOMPLETE. The names are the client's, but no\n" +
-      "   price, pack size, description or legal detail has been supplied.\n" +
+    "\n⚠  This catalogue is INCOMPLETE. The names are the client's; the prices\n" +
+      "   and pack sizes are SAMPLES, and no description or legal detail exists.\n" +
       "   It is flagged is_sample and a production boot will refuse to serve it.",
   );
 }

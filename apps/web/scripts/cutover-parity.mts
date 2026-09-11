@@ -203,9 +203,8 @@ console.log("\n--- helpers ---");
 const sampleProduct = (await catalogService.getProduct("turmeric-powder"))!;
 const sampleSource = catalog.productBySlug("turmeric-powder")!;
 
-// No pack sizes have been supplied, so both sides agree there is none.
 check(
-  "defaultVariant agrees (none, until pack sizes are supplied)",
+  "defaultVariant picks the same pack size",
   catalog.defaultVariant(sampleSource)?.label,
   defaultVariant(sampleProduct)?.label,
 );

@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { productBySlug } from "@/data/catalog";
+import { defaultVariant, productBySlug } from "@/data/catalog";
 import { CATALOGUE_ID, MAX_LINE_QTY } from "@/lib/checkout";
 
 /**
@@ -64,9 +64,12 @@ function parse(raw: string | null): CartLine[] {
     const product = productBySlug(slug);
     if (!product) continue;
     if (variantId && !product.variants.some((v) => v.id === variantId)) continue;
-    if (out.some((l) => sameLine(l, slug, variantId))) continue;
+    // A line saved before the product had pack sizes takes its default one,
+    // rather than sitting in the cart unpriced.
+    const pack = variantId ?? defaultVariant(product)?.id;
+    if (out.some((l) => sameLine(l, slug, pack))) continue;
 
-    out.push({ slug, ...(variantId ? { variantId } : {}), qty: Math.min(qty, MAX_QTY) });
+    out.push({ slug, ...(pack ? { variantId: pack } : {}), qty: Math.min(qty, MAX_QTY) });
   }
   return out;
 }

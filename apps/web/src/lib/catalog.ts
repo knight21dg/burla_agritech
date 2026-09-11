@@ -30,8 +30,7 @@ export function typeHref(categorySlug: string, typeSlug: string): string {
  * The database enforces at most one default per product (a partial unique
  * index), but not that there is one — a product may legitimately have a single
  * variant nobody flagged, so the first is the fallback. Undefined when a
- * product has no pack sizes yet, which is every product in the client's
- * catalogue of 2026-09-10 until prices and sizes are supplied.
+ * product has no pack sizes yet.
  */
 export function defaultVariant(product: Product): Variant | undefined {
   return product.variants.find((v) => v.isDefault) ?? product.variants[0];
