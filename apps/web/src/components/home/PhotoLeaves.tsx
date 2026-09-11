@@ -1,14 +1,11 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { useEffect, useRef } from "react";
 import { between, seeded } from "@/components/art/random";
 import { cn } from "@/lib/utils";
 import {
-  HERO_ANCHOR,
   HERO_CANVAS,
   HERO_LEAVES,
-  HERO_SCALE,
   PAINTED_TEXT,
   heroLeafSrc,
   heroPlacement,
@@ -27,13 +24,13 @@ import { TAU, advance, character, type Motion, transformOf } from "./leafPhysics
  *
  * ## Placement, in CSS, exact at every size
  *
- * The image is shown with `object-fit: cover` in a frame whose shape depends
- * on the screen, so where a painted pixel lands is only known from the
- * frame's size. The frame is a size container, and each leaf is positioned
- * with container units using the same arithmetic as `object-fit: cover`:
+ * The image is scaled to cover a frame whose shape depends on the screen, so
+ * where a painted pixel lands is only known from the frame's size. The frame
+ * is a size container, and the image and each leaf are positioned with
+ * container units by the same rules (`HERO_LAYER_CSS`):
  *
  *   s    = max(frame width / canvas width, frame height / canvas height)
- *   left = (frame width - canvas width x s) x anchorX + canvas x x s
+ *   left = the canvas's left edge (--hero-x) + canvas x x s
  *
  * so the server render is already exact on every device, with no script and
  * no flash. JavaScript then reads each leaf's rendered position and carries
@@ -106,17 +103,21 @@ export function PhotoLeaves({ className }: { className?: string }) {
     if (!W0 || !H0) return;
 
     const desktop = window.matchMedia("(min-width: 768px)").matches;
-    const anchor = desktop ? HERO_ANCHOR.desktop : HERO_ANCHOR.phone;
+    const photo = container.parentElement?.querySelector<HTMLImageElement>(
+      "img[data-hero-image]",
+    );
 
-    // The same cover arithmetic as the CSS, for the one thing CSS cannot
-    // give the physics: where the painted words are.
-    const fit = (W: number, H: number) => {
-      const s = Math.max(W / CW, H / CH);
-      return {
-        s,
-        offX: (W - CW * s) * anchor.x,
-        offY: (H - CH * s) * anchor.y,
-      };
+    // Where the canvas is, for the one thing CSS cannot give the physics:
+    // where the painted words are. Read from the rendered image, which the
+    // same CSS places (HERO_LAYER_CSS), so the two can never disagree.
+    const fit = () => {
+      const frame = container.getBoundingClientRect();
+      const box = photo?.getBoundingClientRect();
+      if (!box?.width) {
+        const s = Math.max(frame.width / CW, frame.height / CH);
+        return { s, offX: 0, offY: (frame.height - CH * s) / 2 };
+      }
+      return { s: box.width / CW, offX: box.left - frame.left, offY: box.top - frame.top };
     };
 
     const leaves: { el: HTMLDivElement; m: Motion }[] = [];
@@ -178,9 +179,6 @@ export function PhotoLeaves({ className }: { className?: string }) {
     // hidden until the photograph has loaded, then fades in with it — and the
     // hold before the breeze is counted from that moment, not from mount.
     let revealedAt = 0;
-    const photo = container.parentElement?.querySelector<HTMLImageElement>(
-      "img[data-hero-image]",
-    );
     const reveal = () => {
       if (revealedAt) return;
       revealedAt = performance.now();
@@ -215,7 +213,7 @@ export function PhotoLeaves({ className }: { className?: string }) {
 
     const reenter = (m: Motion) => {
       const rand = Math.random;
-      const { s, offX, offY } = fit(W, H);
+      const { s, offX, offY } = fit();
       Object.assign(m, character(m.depth, rand), { tumbler: false });
       m.flutterAmp = Math.min(m.flutterAmp, 52);
 
@@ -316,14 +314,13 @@ export function PhotoLeaves({ className }: { className?: string }) {
       ref={containerRef}
       data-photo-leaves
       aria-hidden="true"
-      // --spx: rendered px per canvas px, exactly as object-fit: cover
-      // computes it. Resolved against the frame, the nearest size container.
-      style={{ "--spx": HERO_SCALE } as CSSProperties}
-      // Hidden until the hero photograph has loaded (see the effect). The
-      // <noscript> rule below shows the leaves anyway when there is no script
-      // to reveal them — they are part of the picture.
+      // `hero-layer`: the canvas's scale and placement (HERO_LAYER_CSS), which
+      // every leaf's position reads. Hidden until the hero photograph has
+      // loaded (see the effect); the <noscript> rule below shows the leaves
+      // anyway when there is no script to reveal them — they are part of the
+      // picture.
       className={cn(
-        "pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500",
+        "hero-layer pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500",
         className,
       )}
     >

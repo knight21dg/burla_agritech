@@ -48,14 +48,15 @@ export const HERO_SOURCE = { w: 1536, h: 1024 } as const;
 export const HERO_CANVAS = { w: 3072, h: 880, padX: 768, cropTop: 70 } as const;
 
 /**
- * Where the canvas is anchored when it is cropped (object-position), per
- * layout. On phones the crop is a 1024-px-wide window of the source ending
- * at its right edge — the products, not the painted words:
- * (512 + padX) / (canvas.w - 1024) = 0.625.
+ * Where the canvas is anchored on phones, where it is cropped: a 1024-px-wide
+ * window of the source ending at its right edge — the products, not the
+ * painted words: (512 + padX) / (canvas.w - 1024) = 0.625. Vertically it is
+ * centred on every layout. (Desktop is anchored to the page grid instead; see
+ * HERO_LAYER_CSS.)
  */
 export const HERO_ANCHOR = {
   phone: { x: 0.625, y: 0.5 },
-  desktop: { x: 0.5, y: 0.5 },
+  y: 0.5,
 } as const;
 
 /** The block of words painted into the image (logo to paragraph), source px. */
@@ -71,22 +72,49 @@ export const PAINTED_TEXT = { left: 88, right: 470, bottom: 600 } as const;
 export const HERO_ACTION = { x: 96, y: 602, height: 44, fontSize: 15, padX: 22 } as const;
 
 /**
- * Rendered px per canvas px, exactly as `object-fit: cover` scales it. Set as
- * `--spx` on an element inside the hero frame (a size container), so `cqw` /
- * `cqh` measure the frame.
+ * How the canvas is scaled and placed in the hero frame, as CSS, for every
+ * layer drawn on it — the image, the leaves, the action — on the class
+ * `hero-layer`. The frame is a size container, so `cqw` / `cqh` measure it.
+ *
+ *   --spx     rendered px per canvas px: `cover` (the canvas always fills
+ *             the frame).
+ *   --hero-x  the canvas's left edge in the frame.
+ *   --hero-y  its top edge: centred.
+ *
+ * Desktop: the painted words' left edge (PAINTED_TEXT.left) sits on the site
+ * container's content edge — the line the header logo, the navigation and
+ * every section heading start on — so the hero belongs to the page's grid
+ * instead of floating centred on its own. The content edge is the
+ * `container-page` utility's (globals.css): a 1280px column with 1.5rem
+ * padding, 2rem from 1280px up. The offset is clamped so the canvas always
+ * covers the frame.
+ *
+ * Phones: the anchored crop of the products (HERO_ANCHOR.phone).
  */
-export const HERO_SCALE = `max(100cqw / ${HERO_CANVAS.w}, 100cqh / ${HERO_CANVAS.h})`;
+export const HERO_LAYER_CSS = (() => {
+  const { w: CW, h: CH, padX } = HERO_CANVAS;
+  const contentEdge = "max(1.5rem, (100cqw - var(--container-page)) / 2 + 2rem)";
+  const top = `calc((100cqh - ${CH} * var(--spx)) * ${HERO_ANCHOR.y})`;
+  return (
+    `.hero-layer{--spx:max(100cqw / ${CW}, 100cqh / ${CH});` +
+    `--hero-x:calc((100cqw - ${CW} * var(--spx)) * ${HERO_ANCHOR.phone.x});` +
+    `--hero-y:${top}}` +
+    `@media (width >= 768px){.hero-layer{--hero-x:clamp(` +
+    `100cqw - ${CW} * var(--spx), ` +
+    `${contentEdge} - ${PAINTED_TEXT.left + padX} * var(--spx), 0px)}}`
+  );
+})();
 
 /**
- * An element's box, in container units, at source (x, y) — `object-fit:
- * cover` done by hand, so it stays on its spot in the painting at every size.
- * Reads `--spx` (HERO_SCALE) and the frame's `--ox` / `--oy` anchor.
+ * An element's box at source (x, y), in the canvas's own placement
+ * (HERO_LAYER_CSS), so it stays on its spot in the painting at every size.
+ * The element, or an ancestor inside the frame, carries `hero-layer`.
  */
 export function heroPlacement(x: number, y: number, w?: number): CSSProperties {
-  const { w: CW, h: CH, padX, cropTop } = HERO_CANVAS;
+  const { padX, cropTop } = HERO_CANVAS;
   return {
-    left: `calc((100cqw - ${CW} * var(--spx)) * var(--ox) + ${x + padX} * var(--spx))`,
-    top: `calc((100cqh - ${CH} * var(--spx)) * var(--oy) + ${y - cropTop} * var(--spx))`,
+    left: `calc(var(--hero-x) + ${x + padX} * var(--spx))`,
+    top: `calc(var(--hero-y) + ${y - cropTop} * var(--spx))`,
     ...(w === undefined ? {} : { width: `calc(${w} * var(--spx))` }),
   };
 }

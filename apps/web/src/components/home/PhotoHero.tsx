@@ -1,11 +1,10 @@
-import type { CSSProperties } from "react";
 import { preload } from "react-dom";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import type { Photo } from "@/lib/imagery";
 import { cn } from "@/lib/utils";
-import { HERO_ACTION, HERO_SCALE, heroPlacement } from "./heroLeaves";
+import { HERO_ACTION, HERO_CANVAS, HERO_LAYER_CSS, heroPlacement } from "./heroLeaves";
 import { PhotoLeaves } from "./PhotoLeaves";
 
 /**
@@ -34,10 +33,18 @@ import { PhotoLeaves } from "./PhotoLeaves";
  * 2.6:1. Letterboxing left white bars down both sides, stretching distorts,
  * and a plain cover-crop cuts the logo or the products. So the page shows a
  * widened canvas (`HERO_CANVAS`): the image with its empty top and bottom
- * margin trimmed and matched backdrop extended at both sides, with
- * `object-fit: cover`. The hero fills the screen edge to edge, fits under the
- * header without scrolling, and the content renders as large as the height
- * allows.
+ * margin trimmed and matched backdrop extended at both sides, scaled to
+ * cover. The hero fills the screen edge to edge, fits under the header
+ * without scrolling, and the content renders as large as the height allows.
+ *
+ * ## Alignment
+ *
+ * Centring the canvas left the painted logo and words floating on their own
+ * line — on a laptop-height screen, some 150px inside the header logo and the
+ * section headings. So on desktop the canvas is placed to put the painted
+ * words' left edge on the site container's content edge, the page's one
+ * left line, and the extended backdrop takes up whatever is left at the
+ * right (`HERO_LAYER_CSS`).
  *
  * ## Phones
  *
@@ -114,13 +121,15 @@ export function PhotoHero({ photo }: { photo: Photo }) {
           ratio allows but never taller than the screen below the header, and
           never taller than the canvas (so it is never upscaled).
           Phones: a 1024 x 880 window of the source — the products.
-          A size container, so the leaves can be placed in container units. */}
+          A size container: the image, the leaves and the action are all
+          placed in container units by the same rules (HERO_LAYER_CSS). */}
+      <style>{HERO_LAYER_CSS}</style>
       <div
         data-hero-frame
         className={cn(
           "relative mt-4 w-full overflow-hidden bg-[#fefefe] [container-type:size]",
-          "aspect-[1024/880] [--ox:0.625] [--oy:0.5]",
-          "md:mt-0 md:aspect-[1536/880] md:max-h-[min(calc(100svh-var(--site-chrome)),880px)] md:[--ox:0.5]",
+          "aspect-[1024/880]",
+          "md:mt-0 md:aspect-[1536/880] md:max-h-[min(calc(100svh-var(--site-chrome)),880px)]",
         )}
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- served
@@ -135,7 +144,16 @@ export function PhotoHero({ photo }: { photo: Photo }) {
           height={photo.height}
           fetchPriority="high"
           decoding="async"
-          className="absolute inset-0 h-full w-full object-cover object-[62.5%_50%] md:object-center"
+          // Sized and placed by hand rather than with object-fit, so that on
+          // desktop the painted words can sit on the page grid (see
+          // HERO_LAYER_CSS) — object-position cannot express that edge.
+          style={{
+            left: "var(--hero-x)",
+            top: "var(--hero-y)",
+            width: `calc(${HERO_CANVAS.w} * var(--spx))`,
+            height: `calc(${HERO_CANVAS.h} * var(--spx))`,
+          }}
+          className="hero-layer absolute max-w-none"
         />
         <PhotoLeaves className="z-10" />
 
@@ -146,16 +164,13 @@ export function PhotoHero({ photo }: { photo: Photo }) {
             one drifting past goes behind it. */}
         <Link
           href="/products"
-          style={
-            {
-              "--spx": HERO_SCALE,
-              ...heroPlacement(HERO_ACTION.x, HERO_ACTION.y),
-              height: `max(2.25rem, calc(${HERO_ACTION.height} * var(--spx)))`,
-              paddingInline: `max(1rem, calc(${HERO_ACTION.padX} * var(--spx)))`,
-              fontSize: `max(0.75rem, calc(${HERO_ACTION.fontSize} * var(--spx)))`,
-            } as CSSProperties
-          }
-          className="enter enter-delay-3 group absolute z-20 hidden items-center gap-[0.6em] whitespace-nowrap rounded-full bg-forest font-semibold text-white shadow-[0_10px_24px_-12px_rgba(15,74,44,0.7)] transition duration-300 hover:bg-green-700 hover:shadow-[0_14px_28px_-12px_rgba(15,74,44,0.75)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink md:inline-flex"
+          style={{
+            ...heroPlacement(HERO_ACTION.x, HERO_ACTION.y),
+            height: `max(2.25rem, calc(${HERO_ACTION.height} * var(--spx)))`,
+            paddingInline: `max(1rem, calc(${HERO_ACTION.padX} * var(--spx)))`,
+            fontSize: `max(0.75rem, calc(${HERO_ACTION.fontSize} * var(--spx)))`,
+          }}
+          className="hero-layer enter enter-delay-3 group absolute z-20 hidden items-center gap-[0.6em] whitespace-nowrap rounded-full bg-forest font-semibold text-white shadow-[0_10px_24px_-12px_rgba(15,74,44,0.7)] transition duration-300 hover:bg-green-700 hover:shadow-[0_14px_28px_-12px_rgba(15,74,44,0.75)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink md:inline-flex"
         >
           Explore Our Products
           <ArrowRight
