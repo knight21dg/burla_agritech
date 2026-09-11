@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { productBySlug } from "@/data/catalog";
+import { CATALOGUE_ID, MAX_LINE_QTY } from "@/lib/checkout";
 
 /**
  * The shopping cart, kept in the browser — as Amazon and Flipkart keep a
@@ -25,12 +26,12 @@ export interface CartLine {
   qty: number;
 }
 
-/** The most of one line a shopper can hold — the product page's limit too. */
-export const MAX_QTY = 20;
+/** The most of one line a shopper can hold — checkout's limit too. */
+export const MAX_QTY = MAX_LINE_QTY;
 
 const STORAGE_KEY = "burla:cart:v1";
 const EMPTY: readonly CartLine[] = [];
-const ID = /^[A-Za-z0-9_-]{1,120}$/;
+const ID = CATALOGUE_ID;
 
 let lines: readonly CartLine[] | null = null;
 const listeners = new Set<() => void>();
