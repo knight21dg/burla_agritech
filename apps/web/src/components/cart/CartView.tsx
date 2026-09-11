@@ -4,10 +4,12 @@ import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { ArrowRight, Lock, ShoppingCart } from "lucide-react";
 import { ProductPhoto } from "@/components/product/ProductPhoto";
-import { Button, ButtonLink } from "@/components/ui/Button";
-import { productBySlug, productHref, trailFor } from "@/data/catalog";
+import { ButtonLink } from "@/components/ui/Button";
+import { productHref, trailFor } from "@/data/catalog";
 import { formatPrice } from "@/lib/utils";
 import { removeFromCart, useCart } from "./cartStore";
+import { cartTotals, resolveLines } from "./lines";
+import { PriceDetails } from "./PriceDetails";
 import { QuantityStepper } from "./QuantityStepper";
 
 const noop = () => () => {};
@@ -19,9 +21,9 @@ const noop = () => () => {};
  *
  * Prices are read from the catalogue here, never stored in the cart. Most
  * products have none yet, so a line says "Price to be confirmed" and the
- * subtotal is only shown once every line has a price. Checkout stays closed
- * until prices and delivery charges exist — and when it opens, the server
- * prices the order itself.
+ * subtotal is only shown once every line has a price. Checkout is open to
+ * walk through; the server prices the order itself when it is placed, and
+ * refuses one with unpriced items.
  */
 export function CartView() {
   const { items, count } = useCart();
@@ -30,14 +32,7 @@ export function CartView() {
   const hydrated = useSyncExternalStore(noop, () => true, () => false);
   if (!hydrated) return <div className="min-h-[40vh]" aria-busy="true" />;
 
-  const lines = items.flatMap((line) => {
-    const product = productBySlug(line.slug);
-    if (!product) return [];
-    const variant = line.variantId
-      ? product.variants.find((v) => v.id === line.variantId)
-      : undefined;
-    return [{ line, product, variant }];
-  });
+  const lines = resolveLines(items);
 
   if (lines.length === 0) {
     return (
@@ -55,11 +50,7 @@ export function CartView() {
     );
   }
 
-  const unpriced = lines.filter(({ variant }) => !variant).length;
-  const subtotal = lines.reduce(
-    (sum, { line, variant }) => sum + (variant ? variant.priceMinor * line.qty : 0),
-    0,
-  );
+  const { unpriced, subtotalMinor } = cartTotals(lines);
 
   return (
     <div className="mt-6 grid gap-8 lg:grid-cols-12 lg:gap-10">
@@ -134,37 +125,25 @@ export function CartView() {
         </ul>
       </section>
 
-      <aside aria-labelledby="cart-summary" className="lg:col-span-4">
-        <div className="rounded-lg border border-line bg-white p-5 lg:sticky lg:top-[calc(var(--site-chrome)+1.5rem)]">
-          <h2 id="cart-summary" className="t-label text-ink-3">
-            Price details
-          </h2>
-          <dl className="mt-4 space-y-3 text-[0.9375rem]">
-            <div className="flex justify-between gap-4">
-              <dt className="text-ink-2">Items</dt>
-              <dd className="tabular-nums text-ink">{count}</dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-ink-2">Subtotal</dt>
-              <dd className="font-semibold tabular-nums text-ink">
-                {unpriced === 0 ? formatPrice(subtotal) : "To be confirmed"}
-              </dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-ink-2">Delivery</dt>
-              <dd className="text-ink-3">Calculated at checkout</dd>
-            </div>
-          </dl>
-
-          <Button type="button" size="lg" disabled className="mt-6 w-full">
+      <aside aria-labelledby="price-details" className="lg:col-span-4">
+        <PriceDetails
+          count={count}
+          unpriced={unpriced}
+          subtotalMinor={subtotalMinor}
+          delivery="Calculated at checkout"
+        >
+          <ButtonLink href="/checkout" size="lg" className="mt-6 w-full">
             <Lock className="size-4" aria-hidden="true" />
             Proceed to checkout
-          </Button>
-          <p className="mt-3 text-[0.8125rem] leading-relaxed text-ink-3">
-            {unpriced > 0 &&
-              `${unpriced === lines.length ? "Prices for these products are" : `${unpriced} of these products are awaiting prices, which are`} being finalised. `}
-            Checkout opens once prices and delivery charges are confirmed.
-          </p>
+          </ButtonLink>
+          {unpriced > 0 && (
+            <p className="mt-3 text-[0.8125rem] leading-relaxed text-ink-3">
+              {unpriced === lines.length
+                ? "Prices for these products are still being confirmed"
+                : `${unpriced} of these products are still awaiting prices`}
+              . Orders can be placed once they are.
+            </p>
+          )}
 
           <Link
             href="/products"
@@ -173,7 +152,7 @@ export function CartView() {
             Continue shopping
             <ArrowRight className="size-3.5" aria-hidden="true" />
           </Link>
-        </div>
+        </PriceDetails>
       </aside>
     </div>
   );
