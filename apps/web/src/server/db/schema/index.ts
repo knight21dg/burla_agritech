@@ -1,12 +1,9 @@
 /**
  * The schema, as one module.
  *
- * Commerce tables — carts, orders, payments, refunds, webhook_events — are
- * designed in docs/DATABASE-DESIGN.md §6 but deliberately not built yet. They
- * are conditional on OQ-001 (sell online, or enquiry-only). Creating eight
- * empty tables for a decision that has not been made would be worse than
- * adding them in one migration when it has: the design is settled, so this
- * costs nothing to defer, and if the answer is enquiry-only they never exist.
+ * OQ-001 is answered — the client sells online (2026-09-11) — so the order
+ * tables exist (commerce.ts). Payments, refunds and webhook_events follow
+ * with the Razorpay integration; carts stay in the browser for now.
  */
 export * from "./_shared";
 export * from "./enums";
@@ -15,3 +12,4 @@ export * from "./taxonomy";
 export * from "./products";
 export * from "./identity";
 export * from "./operations";
+export * from "./commerce";

@@ -107,6 +107,39 @@ export const inventoryReasonEnum = pgEnum("inventory_reason", [
   "return",
   "damage",
   "correction",
+  /** Stock put back when an order is cancelled before it ships. */
+  "order_cancelled",
+]);
+
+// --- Commerce ---------------------------------------------------------------
+
+/**
+ * An order's life, as docs/DATABASE-DESIGN.md §6 sets it out. The allowed
+ * transitions live in one table in orderService; anything else is refused.
+ */
+export const orderStatusEnum = pgEnum("order_status", [
+  "pending",
+  "confirmed",
+  "processing",
+  "packed",
+  "shipped",
+  "delivered",
+  "cancelled",
+  "failed",
+  "refunded",
+]);
+
+export const paymentMethodEnum = pgEnum("payment_method", ["upi", "card", "cod"]);
+
+/**
+ * Where the money is, separately from where the parcel is. Cash on delivery
+ * stays `pending` until the order is delivered and the cash collected.
+ */
+export const paymentStatusEnum = pgEnum("payment_status", [
+  "pending",
+  "paid",
+  "failed",
+  "refunded",
 ]);
 
 export const locationTypeEnum = pgEnum("location_type", [

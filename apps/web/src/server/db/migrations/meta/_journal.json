@@ -29,6 +29,20 @@
       "when": 1788973795367,
       "tag": "0003_allow_purging_sample_ledger",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789118160153,
+      "tag": "0004_orders",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789118184070,
+      "tag": "0005_orders_integrity",
+      "breakpoints": true
     }
   ]
 }

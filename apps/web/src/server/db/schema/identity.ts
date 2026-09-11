@@ -199,6 +199,8 @@ export const addresses = pgTable(
 
     line1: text("line1").notNull(),
     line2: text("line2"),
+    /** "Near the temple" — Indian couriers use it, and checkout asks for it. */
+    landmark: text("landmark"),
     city: text("city").notNull(),
     state: text("state").notNull(),
     postalCode: text("postal_code").notNull(),
