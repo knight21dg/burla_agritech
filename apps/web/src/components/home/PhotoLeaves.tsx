@@ -8,8 +8,10 @@ import {
   HERO_ANCHOR,
   HERO_CANVAS,
   HERO_LEAVES,
+  HERO_SCALE,
   PAINTED_TEXT,
   heroLeafSrc,
+  heroPlacement,
 } from "./heroLeaves";
 import { TAU, advance, character, type Motion, transformOf } from "./leafPhysics";
 
@@ -91,15 +93,6 @@ const smooth = (t: number) => {
 };
 
 const { w: CW, h: CH, padX: PAD, cropTop: TOP } = HERO_CANVAS;
-
-/** The leaf's box, in container units — `object-fit: cover`, done by hand. */
-function placement(x: number, y: number, w: number): CSSProperties {
-  return {
-    left: `calc((100cqw - ${CW} * var(--spx)) * var(--ox) + ${x + PAD} * var(--spx))`,
-    top: `calc((100cqh - ${CH} * var(--spx)) * var(--oy) + ${y - TOP} * var(--spx))`,
-    width: `calc(${w} * var(--spx))`,
-  };
-}
 
 export function PhotoLeaves({ className }: { className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -325,7 +318,7 @@ export function PhotoLeaves({ className }: { className?: string }) {
       aria-hidden="true"
       // --spx: rendered px per canvas px, exactly as object-fit: cover
       // computes it. Resolved against the frame, the nearest size container.
-      style={{ "--spx": `max(100cqw / ${CW}, 100cqh / ${CH})` } as CSSProperties}
+      style={{ "--spx": HERO_SCALE } as CSSProperties}
       // Hidden until the hero photograph has loaded (see the effect). The
       // <noscript> rule below shows the leaves anyway when there is no script
       // to reveal them — they are part of the picture.
@@ -344,7 +337,7 @@ export function PhotoLeaves({ className }: { className?: string }) {
             leafRefs.current[i] = el;
           }}
           className="absolute will-change-transform"
-          style={placement(leaf.x, leaf.y, leaf.w)}
+          style={heroPlacement(leaf.x, leaf.y, leaf.w)}
         >
           {/* eslint-disable-next-line @next/next/no-img-element -- a 2-10KB
               pre-sized sprite positioned by transform; next/image's wrapper

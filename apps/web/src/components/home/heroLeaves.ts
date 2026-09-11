@@ -22,6 +22,7 @@
  * nearest the camera, the small soft ones furthest. It drives how fast each
  * falls, how far it sways and how strongly the breeze carries it.
  */
+import type { CSSProperties } from "react";
 
 export interface HeroLeaf {
   name: string;
@@ -59,6 +60,36 @@ export const HERO_ANCHOR = {
 
 /** The block of words painted into the image (logo to paragraph), source px. */
 export const PAINTED_TEXT = { left: 88, right: 470, bottom: 600 } as const;
+
+/**
+ * Where the desktop "Explore Our Products" action sits, source px: level with
+ * the painted paragraph's left edge (x 96), in the clear band between the
+ * paragraph's last line (ends at row 583) and the painted leaf beside the
+ * mango bowl (from row 650, x 346 rightwards). At the image's own scale the
+ * button (44 px tall) fills x 96-340, rows 602-646.
+ */
+export const HERO_ACTION = { x: 96, y: 602, height: 44, fontSize: 15, padX: 22 } as const;
+
+/**
+ * Rendered px per canvas px, exactly as `object-fit: cover` scales it. Set as
+ * `--spx` on an element inside the hero frame (a size container), so `cqw` /
+ * `cqh` measure the frame.
+ */
+export const HERO_SCALE = `max(100cqw / ${HERO_CANVAS.w}, 100cqh / ${HERO_CANVAS.h})`;
+
+/**
+ * An element's box, in container units, at source (x, y) — `object-fit:
+ * cover` done by hand, so it stays on its spot in the painting at every size.
+ * Reads `--spx` (HERO_SCALE) and the frame's `--ox` / `--oy` anchor.
+ */
+export function heroPlacement(x: number, y: number, w?: number): CSSProperties {
+  const { w: CW, h: CH, padX, cropTop } = HERO_CANVAS;
+  return {
+    left: `calc((100cqw - ${CW} * var(--spx)) * var(--ox) + ${x + padX} * var(--spx))`,
+    top: `calc((100cqh - ${CH} * var(--spx)) * var(--oy) + ${y - cropTop} * var(--spx))`,
+    ...(w === undefined ? {} : { width: `calc(${w} * var(--spx))` }),
+  };
+}
 
 /** Drawn in this order: far first, so nearer leaves pass in front. */
 export const HERO_LEAVES: HeroLeaf[] = [

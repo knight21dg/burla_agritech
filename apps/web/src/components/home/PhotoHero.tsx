@@ -1,9 +1,11 @@
+import type { CSSProperties } from "react";
 import { preload } from "react-dom";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import type { Photo } from "@/lib/imagery";
 import { cn } from "@/lib/utils";
+import { HERO_ACTION, HERO_SCALE, heroPlacement } from "./heroLeaves";
 import { PhotoLeaves } from "./PhotoLeaves";
 
 /**
@@ -11,8 +13,11 @@ import { PhotoLeaves } from "./PhotoLeaves";
  *
  * The image is the whole composition — logo, headline, copy, products, the
  * "Good Food Better Living" script and the leaves — so on desktop it is
- * displayed as it is, not reconstructed, and nothing is added on top of it
- * that the image does not have.
+ * displayed as it is, not reconstructed. The one thing added on top of it is
+ * the "Explore Our Products" action, which the image has no painted
+ * equivalent of: a live link, set in the clear white under the painted
+ * paragraph and scaled with the image, so it stays on that spot at every
+ * width.
  *
  * Its floating leaves are the exception, and only in that they move: they
  * were lifted out of the image as sprites (`heroLeaves.ts`), the background
@@ -133,6 +138,31 @@ export function PhotoHero({ photo }: { photo: Photo }) {
           className="absolute inset-0 h-full w-full object-cover object-[62.5%_50%] md:object-center"
         />
         <PhotoLeaves className="z-10" />
+
+        {/* Desktop: the action, placed on the painting under the paragraph
+            (HERO_ACTION) and sized in canvas px, so it keeps its proportion to
+            the painted words. A floor on each size keeps it a usable button
+            where the image renders small, just above md. Above the leaves, so
+            one drifting past goes behind it. */}
+        <Link
+          href="/products"
+          style={
+            {
+              "--spx": HERO_SCALE,
+              ...heroPlacement(HERO_ACTION.x, HERO_ACTION.y),
+              height: `max(2.25rem, calc(${HERO_ACTION.height} * var(--spx)))`,
+              paddingInline: `max(1rem, calc(${HERO_ACTION.padX} * var(--spx)))`,
+              fontSize: `max(0.75rem, calc(${HERO_ACTION.fontSize} * var(--spx)))`,
+            } as CSSProperties
+          }
+          className="enter enter-delay-3 group absolute z-20 hidden items-center gap-[0.6em] whitespace-nowrap rounded-full bg-forest font-semibold text-white shadow-[0_10px_24px_-12px_rgba(15,74,44,0.7)] transition duration-300 hover:bg-green-700 hover:shadow-[0_14px_28px_-12px_rgba(15,74,44,0.75)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink md:inline-flex"
+        >
+          Explore Our Products
+          <ArrowRight
+            className="size-[1.15em] transition-transform duration-300 group-hover:translate-x-1"
+            aria-hidden="true"
+          />
+        </Link>
       </div>
     </section>
   );
