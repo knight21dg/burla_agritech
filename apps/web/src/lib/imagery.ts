@@ -95,16 +95,11 @@ export const imagery: {
       { src: `/images/categories/${slug}.webp`, alt: alt!, width: 480, height: 360 },
     ]),
   ),
-  // Supplied by the client, 2026-09-10, as eight sheets; each photo cut out
-  // and re-centred at one scale (assets/products/).
-  //   - The Featured Products sheet: red chilli powder. Its Dehydrated Banana
-  //     and Ragi Flour are not in the catalogue; its Dehydrated Mango, Mango
-  //     Pickle and Gongura Pickle are superseded by the category sheets.
-  //   - The Powders, Flakes, Dehydrated Fruits, Pickles, Dal Powders, Crisps
-  //     and Dry Fruits, and Millet and Tea / Coffee sheets: every card, one
-  //     per product in those categories, each named on its card.
-  //     The pickle jars' labels are part of the generated image, not real
-  //     packaging.
+  // Supplied by the client, 2026-09-10, as one sheet per range; each photo cut
+  // out and re-centred at one scale (assets/products/). Every product in the
+  // catalogue has one, each mapped by the name printed on its card. (The
+  // earlier Featured Products sheet is superseded by these.) The pickle jars'
+  // labels are part of the generated image, not real packaging.
   // Alt text describes what each photograph shows, and nothing more.
   products: Object.fromEntries(
     [
@@ -142,7 +137,15 @@ export const imagery: {
       ["masala-tea-powder", "Wooden bowl of masala tea powder with cinnamon, cardamom, cloves and ginger"],
       ["lemon-tea-powder", "Wooden bowl of lemon tea powder with lemons and loose tea"],
       ["green-tea-powder", "Wooden bowl of green tea powder with fresh tea leaves and loose tea"],
+      ["masala-powders-chicken-biryani", "Wooden bowl of masala powder beside a pot of chicken biryani"],
+      ["masala-powders-mutton-biryani", "Wooden bowl of masala powder beside a pot of mutton biryani"],
+      ["masala-powders-fish-curry", "Wooden bowl of masala powder beside a pan of fish curry"],
+      ["masala-powders-non-veg", "Wooden bowl of masala powder with raw chicken, meat and fish"],
+      ["turmeric-powder", "Wooden bowl of turmeric powder with fresh turmeric roots"],
       ["red-chilli-powder", "Wooden bowl of red chilli powder with dried red chillies"],
+      ["coriander-powder", "Wooden bowl of coriander powder with coriander seeds and leaves"],
+      ["black-pepper-powder", "Wooden bowl of black pepper powder with a scoop of peppercorns"],
+      ["rasam-powder", "Wooden bowl of rasam powder with tomatoes, red chillies and spices"],
       ["moringa-powder", "Wooden bowl of moringa powder with moringa leaves"],
       ["banana-powder", "Wooden bowl of banana powder with bananas and banana slices"],
       ["lemon-powder", "Wooden bowl of lemon powder with lemons and lemon slices"],

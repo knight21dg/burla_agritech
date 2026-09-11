@@ -10,15 +10,20 @@ Input   assets/products/powders-supplied.png       13 cards (2092 x 752)
         assets/products/dal-powders-supplied.png   4 cards (2092 x 752)
         assets/products/crisps-dry-fruits-supplied.png  8 cards (1536 x 1024)
         assets/products/millet-tea-coffee-supplied.png  9 cards (1536 x 1024)
+        assets/products/masala-spices-supplied.png      9 cards (1536 x 1024)
 Output  apps/web/public/images/products/{slug}.webp  one square image each
 
-Same method as extract_featured.py: card edges measured from the sheet's own
-border lines; the printed name under each photograph left behind; the product
-trimmed to its outline, shadow included, and re-centred on white at one fill.
+Card edges measured from the sheet's own border lines; the printed name under
+each photograph left behind; the product trimmed to its outline, shadow
+included, and re-centred on white at one fill.
+
+The client's earlier Featured Products sheet (and its script,
+extract_featured.py) is retired: each of its photographs that pictured a
+catalogue product has been superseded by that category's sheet here. Both
+remain in git history.
 
 Each sheet has two rows of different card widths, so each card carries its
-own box. The cards are in the catalogue's order, and each is named for the
-product whose name is printed on it.
+own box, and each is named for the product whose name is printed on it.
 """
 import json
 import os
@@ -64,7 +69,7 @@ FLAKES = [
 ]
 
 # Dehydrated Fruits sheet: three cards in each row. Its Mango card replaces
-# the Featured sheet's (see extract_featured.py), so the six fruits match.
+# the Featured sheet's, so the six fruits match.
 D_ROW_1 = (12, 436)
 D_ROW_2 = (452, 874)
 FRUITS = [
@@ -133,6 +138,24 @@ MILLET_TEA_COFFEE = [
     ("green-tea-powder", (1153, 1521), T_ROW),
 ]
 
+# Masala and Spices sheet: four cards under "Masala Powders (Non-Veg)", five
+# under "Spices". The Masala cards are in a different order from the
+# catalogue (Non-Veg last, not first), so each is mapped by the name printed
+# on it. Its Red Chilli Powder replaces the Featured sheet's.
+S_ROW_1 = (82, 511)     # Masala Powders
+S_ROW_2 = (603, 986)    # Spices
+MASALA_SPICES = [
+    ("masala-powders-chicken-biryani", (16, 385), S_ROW_1),  # "Chicken Biryani Masala Powder"
+    ("masala-powders-mutton-biryani", (393, 764), S_ROW_1),  # "Mutton Biryani Masala Powder"
+    ("masala-powders-fish-curry", (772, 1143), S_ROW_1),     # "Fish Curry Masala Powder"
+    ("masala-powders-non-veg", (1151, 1519), S_ROW_1),       # "Non-Veg Masala Powder (Confirmation Required)"
+    ("turmeric-powder", (16, 315), S_ROW_2),
+    ("red-chilli-powder", (323, 614), S_ROW_2),
+    ("coriander-powder", (623, 912), S_ROW_2),
+    ("black-pepper-powder", (920, 1212), S_ROW_2),
+    ("rasam-powder", (1221, 1519), S_ROW_2),
+]
+
 SHEETS = [
     ("powders-supplied.png", POWDERS),
     ("flakes-supplied.png", FLAKES),
@@ -141,6 +164,7 @@ SHEETS = [
     ("dal-powders-supplied.png", DAL_POWDERS),
     ("crisps-dry-fruits-supplied.png", CRISPS_DRY_FRUITS),
     ("millet-tea-coffee-supplied.png", MILLET_TEA_COFFEE),
+    ("masala-spices-supplied.png", MASALA_SPICES),
 ]
 
 TILE = 600      # square, matching the product card's image area, ~2x its size
