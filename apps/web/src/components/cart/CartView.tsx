@@ -130,7 +130,6 @@ export function CartView() {
           count={count}
           unpriced={unpriced}
           subtotalMinor={subtotalMinor}
-          delivery="Calculated at checkout"
         >
           <ButtonLink href="/checkout" size="lg" className="mt-6 w-full">
             <Lock className="size-4" aria-hidden="true" />

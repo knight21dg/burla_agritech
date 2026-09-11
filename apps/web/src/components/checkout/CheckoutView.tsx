@@ -2,17 +2,18 @@
 
 import { useState, useSyncExternalStore, useTransition, type ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AlertCircle, ArrowRight, Check, Info, Loader2, Lock, ShoppingCart } from "lucide-react";
 import { placeOrder, type PlaceOrderResult } from "@/app/checkout/actions";
-import { useCart } from "@/components/cart/cartStore";
+import { clearCart, useCart } from "@/components/cart/cartStore";
 import { cartTotals, resolveLines } from "@/components/cart/lines";
 import { PriceDetails } from "@/components/cart/PriceDetails";
 import { ProductPhoto } from "@/components/product/ProductPhoto";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { productHref } from "@/data/catalog";
-import { PAYMENT_LABEL, formatAddress, type Address, type PaymentMethod } from "@/lib/checkout";
+import { PAYMENT_LABEL, formatAddress, type PaymentMethod, type SavedAddress } from "@/lib/checkout";
 import { cn, formatPrice } from "@/lib/utils";
-import { AddressForm } from "./AddressForm";
+import { AddressStep, type AddressChoice } from "./AddressStep";
 import { PaymentOptions } from "./PaymentOptions";
 
 type Step = "address" | "payment" | "review";
@@ -25,18 +26,25 @@ const noop = () => () => {};
  * address, payment method, review — each collapsing to a one-line summary
  * with "Change" once done, and the price details beside them.
  *
+ * Signed-in customers only: the page sends anyone else to sign in first, and
+ * the server action checks again.
+ *
  * Nothing here decides what the order costs. "Place order" sends the address,
  * the payment method and the cart's references to the server (`placeOrder`),
- * which checks and prices everything itself.
+ * which checks and prices everything itself. Each visit to this page carries
+ * one idempotency key, so pressing "Place order" twice places one order.
  */
-export function CheckoutView() {
+export function CheckoutView({ saved }: { saved: SavedAddress[] }) {
+  const router = useRouter();
   const { items } = useCart();
   const hydrated = useSyncExternalStore(noop, () => true, () => false);
   const [step, setStep] = useState<Step>("address");
-  const [address, setAddress] = useState<Address>();
+  const [choice, setChoice] = useState<AddressChoice>();
   const [payment, setPayment] = useState<PaymentMethod>();
   const [result, setResult] = useState<PlaceOrderResult>();
   const [placing, startPlacing] = useTransition();
+  const [idempotencyKey] = useState(() => crypto.randomUUID());
+  const address = choice?.address;
 
   if (!hydrated) return <div className="min-h-[40vh]" aria-busy="true" />;
 
@@ -61,11 +69,12 @@ export function CheckoutView() {
   const reached = (s: Step) => STEPS.indexOf(s) <= STEPS.indexOf(step);
 
   function place() {
-    if (!address || !payment) return;
+    if (!choice || !payment) return;
     setResult(undefined);
     startPlacing(async () => {
       const outcome = await placeOrder({
-        address,
+        idempotencyKey,
+        address: choice.savedId ? { savedId: choice.savedId } : choice.address,
         paymentMethod: payment,
         lines: items.map(({ slug, variantId, qty }) => ({
           slug,
@@ -73,9 +82,18 @@ export function CheckoutView() {
           qty,
         })),
       });
+      if (outcome.ok) {
+        clearCart();
+        router.push(`/account/orders/${outcome.orderNumber}?placed=1`);
+        return;
+      }
+      if (outcome.code === "SIGNED_OUT") {
+        router.push("/login?next=/checkout");
+        return;
+      }
       setResult(outcome);
       // The server found a problem with the address itself: reopen it.
-      if (!outcome.ok && outcome.code === "INVALID") setStep("address");
+      if (outcome.code === "INVALID") setStep("address");
     });
   }
 
@@ -109,10 +127,11 @@ export function CheckoutView() {
           }
           onChange={() => setStep("address")}
         >
-          <AddressForm
-            initial={address}
-            onSubmit={(a) => {
-              setAddress(a);
+          <AddressStep
+            saved={saved}
+            current={choice}
+            onSubmit={(next) => {
+              setChoice(next);
               setResult(undefined);
               setStep(payment ? "review" : "payment");
             }}
@@ -195,7 +214,7 @@ export function CheckoutView() {
             type="button"
             size="lg"
             onClick={place}
-            disabled={placing || !address || !payment}
+            disabled={placing || !choice || !payment}
             className="mt-5 w-full"
           >
             {placing ? (
@@ -213,7 +232,6 @@ export function CheckoutView() {
           count={count}
           unpriced={unpriced}
           subtotalMinor={subtotalMinor}
-          delivery="To be confirmed"
         />
       </aside>
     </div>

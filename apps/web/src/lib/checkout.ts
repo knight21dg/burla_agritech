@@ -97,6 +97,11 @@ export const addressSchema = z
 export type Address = z.infer<typeof addressSchema>;
 export type AddressField = keyof Address;
 
+/** An address saved to a customer's account. */
+export interface SavedAddress extends Address {
+  id: string;
+}
+
 export const PAYMENT_METHODS = ["upi", "card", "cod"] as const;
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
@@ -108,7 +113,13 @@ export const PAYMENT_LABEL: Record<PaymentMethod, string> = {
 
 export const orderRequestSchema = z
   .object({
-    address: addressSchema,
+    /** One per checkout attempt, so a retried request cannot order twice. */
+    idempotencyKey: z.string().uuid(),
+    // A saved address is sent by id and loaded on the server, which checks
+    // it belongs to the signed-in customer; a new one is sent in full. Parsed
+    // on its own (parseAddressInput), so a new address's problems come back
+    // field by field rather than as one "no union member matched".
+    address: z.unknown(),
     paymentMethod: z.enum(PAYMENT_METHODS),
     // References only, as the cart holds them. Never a price: the server
     // prices every line from its own records.
@@ -128,6 +139,17 @@ export const orderRequestSchema = z
   .strict();
 
 export type OrderRequest = z.infer<typeof orderRequestSchema>;
+
+const savedAddressRefSchema = z.object({ savedId: z.string().uuid() }).strict();
+
+/** A new address in full, or a saved one by id. */
+export type AddressInput = Address | { savedId: string };
+
+export function parseAddressInput(value: unknown) {
+  const saved =
+    typeof value === "object" && value !== null && "savedId" in value;
+  return saved ? savedAddressRefSchema.safeParse(value) : addressSchema.safeParse(value);
+}
 
 const ADDRESS_FIELDS = new Set<string>(Object.keys(addressSchema.shape));
 
@@ -150,7 +172,9 @@ export function addressErrors(error: z.ZodError): Partial<Record<AddressField, s
 }
 
 /** "Flat 4B, Sunrise Apartments, MG Road, Nellore, Andhra Pradesh 524001" */
-export function formatAddress(a: Address): string {
+export function formatAddress(
+  a: Pick<Address, "line1" | "line2" | "landmark" | "city" | "pincode"> & { state: string },
+): string {
   return [a.line1, a.line2, a.landmark, a.city, `${a.state} ${a.pincode}`]
     .filter(Boolean)
     .join(", ");

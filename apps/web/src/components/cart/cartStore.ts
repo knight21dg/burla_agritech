@@ -163,6 +163,11 @@ export function stepCartQty(slug: string, variantId: string | undefined, delta: 
   setCartQty(slug, variantId, (existing?.qty ?? 0) + delta);
 }
 
+/** Empties the cart — once an order has been placed from it. */
+export function clearCart() {
+  commit([]);
+}
+
 export function removeFromCart(slug: string, variantId?: string) {
   commit(current().filter((l) => !sameLine(l, slug, variantId)));
 }
