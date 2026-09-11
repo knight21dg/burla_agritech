@@ -91,6 +91,26 @@ Client variables are parsed by a separate `clientSchema` that contains only `NEX
 
 Neon branching gives each preview deploy a real, isolated copy of the schema without Docker or a shared staging database that everyone breaks.
 
+### A local database, until the Neon dev branch exists
+
+Sign-in, checkout and "Your orders" need a database; the catalogue pages do
+not. On the development machine (Windows, PostgreSQL 17 installed), a
+cluster used only for this project lives outside OneDrive — a synced
+folder corrupts a running database:
+
+```bash
+initdb -D "$HOME/burla-dev-db" -U postgres -A trust -E UTF8 --locale=C
+pg_ctl -D "$HOME/burla-dev-db" -o "-p 55433 -c listen_addresses=localhost" -l "$HOME/burla-dev-db/server.log" start
+psql -h localhost -p 55433 -U postgres -c "create database burla_dev"
+```
+
+`apps/web/.env.local` (gitignored) then holds
+`DATABASE_URL=postgres://postgres@localhost:55433/burla_dev`, followed by
+`npm run db:migrate` and `npm run db:seed -- --demo`. Trust authentication
+is acceptable only because the cluster listens on localhost alone; it holds
+no real data. After a restart of the machine, run the `pg_ctl … start` line
+again.
+
 ---
 
 ## 5. Not pointing local development at production
