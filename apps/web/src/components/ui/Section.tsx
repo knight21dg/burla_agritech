@@ -16,7 +16,7 @@ export function Section({
   children: ReactNode;
   className?: string;
   tone?: "white" | "surface" | "dark";
-  size?: "sm" | "md" | "lg";
+  size?: "compact" | "sm" | "md" | "lg";
   as?: ElementType;
   id?: string;
 }) {
@@ -29,8 +29,11 @@ export function Section({
           surface: "bg-surface",
           dark: "bg-green-900 text-white",
         }[tone],
-        // Tighter than v0.2 — products should arrive sooner
+        // Tighter than v0.2 — products should arrive sooner.
+        // `compact` is for listing pages, where the grid is the content and
+        // marketing air above it only pushes products below the fold.
         {
+          compact: "py-5 md:py-7",
           sm: "py-10 md:py-12",
           md: "py-12 md:py-14 lg:py-16",
           lg: "py-14 md:py-16 lg:py-20",

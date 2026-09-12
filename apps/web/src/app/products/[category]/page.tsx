@@ -91,28 +91,24 @@ export default async function CategoryPage({
 
   return (
     <>
-      <Section tone="white" size="sm">
+      <Section tone="white" size="compact">
         <Container>
           <Breadcrumbs
             items={[{ label: "Products", href: "/products" }, { label: c.name }]}
           />
-          <div className="mt-6 max-w-2xl">
+          <div className="mt-3 max-w-2xl">
             <h1 className="t-h1">{c.name}</h1>
-            {c.description && <p className="t-lead mt-3">{c.description}</p>}
+            {c.description && <p className="t-lead mt-2">{c.description}</p>}
           </div>
 
           {types.length > 0 && (
-            <div className="mt-8">
-              <h2 className="t-label mb-3 text-ink-3">Browse by type</h2>
+            <div className="mt-5">
+              <h2 className="t-label mb-2.5 text-ink-3">Browse by type</h2>
               <TypeChips categorySlug={c.slug} types={types} />
             </div>
           )}
-        </Container>
-      </Section>
 
-      <Section tone="white" size="sm">
-        <Container>
-          <div className="flex items-baseline justify-between gap-4 border-t border-line pt-8">
+          <div className="mt-6 flex items-baseline justify-between gap-4 border-t border-line pt-5 md:mt-7 md:pt-6">
             <h2 className="t-h2">
               {types.length > 0 ? `All ${c.name}` : "Products"}
             </h2>
@@ -122,7 +118,7 @@ export default async function CategoryPage({
           </div>
 
           {list.length === 0 ? (
-            <div className="py-16 text-center">
+            <div className="py-12 text-center">
               <h3 className="t-h3">Nothing here yet</h3>
               <p className="mx-auto mt-2 max-w-md text-[0.9375rem] text-ink-2">
                 This range is being added. Ask us what is available now.
@@ -135,7 +131,7 @@ export default async function CategoryPage({
               </div>
             </div>
           ) : grouped ? (
-            <div className="mt-8 space-y-14">
+            <div className="mt-5 space-y-9 md:mt-6 md:space-y-11">
               {groups.map(({ type, items }) => (
                 <section key={type.slug} aria-labelledby={`type-${type.slug}`}>
                   <div className="flex items-baseline justify-between gap-4">
@@ -151,7 +147,7 @@ export default async function CategoryPage({
                       {items.length} {items.length === 1 ? "product" : "products"}
                     </p>
                   </div>
-                  <div className="mt-5 grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3 lg:grid-cols-4">
+                  <div className="product-grid mt-4">
                     {items.map((p) => (
                       <ProductCard key={p.id} product={p} />
                     ))}
@@ -160,7 +156,7 @@ export default async function CategoryPage({
               ))}
             </div>
           ) : (
-            <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3 lg:grid-cols-4">
+            <div className="product-grid mt-5 md:mt-6">
               {list.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
@@ -170,7 +166,7 @@ export default async function CategoryPage({
       </Section>
 
       {/* Every category stays reachable from every category */}
-      <Section tone="surface" size="sm">
+      <Section tone="surface" size="compact">
         <Container>
           <h2 className="t-label text-ink-3">Other ranges</h2>
           <ul className="mt-4 flex flex-wrap gap-2">

@@ -81,7 +81,7 @@ export default async function TypePage({
 
   return (
     <>
-      <Section tone="white" size="sm">
+      <Section tone="white" size="compact">
         <Container>
           <Breadcrumbs
             items={[
@@ -90,29 +90,29 @@ export default async function TypePage({
               { label: t.name },
             ]}
           />
-          <div className="mt-6 max-w-2xl">
+          <div className="mt-3 max-w-2xl">
             {/* Category as an eyebrow rather than part of the heading.
                 Concatenating the two reads well for "Mango Pickles" but badly
                 for "Mango Dehydrated Fruits". The title tag still carries the
                 combined phrase for search. */}
             <p className="t-label text-ink-3">{c.name}</p>
             <h1 className="t-h1 mt-2">{t.name}</h1>
-            {t.description && <p className="t-lead mt-3">{t.description}</p>}
+            {t.description && <p className="t-lead mt-2">{t.description}</p>}
           </div>
 
           {list.length === 0 ? (
-            <p className="mt-10 text-[0.9375rem] text-ink-2">
+            <p className="mt-6 text-[0.9375rem] text-ink-2">
               Nothing in this type yet.
             </p>
           ) : (
-            <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3 lg:grid-cols-4">
+            <div className="product-grid mt-5 md:mt-6">
               {list.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>
           )}
 
-          <div className="mt-12">
+          <div className="mt-9 md:mt-10">
             <TypeSiblings
               categorySlug={c.slug}
               categoryName={c.name}

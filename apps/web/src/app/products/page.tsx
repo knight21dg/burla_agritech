@@ -15,18 +15,18 @@ export const metadata: Metadata = {
 export default function ProductsPage() {
   return (
     <>
-      <Section tone="white" size="sm">
+      <Section tone="white" size="compact">
         <Container>
           <Breadcrumbs items={[{ label: "Products" }]} />
-          <div className="mt-6 max-w-2xl">
+          <div className="mt-3 max-w-2xl">
             <h1 className="t-h1">Our full range</h1>
-            <p className="t-lead mt-3">
+            <p className="t-lead mt-2">
               Ten ranges, each built around one way of working with what the
               land gives — drying, curing, roasting and milling.
             </p>
           </div>
 
-          <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="mt-5 grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-x-4 lg:grid-cols-5 lg:gap-x-5">
             {categories.map((c) => (
               <CategoryCard key={c.slug} category={c} />
             ))}
@@ -34,7 +34,7 @@ export default function ProductsPage() {
         </Container>
       </Section>
 
-      <Section tone="white" size="sm">
+      <Section tone="white" size="compact" className="pt-0">
         <Container>
           <div className="flex items-baseline justify-between gap-4 border-t border-line pt-8">
             <h2 className="t-h2">Every product</h2>
@@ -42,7 +42,7 @@ export default function ProductsPage() {
               {products.length} products
             </p>
           </div>
-          <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-3 lg:grid-cols-4">
+          <div className="product-grid mt-5 md:mt-6">
             {products.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}

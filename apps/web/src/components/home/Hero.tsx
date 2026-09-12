@@ -33,8 +33,8 @@ import { HeroLeaves } from "./HeroLeaves";
  * hero ends where it ends rather than leaving a gap.
  *
  * The words keep a readable measure while the composition widens with the
- * screen (`container-hero`): at 2560px the products grow, the paragraph does
- * not.
+ * screen (`container-page`, fluid past ~1456px): at 2560px the products grow,
+ * the paragraph does not.
  */
 export function Hero() {
   const products = imagery.heroProducts;
@@ -47,7 +47,7 @@ export function Hero() {
     >
       <HeroLeaves className="z-0" />
 
-      <div className="container-hero relative z-10">
+      <div className="container-page relative z-10">
         <div className="grid items-center gap-8 pb-10 pt-8 sm:pb-12 lg:min-h-[min(calc(100dvh-var(--site-chrome)),48rem)] lg:grid-cols-12 lg:gap-10 lg:py-10">
           {/* The words. `data-hero-content` is what the leaves keep clear of. */}
           <div data-hero-content className="lg:col-span-5">
