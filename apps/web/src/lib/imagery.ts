@@ -35,8 +35,12 @@ export interface Photo {
 }
 
 export const imagery: {
-  /** Homepage hero, right-hand side. Products on white, landscape ~4:3. */
-  hero: Photo | null;
+  /**
+   * The homepage hero's product composition — the products alone, on white.
+   * The logo, headline, copy and leaves are the page's own elements, so this
+   * carries none of them (assets/hero/extract_products.py).
+   */
+  heroProducts: Photo | null;
   /** Homepage "About Burla" band, left-hand side. Farm landscape, ~16:10. */
   about: Photo | null;
   /** One per category slug, square, product on white. */
@@ -48,26 +52,20 @@ export const imagery: {
    */
   products: Partial<Record<string, Photo>>;
 } = {
-  // Supplied by the client, 2026-09-10 (a generated image; the packaging it
-  // shows is not yet a real product). Its floating leaves have been lifted out
-  // as sprites and removed from these files — they are placed back, and
-  // animated, by components/home/PhotoLeaves.tsx. Masters and the script that
-  // produced all of it: assets/hero/.
-  hero: {
-    // The widened canvas (3072 x 880): the supplied image with its empty top
-    // and bottom margin trimmed and matched backdrop added at both sides, so
-    // it fills the screen width without stretching or cropping content.
-    src: "/images/home/hero-wide-3072.webp",
-    sources: [
-      { src: "/images/home/hero-wide-1536.webp", width: 1536 },
-      { src: "/images/home/hero-wide-3072.webp", width: 3072 },
-    ],
+  // Cut from the client's supplied hero (2026-09-10, a generated image; the
+  // packaging it shows is not yet a real product): the painted text and the
+  // script were removed and the products trimmed to their own bounds, so the
+  // page can lay out its own words and leaves around them. The floating
+  // leaves were lifted out earlier as sprites (components/home/HeroLeaves).
+  // Masters and the scripts that produced both: assets/hero/.
+  heroProducts: {
+    src: "/images/home/hero-products.webp",
     alt:
       "Burla dehydrated mango pouch and jars of mango pickle and spiced dal " +
       "powder, with wooden bowls of dried mango slices, turmeric and red " +
       "chilli powder, and dried red chillies",
-    width: 3072,
-    height: 880,
+    width: 1243,
+    height: 616,
   },
   about: null,
   // Supplied by the client, 2026-09-10, as one sheet of ten cards; each photo

@@ -1,98 +1,75 @@
 import Link from "next/link";
-import { ArrowRight, Globe, Heart, Leaf } from "lucide-react";
-import { StillLife } from "@/components/art/StillLife";
+import { ArrowRight } from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
 import { imagery } from "@/lib/imagery";
-import { FallingLeaves } from "./FallingLeaves";
-import { PhotoHero } from "./PhotoHero";
+import { HeroLeaves } from "./HeroLeaves";
 
 /**
- * Homepage hero, built to the client's final mockup (2026-09-10).
+ * Homepage hero, to the client's approved composition: the wordmark, the
+ * headline, a line of copy and one action on the left; the products on the
+ * right under the "Good Food Better Living" script; leaves drifting through.
  *
- * Left: three lines of tracked capitals, the BURLA wordmark set large in the
- * serif, the tagline, one action, and three brand pillars.
- * Right: the product still life with the "Good Food, Better Living" script.
- * Across all of it: leaves drifting down on a breeze.
+ * ## Why it is composed rather than one picture
  *
- * ## Depth, from back to front
+ * It used to be the supplied image itself — logo, words, products and all —
+ * scaled to fit. One picture cannot re-flow: on a wide screen its shape left
+ * bands of empty backdrop at the sides, on a tablet everything shrank
+ * together, and the words could never stack above the products on a phone.
+ * The page now owns the layout and the image carries only the products
+ * (`assets/hero/extract_products.py`), so each part answers the screen it is
+ * on:
  *
- *   1. Warm light behind the still life
- *   2. Far and mid leaves       (FallingLeaves layer="back")
- *   3. Text and illustration
- *   4. Three near, out-of-focus leaves   (layer="front")
+ *   Hero  ├── background   the page's own white
+ *         ├── content      live text: logo, headline, copy, action
+ *         ├── products     one photograph, never stretched or cropped
+ *         └── leaves       independent sprites (HeroLeaves)
  *
- * So most leaves pass *behind* the headline — which is what makes the scene
- * read as a space rather than a sticker sheet — and the few in front are
- * kept over the illustration, never across the text. Neither layer takes
- * pointer events, so nothing interferes with the button.
+ * ## Sizing
  *
- * ## Entrance
+ * Full-bleed, and on desktop as tall as the first screen below the header
+ * (`100dvh - --site-chrome`, the dynamic unit so a phone's address bar
+ * appearing does not jump it), capped so a very tall window does not stretch
+ * it. Below `lg` the height follows the content: the parts stack, and the
+ * hero ends where it ends rather than leaving a gap.
  *
- * Pure CSS (`.enter`), staggered by line, so the hero is never waiting on
- * JavaScript to become visible and reduced-motion users get it immediately.
+ * The words keep a readable measure while the composition widens with the
+ * screen (`container-hero`): at 2560px the products grow, the paragraph does
+ * not.
  */
-
-const PILLARS = [
-  { Icon: Leaf, label: "Pure & Natural" },
-  { Icon: Heart, label: "Quality Assured" },
-  { Icon: Globe, label: "Globally Trusted" },
-];
-
 export function Hero() {
-  const photo = imagery.hero;
-
-  // The client's supplied hero image is a complete composition — words,
-  // products and leaves — so when it is present it replaces this layout
-  // outright rather than filling the right-hand column.
-  if (photo) return <PhotoHero photo={photo} />;
+  const products = imagery.heroProducts;
 
   return (
     <section
       aria-labelledby="hero-title"
-      className="relative isolate overflow-hidden bg-white"
+      // Full width, and the leaf layer clips here — never at the page.
+      className="relative isolate w-full overflow-hidden bg-white"
     >
-      {/* 1 — warm light seating the illustration */}
-      <div
-        aria-hidden="true"
-        // Sized and placed against the content column, not the window, so on
-        // a very wide screen it stays behind the illustration instead of
-        // swelling toward the right edge.
-        style={{
-          width: "min(62%, 52rem)",
-          right: "max(-10%, calc((100% - var(--container-page)) / 2 - 8rem))",
-        }}
-        className="pointer-events-none absolute top-1/2 -z-10 hidden aspect-square -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,#fdf3df_0%,#fef9f0_55%,transparent_100%)] lg:block"
-      />
+      <HeroLeaves className="z-0" />
 
-      {/* 2 — leaves behind the content */}
-      <FallingLeaves layer="back" className="z-0" />
+      <div className="container-hero relative z-10">
+        <div className="grid items-center gap-8 pb-10 pt-8 sm:pb-12 lg:min-h-[min(calc(100dvh-var(--site-chrome)),48rem)] lg:grid-cols-12 lg:gap-10 lg:py-10">
+          {/* The words. `data-hero-content` is what the leaves keep clear of. */}
+          <div data-hero-content className="lg:col-span-5">
+            <Logo
+              variant="full"
+              height="clamp(3.5rem,7.5vw,6.5rem)"
+              priority
+              className="enter block"
+            />
 
-      <div className="container-page relative z-10">
-        <div className="grid items-center gap-8 pb-12 pt-10 lg:grid-cols-12 lg:gap-6 lg:pb-16 lg:pt-12">
-          {/* 3 — the words */}
-          <div className="lg:col-span-5">
-            <p className="t-tracked enter text-ink-2">
-              Natural Products
+            <h1
+              id="hero-title"
+              className="enter enter-delay-1 mt-7 font-serif text-[clamp(1.75rem,1.1rem+1.9vw,2.85rem)] font-normal leading-[1.16] tracking-[-0.01em] text-forest"
+            >
+              Pure Goodness from
               <br />
-              Healthy People
-              <br />A Brighter Tomorrow
-            </p>
-
-            <h1 id="hero-title" className="mt-5">
-              <span className="enter enter-delay-1 block font-serif text-[clamp(4.25rem,2.6rem+6.2vw,7.25rem)] font-bold uppercase leading-[0.86] tracking-[-0.012em] text-forest [font-variation-settings:'opsz'_60]">
-                Burla
-              </span>
-              <span className="enter enter-delay-1 mt-3 block text-[clamp(0.95rem,0.8rem+0.5vw,1.2rem)] font-semibold uppercase leading-none tracking-[0.42em] text-forest">
-                Global Agri Products
-              </span>
-            </h1>
-
-            <p className="enter enter-delay-2 mt-6 font-serif text-[clamp(1.6rem,1.3rem+1.1vw,2.15rem)] font-normal leading-[1.18] tracking-[-0.01em] text-ink">
-              Pure Goodness from India&rsquo;s Soil
+              India&rsquo;s Soil
               <br />
               To Your Table
-            </p>
+            </h1>
 
-            <p className="enter enter-delay-2 mt-4 max-w-[38ch] text-[0.9375rem] leading-relaxed text-ink-2">
+            <p className="enter enter-delay-2 mt-5 max-w-[34ch] text-[clamp(0.9375rem,0.9rem+0.2vw,1.0625rem)] leading-relaxed text-ink-2">
               Wholesome agricultural products, carefully processed for a
               healthier, happier tomorrow.
             </p>
@@ -109,62 +86,53 @@ export function Hero() {
                 />
               </Link>
             </div>
-
-            <ul className="enter enter-delay-4 mt-10 flex items-stretch">
-              {PILLARS.map(({ Icon, label }, i) => (
-                <li
-                  key={label}
-                  className={
-                    "flex min-w-0 flex-1 flex-col items-center gap-2.5 px-2 text-center sm:flex-none sm:px-6 " +
-                    (i > 0 ? "border-l border-line" : "sm:pl-0")
-                  }
-                >
-                  <Icon
-                    className="size-7 text-green-700"
-                    strokeWidth={1.25}
-                    aria-hidden="true"
-                  />
-                  <span className="text-[0.75rem] text-ink-2">{label}</span>
-                </li>
-              ))}
-            </ul>
           </div>
 
-          {/* 3 — the picture */}
-          <div className="relative lg:col-span-7">
-            <div className="enter-art relative">
-              <StillLife className="h-auto w-full" />
-            </div>
-
+          {/* The products, with the script above them as in the painting.
+              In the flow rather than laid over the image: the two then never
+              overlap, at any width. */}
+          <div className="lg:col-span-7">
             <div
               aria-hidden="true"
-              className="enter enter-delay-3 pointer-events-none absolute -top-3 right-0 hidden rotate-[-9deg] sm:block lg:-top-6 lg:right-2"
+              className="enter enter-delay-2 pointer-events-none flex justify-end pr-2 sm:pr-6"
             >
-              <p className="t-script text-[clamp(2rem,1.4rem+1.6vw,2.9rem)] leading-[0.95] text-forest">
-                Good Food
-                <br />
-                <span className="ml-6">Better Living</span>
-              </p>
-              <svg
-                viewBox="0 0 200 24"
-                className="ml-8 mt-1 h-auto w-[62%]"
-                fill="none"
-              >
-                <path
-                  d="M4 16 C52 6 120 4 196 10"
-                  stroke="currentColor"
-                  className="text-forest"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <div className="rotate-[-9deg]">
+                <p className="t-script text-[clamp(1.5rem,1rem+1.7vw,2.9rem)] leading-[0.95] text-forest">
+                  Good Food
+                  <br />
+                  <span className="ml-6">Better Living</span>
+                </p>
+                <svg viewBox="0 0 200 24" className="ml-8 mt-1 h-auto w-[62%]" fill="none">
+                  <path
+                    d="M4 16 C52 6 120 4 196 10"
+                    stroke="currentColor"
+                    className="text-forest"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
             </div>
+
+            {products && (
+              <div className="enter-art mt-2 sm:mt-4">
+                {/* eslint-disable-next-line @next/next/no-img-element -- the
+                    page's largest paint, served pre-encoded at its own size;
+                    an on-the-fly encode is a first-visit delay for no gain */}
+                <img
+                  src={products.src}
+                  alt={products.alt}
+                  width={products.width}
+                  height={products.height}
+                  fetchPriority="high"
+                  decoding="async"
+                  className="mx-auto h-auto w-full max-w-[min(100%,46rem)] object-contain lg:max-w-none"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
-
-      {/* 4 — near leaves in front of everything */}
-      <FallingLeaves layer="front" className="z-20" />
     </section>
   );
 }

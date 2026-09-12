@@ -52,8 +52,12 @@ export function Logo({
   plate = false,
 }: {
   variant?: keyof typeof VARIANTS;
-  /** Rendered height in px. Width follows the artwork's aspect ratio. */
-  height?: number;
+  /**
+   * Rendered height: a number in px, or any CSS length — "clamp(...)" for a
+   * mark that scales with the viewport. Width follows the artwork's aspect
+   * ratio either way.
+   */
+  height?: number | string;
   className?: string;
   priority?: boolean;
   /** Pass "" where an ancestor link already carries the accessible name. */
@@ -67,11 +71,12 @@ export function Logo({
   plate?: boolean;
 }) {
   const v = VARIANTS[variant];
+  const size = typeof height === "number" ? `${height}px` : height;
 
   const mark = (
     <span
       className="relative block overflow-hidden"
-      style={{ height, width: Math.round(height * v.aspect) }}
+      style={{ height: size, width: `calc(${size} * ${v.aspect})` }}
     >
       <Image
         src={v.src}
