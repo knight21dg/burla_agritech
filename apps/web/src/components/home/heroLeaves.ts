@@ -59,6 +59,17 @@ export const HERO_ANCHOR = {
   y: 0.5,
 } as const;
 
+/**
+ * The painting itself inside the canvas, in canvas px: everything drawn, from
+ * the top of the logo to the shadow under the bowls, measured from
+ * hero-wide-3072.webp (ink, not the extended backdrop). The canvas is taller
+ * and much wider than this — empty margin above and below, matched backdrop
+ * to either side — so it is the content, not the canvas, that the hero is
+ * sized to fill. The height carries two rows of slack, so rounding never
+ * pushes the bowls' shadow past the bottom of the band.
+ */
+export const HERO_CONTENT = { left: 861, top: 37, w: 1420, h: 810 } as const;
+
 /** The block of words painted into the image (logo to paragraph), source px. */
 export const PAINTED_TEXT = { left: 88, right: 470, bottom: 600 } as const;
 
@@ -76,32 +87,41 @@ export const HERO_ACTION = { x: 96, y: 602, height: 44, fontSize: 15, padX: 22 }
  * layer drawn on it — the image, the leaves, the action — on the class
  * `hero-layer`. The frame is a size container, so `cqw` / `cqh` measure it.
  *
- *   --spx     rendered px per canvas px: `cover` (the canvas always fills
- *             the frame).
+ *   --spx     rendered px per canvas px.
  *   --hero-x  the canvas's left edge in the frame.
- *   --hero-y  its top edge: centred.
+ *   --hero-y  its top edge.
  *
- * Desktop: the painted words' left edge (PAINTED_TEXT.left) sits on the site
- * container's content edge — the line the header logo, the navigation and
- * every section heading start on — so the hero belongs to the page's grid
- * instead of floating centred on its own. The content edge is the
- * `container-page` utility's (globals.css): a 1280px column with 1.5rem
- * padding, 2rem from 1280px up. The offset is clamped so the canvas always
- * covers the frame.
+ * Desktop: the painting is shown as large as it fits — scaled so its own
+ * height (HERO_CONTENT.h, not the canvas's empty margins) fills the band —
+ * and centred, so the backdrop left over is even on both sides. It cannot
+ * also fill the width: the painting is about 1.76:1 and the band about
+ * 2.6:1, so filling the width would cut the top of the logo and the bottoms
+ * of the bowls. The vertical crop takes only the canvas's empty margin.
  *
- * Phones: the anchored crop of the products (HERO_ANCHOR.phone).
+ * Phones: the anchored crop of the products (HERO_ANCHOR.phone), at the
+ * canvas's own cover scale — the painted words are replaced by real text
+ * there, so the products are what has to fill the frame.
  */
 export const HERO_LAYER_CSS = (() => {
-  const { w: CW, h: CH, padX } = HERO_CANVAS;
-  const contentEdge = "max(1.5rem, (100cqw - var(--container-page)) / 2 + 2rem)";
+  const { w: CW, h: CH } = HERO_CANVAS;
+  const { left: CX, w: CONTENT_W, h: CONTENT_H } = HERO_CONTENT;
+  // The canvas must always cover the frame, whatever else is asked for.
+  const cover = `max(100cqw / ${CW}, 100cqh / ${CH})`;
   const top = `calc((100cqh - ${CH} * var(--spx)) * ${HERO_ANCHOR.y})`;
+  // Desktop: as large as the painting fits. Its height fills the band; the
+  // width is capped so it is never scaled past the frame, and the canvas's
+  // cover scale is the floor, so no edge of the frame is ever left bare.
+  const fit = `max(${cover}, min(100cqh / ${CONTENT_H}, 100cqw / ${CONTENT_W}))`;
+  // Centred on the painting, not on the canvas: the canvas has 768px of
+  // backdrop either side, and centring that would put the painting off-centre.
+  const centred =
+    `calc((100cqw - ${CONTENT_W} * var(--spx)) / 2 - ${CX} * var(--spx))`;
   return (
-    `.hero-layer{--spx:max(100cqw / ${CW}, 100cqh / ${CH});` +
+    `.hero-layer{--spx:${cover};` +
     `--hero-x:calc((100cqw - ${CW} * var(--spx)) * ${HERO_ANCHOR.phone.x});` +
     `--hero-y:${top}}` +
-    `@media (width >= 768px){.hero-layer{--hero-x:clamp(` +
-    `100cqw - ${CW} * var(--spx), ` +
-    `${contentEdge} - ${PAINTED_TEXT.left + padX} * var(--spx), 0px)}}`
+    `@media (width >= 768px){.hero-layer{--spx:${fit};` +
+    `--hero-x:clamp(100cqw - ${CW} * var(--spx), ${centred}, 0px)}}`
   );
 })();
 
