@@ -9,7 +9,9 @@
     "./db": "./src/db/index.ts",
     "./db/schema": "./src/db/schema/index.ts",
     "./auth": "./src/auth/index.ts",
-    "./repositories/users": "./src/repositories/userRepository.ts"
+    "./auth/rbac": "./src/auth/rbac.ts",
+    "./repositories/users": "./src/repositories/userRepository.ts",
+    "./repositories/audit": "./src/repositories/auditRepository.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

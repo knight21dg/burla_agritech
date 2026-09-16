@@ -7,17 +7,25 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace=@burla/web",
+    "dev:admin": "npm run dev --workspace=@burla/admin",
     "build": "npm run build --workspace=@burla/web",
+    "build:admin": "npm run build --workspace=@burla/admin",
     "start": "npm run start --workspace=@burla/web",
     "lint": "npm run lint --workspace=@burla/web",
-    "typecheck": "npm run typecheck --workspace=@burla/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "vitest run",
+    "admin:create": "npm run admin:create --workspace=@burla/admin --",
     "db:generate": "npm run db:generate --workspace=@burla/web",
     "db:migrate": "npm run db:migrate --workspace=@burla/web --",
     "db:check": "npm run db:check --workspace=@burla/web",
     "db:seed": "npm run db:seed --workspace=@burla/web --",
-    "db:verify": "npm run db:verify --workspace=@burla/web --"
+    "db:verify": "npm run db:verify --workspace=@burla/web --",
+    "db:parity": "npm run db:parity --workspace=@burla/web"
   },
   "engines": {
     "node": ">=20.9.0"
+  },
+  "devDependencies": {
+    "vitest": "3.2.4"
   }
 }

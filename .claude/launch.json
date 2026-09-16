@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--workspace=@burla/web"],
       "port": 3000
+    },
+    {
+      "name": "burla-admin",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--workspace=@burla/admin"],
+      "port": 3001
     }
   ]
 }

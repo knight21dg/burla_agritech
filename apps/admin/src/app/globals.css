@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Burla Admin — an internal tool, not a shop window.
+
+   It does not share the storefront's design system, and should not: the
+   customer site is white space and photography; this is dense rows of data
+   that people read for eight hours. What it borrows is the brand green, and
+   only where an accent is needed, so the two are recognisably the same
+   business.
+
+   Everything here is system fonts and flat surfaces. No decoration that costs
+   a paint, no animation that delays a keystroke.
+   ========================================================================== */
+
+@theme {
+  --color-surface: #f6f7f8;
+  --color-panel: #ffffff;
+  --color-line: #e2e5e9;
+  --color-line-strong: #cbd1d8;
+
+  --color-ink: #14181d; /* 16.8:1 on panel */
+  --color-ink-2: #4a5259; /*  8.1:1 */
+  --color-ink-3: #6d757d; /*  4.9:1 — labels only, never body text */
+
+  /* The storefront's brand green, used for action and for nothing else. */
+  --color-accent: #187b44; /* 5.33:1 on white */
+  --color-accent-dark: #0f4a2c;
+  --color-accent-soft: #eef6f1;
+
+  --color-danger: #a32b1e;
+  --color-danger-soft: #fdf1ef;
+  --color-warning: #8a5a00;
+  --color-warning-soft: #fdf6e7;
+  --color-ok: #187b44;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* An admin is operated by keyboard. The focus ring is never subtle. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent-dark);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: var(--color-ink);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  /* 16px stops iOS zooming the page when a field takes focus. */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+    font-family: inherit;
+  }
+}
+
+@layer components {
+  .label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+
+  .panel {
+    background: var(--color-panel);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+  }
+
+  .field {
+    display: block;
+    width: 100%;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-panel);
+    padding: 0.5rem 0.625rem;
+    color: var(--color-ink);
+  }
+  .field:focus {
+    border-color: var(--color-accent);
+    outline-offset: 1px;
+  }
+  .field[aria-invalid="true"] {
+    border-color: var(--color-danger);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.25rem;
+    padding-inline: 0.875rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    color: #fff;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-accent-dark);
+  }
+  .btn-quiet {
+    background: var(--color-panel);
+    border-color: var(--color-line-strong);
+    color: var(--color-ink);
+  }
+  .btn-quiet:hover:not(:disabled) {
+    border-color: var(--color-ink-3);
+  }
+}
