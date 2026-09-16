@@ -11,7 +11,10 @@
     "./auth": "./src/auth/index.ts",
     "./auth/rbac": "./src/auth/rbac.ts",
     "./repositories/users": "./src/repositories/userRepository.ts",
-    "./repositories/audit": "./src/repositories/auditRepository.ts"
+    "./repositories/audit": "./src/repositories/auditRepository.ts",
+    "./media": "./src/media/index.ts",
+    "./media/store": "./src/media/store.ts",
+    "./content": "./src/content.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
@@ -20,6 +23,7 @@
     "drizzle-orm": "0.45.2",
     "postgres": "3.4.9",
     "server-only": "^0.0.1",
+    "sharp": "0.35.4",
     "zod": "4.5.4"
   },
   "devDependencies": {

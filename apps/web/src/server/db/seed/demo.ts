@@ -61,10 +61,13 @@ import {
  * currently advertises. Availability is derived, not stored, so the seed sets
  * the inputs rather than the answer — docs/PRODUCT-DOMAIN.md §8.
  */
+// Stock is not counted by default (migration 0007): a pack is simply
+// available or not, as the owner sets it in the admin. "Out of stock" is
+// therefore an unavailable pack, not a zero in a counter.
 const STOCK_FOR: Record<Availability, { quantity: number; tracked: boolean }> = {
-  in_stock: { quantity: 24, tracked: true },
-  low_stock: { quantity: 3, tracked: true }, // at or below the threshold of 5
-  out_of_stock: { quantity: 0, tracked: true },
+  in_stock: { quantity: 0, tracked: false },
+  low_stock: { quantity: 0, tracked: false },
+  out_of_stock: { quantity: 0, tracked: false },
   enquire_only: { quantity: 0, tracked: false },
 };
 
@@ -247,7 +250,7 @@ async function seedVariants(
         trackInventory: stock.tracked,
         isDefault: variant.isDefault ?? false,
         sortOrder: index,
-        status: "active",
+        status: variant.availability === "out_of_stock" ? "inactive" : "active",
       })
       .returning({ id: productVariants.id });
 

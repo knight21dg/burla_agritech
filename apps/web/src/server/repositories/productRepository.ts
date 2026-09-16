@@ -15,8 +15,15 @@ import { and, asc, desc, eq, inArray, ne, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { deriveAvailability } from "@/lib/catalog";
 import { db } from "@burla/core/db";
-import { categories, productVariants, products } from "@burla/core/db/schema";
-import type { Product, Variant } from "@/types/catalog";
+import {
+  categories,
+  media,
+  productImages,
+  productVariants,
+  products,
+} from "@burla/core/db/schema";
+import { mediaPath } from "@burla/core/media";
+import type { Photo, Product, Variant } from "@/types/catalog";
 
 const categoryAlias = alias(categories, "category");
 const typeAlias = alias(categories, "type");
@@ -53,6 +60,7 @@ const variantColumns = {
   stockQuantity: productVariants.stockQuantity,
   lowStockThreshold: productVariants.lowStockThreshold,
   trackInventory: productVariants.trackInventory,
+  status: productVariants.status,
   isDefault: productVariants.isDefault,
   sortOrder: productVariants.sortOrder,
 } as const;
@@ -81,6 +89,7 @@ type VariantRow = {
   stockQuantity: number;
   lowStockThreshold: number;
   trackInventory: boolean;
+  status: "active" | "inactive" | "removed";
   isDefault: boolean;
   sortOrder: number;
 };
@@ -125,10 +134,45 @@ async function withVariants(rows: ProductRow[]): Promise<Product[]> {
           productVariants.productId,
           rows.map((row) => row.id),
         ),
-        eq(productVariants.status, "active"),
+        // Unavailable packs are listed and shown as out of stock; removed
+        // ones exist only for the history of past orders.
+        ne(productVariants.status, "removed"),
       ),
     )
     .orderBy(asc(productVariants.sortOrder), asc(productVariants.label));
+
+  // Each product's primary photograph, in one query for the whole set.
+  const photoRows = await db
+    .select({
+      productId: productImages.productId,
+      alt: productImages.altText,
+      key: media.r2Key,
+      width: media.width,
+      height: media.height,
+    })
+    .from(productImages)
+    .innerJoin(media, eq(media.id, productImages.mediaId))
+    .where(
+      and(
+        inArray(
+          productImages.productId,
+          rows.map((row) => row.id),
+        ),
+        eq(productImages.isPrimary, true),
+      ),
+    );
+
+  const photos = new Map<string, Photo>();
+  for (const row of photoRows) {
+    const url = mediaPath(row.key);
+    if (!url) continue;
+    photos.set(row.productId, {
+      url,
+      alt: row.alt,
+      width: row.width ?? 600,
+      height: row.height ?? 600,
+    });
+  }
 
   const byProduct = new Map<string, Variant[]>();
   for (const row of variantRows) {
@@ -155,6 +199,7 @@ async function withVariants(rows: ProductRow[]): Promise<Product[]> {
     variants: byProduct.get(row.id) ?? [],
     ...(row.featured ? { featured: true } : {}),
     tone: row.tone,
+    ...(photos.has(row.id) ? { photo: photos.get(row.id)! } : {}),
   }));
 }
 

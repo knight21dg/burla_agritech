@@ -36,6 +36,17 @@ export type Availability =
   | "out_of_stock"
   | "enquire_only";
 
+/**
+ * A photograph, resolved: where it is and how big. Chosen in the admin and
+ * stored in the database; a page only ever draws what it is given here.
+ */
+export interface Photo {
+  url: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
 export interface Variant {
   id: string;
   label: string;
@@ -61,6 +72,8 @@ export interface Product {
   variants: Variant[];
   featured?: boolean;
   tone: Tone;
+  /** The primary photograph. Absent draws the illustrated stand-in. */
+  photo?: Photo;
   /**
    * TODO note for an item awaiting the client's confirmation. Carried by the
    * catalogue module only — the database has no column for it, so it is not
@@ -79,6 +92,8 @@ export interface Category {
   tone: Tone;
   /** Present = this row is a TYPE sitting under that category. */
   parentSlug?: string;
+  /** The category's picture, for its tile. */
+  photo?: Photo;
   /** TODO note; catalogue module only (see Product.confirmation). */
   confirmation?: string;
 }

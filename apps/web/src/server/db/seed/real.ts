@@ -12,9 +12,8 @@
  * registered firm name (`OQ-002`) and the grievance officer (`OQ-005`) are
  * all in that position, and all three block launch.
  *
- * Idempotent: it upserts by slug, so re-running it updates rather than
- * duplicating, and it never touches a column an admin may have edited by
- * hand except the ones it owns.
+ * Idempotent, and insert-only: re-running it adds anything missing and changes
+ * nothing that exists. Everything it writes is the admin's to edit afterwards.
  *
  * Category names and order remain provisional pending `OQ-013` / `OQ-064`.
  */
@@ -60,13 +59,11 @@ export async function seedReal(db: Database): Promise<SeedResult> {
       .limit(1);
 
     if (existing) {
-      // publishedAt is deliberately absent: a category published months ago
-      // should not have its date reset every time the seed runs.
-      await db
-        .update(categories)
-        .set(values)
-        .where(eq(categories.id, existing.id));
-      updated += 1;
+      // Never overwritten. The admin owns categories now: a name, description
+      // or visibility the owner changed must survive the seed running again,
+      // which it does on every deploy. The seed's job is to make sure the
+      // ten exist, not to decide what they say.
+      continue;
     } else {
       await db
         .insert(categories)
@@ -100,21 +97,10 @@ export async function seedReal(db: Database): Promise<SeedResult> {
       partners: site.legal.partners,
       socialLinks: null, // OQ-025
     })
-    .onConflictDoUpdate({
-      target: siteSettings.singleton,
-      // Only the columns this seed owns. An admin who fills in the FSSAI
-      // number must not have it wiped by the next deploy, which is why the
-      // NULL fields above are absent here.
-      set: {
-        addressLine: site.legal.address,
-        gstin: site.legal.gstin,
-        contactPhone: site.contact.phone,
-        contactEmail: site.contact.email,
-        whatsappNumber: site.whatsapp,
-        partners: site.legal.partners,
-        updatedAt: new Date(),
-      },
-    });
+    // Only the first time. The owner edits these in the admin; a deploy that
+    // put the business card's phone number back over theirs would be a bug
+    // nobody notices until a customer calls the old number.
+    .onConflictDoNothing({ target: siteSettings.singleton });
 
   return {
     categoriesInserted: inserted,

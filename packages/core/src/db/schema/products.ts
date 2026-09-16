@@ -186,7 +186,9 @@ export const productVariants = pgTable(
      * enquiry-only. Drives the `enquire_only` availability the frontend
      * already renders.
      */
-    trackInventory: boolean("track_inventory").notNull().default(true),
+    // Off by default: the owner marks a pack available or not, and stock is
+    // not counted behind their back (migration 0007 explains why).
+    trackInventory: boolean("track_inventory").notNull().default(false),
 
     status: variantStatusEnum("status").notNull().default("active"),
     isDefault: boolean("is_default").notNull().default(false),

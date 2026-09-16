@@ -23,6 +23,7 @@ async function main(): Promise<void> {
   const { countSampleData } = await import("../guards");
   const { seedReal } = await import("./real");
   const { purgeDemo, seedDemo } = await import("./demo");
+  const { seedPhotos } = await import("./photos");
 
   const args = new Set(process.argv.slice(2));
   const wantsDemo = args.has("--demo");
@@ -51,11 +52,20 @@ async function main(): Promise<void> {
 
   const real = await seedReal(db);
   console.log(
-    `Real seed: ${real.categoriesInserted} categories inserted, ` +
-      `${real.categoriesUpdated} updated, site settings written.`,
+    `Real seed: ${real.categoriesInserted} categories added ` +
+      "(existing ones are never changed); site settings checked.",
   );
 
+  const reportPhotos = async () => {
+    const photos = await seedPhotos(db);
+    console.log(
+      `Photos: ${photos.products} product and ${photos.categories} category photos attached ` +
+        "(ones already handled are left as the owner set them).",
+    );
+  };
+
   if (!wantsDemo) {
+    await reportPhotos();
     console.log(
       "\nDemonstration catalogue NOT seeded. Pass --demo if you want it.\n" +
         "The site will show categories with no products until real product\n" +
@@ -87,6 +97,8 @@ async function main(): Promise<void> {
       "   and pack sizes are SAMPLES, and no description or legal detail exists.\n" +
       "   It is flagged is_sample and a production boot will refuse to serve it.",
   );
+
+  await reportPhotos();
 }
 
 main()

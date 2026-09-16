@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getContact } from "@/server/siteContent";
 import { Facebook, Instagram, Mail, MessageCircle, Youtube } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Container } from "@/components/ui/Section";
@@ -40,6 +41,8 @@ const linkClass =
   "text-[0.8125rem] leading-relaxed text-ink-2 underline-offset-4 transition-colors hover:text-green-700 hover:underline";
 
 export async function Footer() {
+  // Edited in the admin (Settings); falls back to the site's original details.
+  const contact = await getContact();
   const categories = await listCategories();
   const year = new Date().getFullYear();
 
@@ -154,14 +157,14 @@ export async function Footer() {
                       Chat on WhatsApp
                     </span>
                     <span className="block text-[0.8125rem] text-ink-2 tabular-nums">
-                      {site.contact.phone}
+                      {contact.phone}
                     </span>
                   </span>
                 </a>
               </li>
               <li>
                 <a
-                  href={`mailto:${site.contact.email}`}
+                  href={`mailto:${contact.email}`}
                   className="group flex items-start gap-3"
                 >
                   <Mail
@@ -172,8 +175,8 @@ export async function Footer() {
                   {/* Breaks after the @ if it must break at all — never
                       mid-word, which is what break-all did. */}
                   <span className="text-[0.8125rem] text-ink-2 group-hover:text-green-700 group-hover:underline">
-                    {site.contact.email.split("@")[0]}@<wbr />
-                    {site.contact.email.split("@")[1]}
+                    {contact.email.split("@")[0]}@<wbr />
+                    {contact.email.split("@")[1]}
                   </span>
                 </a>
               </li>
@@ -196,9 +199,9 @@ export async function Footer() {
 
           {/* Statutory — FR-008. Small, but present on every page. */}
           <p className="mt-3 text-[0.6875rem] leading-relaxed text-ink-3">
-            {site.legal.entityName} · {site.legal.address} · FSSAI Licence No.{" "}
-            {site.legal.fssai} · GSTIN {site.legal.gstin} · Grievance Officer:{" "}
-            {site.legal.grievanceOfficer}
+            {contact.entityName} · {contact.address} · FSSAI Licence No.{" "}
+            {contact.fssai} · GSTIN {contact.gstin} · Grievance Officer:{" "}
+            {contact.grievanceOfficer}
           </p>
         </div>
       </Container>

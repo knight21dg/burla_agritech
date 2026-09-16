@@ -8,6 +8,8 @@ import { Reveal } from "@/components/ui/Reveal";
 import { CategoryCard } from "@/components/product/CategoryCard";
 import { ProductCarousel } from "@/components/product/ProductCarousel";
 import { listCategories, listFeatured } from "@/server/catalogue";
+import { getHomepage } from "@/server/siteContent";
+import { linesOf } from "@burla/core/content";
 import { imagery } from "@/lib/imagery";
 
 /**
@@ -68,15 +70,16 @@ function SectionHead({
 }
 
 export default async function HomePage() {
-  const [categories, featured] = await Promise.all([
+  const [categories, featured, words] = await Promise.all([
     listCategories(),
     listFeatured(),
+    getHomepage(),
   ]);
   const about = imagery.about;
 
   return (
     <>
-      <Hero />
+      <Hero heading={words.heroHeading} text={words.heroText} />
 
       {/* ---------------------------------------------------------- Categories */}
       <section aria-labelledby="home-categories" className="bg-white pb-10 pt-6 md:pb-12">
@@ -165,19 +168,18 @@ export default async function HomePage() {
                     id="home-about"
                     className="mt-5 font-serif text-[clamp(1.6rem,1.3rem+1vw,2rem)] font-medium leading-[1.18] tracking-[-0.015em] text-forest"
                   >
-                    Rooted in Values.
-                    <br />
-                    Growing for Tomorrow.
+                    {linesOf(words.aboutHeading).map((line, index) => (
+                      <span key={index} className="block">
+                        {line}
+                      </span>
+                    ))}
                   </h2>
 
-                  {/* Deliberately general. The founding story, sourcing
-                      relationships and processing detail are pending client
-                      confirmation (CONTENT-INVENTORY) and are not invented. */}
+                  {/* Written by the owner in the admin (Website → Homepage). The
+                      default is deliberately general: the founding story and
+                      sourcing detail are theirs to supply, not ours to invent. */}
                   <p className="mt-4 max-w-[46ch] text-[0.875rem] leading-[1.75] text-ink-2">
-                    Burla Global Agri Products brings the everyday foods of
-                    Indian farming — dried, cured, roasted and milled — from
-                    the field to your table, with careful grading and honest
-                    packing at every step.
+                    {words.aboutText}
                   </p>
 
                   <Link

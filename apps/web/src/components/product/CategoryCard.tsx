@@ -3,7 +3,6 @@ import Link from "next/link";
 import { CONTENTS_FOR_CATEGORY } from "@/components/art/Bowl";
 import { ProductImage } from "@/components/ui/ProductImage";
 import type { Category } from "@/types/catalog";
-import { imagery } from "@/lib/imagery";
 
 /**
  * Category tile, as in the client's final mockup: a white card, the category's
@@ -17,7 +16,8 @@ import { imagery } from "@/lib/imagery";
  * client); a category without one falls back to its illustrated bowl.
  */
 export function CategoryCard({ category }: { category: Category }) {
-  const photo = imagery.categories[category.slug];
+  // Chosen in the admin (Categories → Edit → Photo); stored in the database.
+  const photo = category.photo;
 
   return (
     <Link
@@ -27,13 +27,13 @@ export function CategoryCard({ category }: { category: Category }) {
       <div className="relative overflow-hidden">
         {photo ? (
           <Image
-            src={photo.src}
+            src={photo.url}
             // Decorative: the tile's name, below, is its label.
             alt=""
             width={photo.width}
             height={photo.height}
-            // Pre-encoded at 480 x 360 (about 20 KB), which already covers a
-            // tile at 2x — there is nothing for the optimiser to add.
+            // Supplied photos are pre-encoded for the tile; uploads are already
+            // resized and re-encoded when they are saved. Nothing to add.
             unoptimized
             className="aspect-4/3 w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.05]"
           />

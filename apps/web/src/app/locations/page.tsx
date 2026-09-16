@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getContact } from "@/server/siteContent";
 import { Building2, Globe2, Handshake, MapPin } from "lucide-react";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container, Section } from "@/components/ui/Section";
@@ -31,7 +32,9 @@ const presence = [
   },
 ];
 
-export default function LocationsPage() {
+export default async function LocationsPage() {
+  // Edited in the admin (Settings); falls back to the site's original details.
+  const contact = await getContact();
   return (
     <>
       <PageHeader
@@ -56,7 +59,7 @@ export default function LocationsPage() {
                     aria-hidden="true"
                   />
                   <span>
-                    {site.legal.address}
+                    {contact.address}
                   </span>
                 </p>
               </address>
@@ -64,17 +67,17 @@ export default function LocationsPage() {
                 <div className="flex gap-2">
                   <dt className="text-ink-3">GSTIN</dt>
                   <dd className="font-medium tabular-nums text-ink">
-                    {site.legal.gstin}
+                    {contact.gstin}
                   </dd>
                 </div>
                 <div className="flex gap-2">
                   <dt className="text-ink-3">Phone</dt>
                   <dd>
                     <a
-                      href={`tel:${site.contact.phoneRaw}`}
+                      href={`tel:${contact.phoneRaw}`}
                       className="inline-flex min-h-6 items-center font-medium text-ink hover:text-green-700"
                     >
-                      {site.contact.phone}
+                      {contact.phone}
                     </a>
                   </dd>
                 </div>

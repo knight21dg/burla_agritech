@@ -22,7 +22,17 @@ export const productStatusEnum = pgEnum("product_status", [
   "archived",
 ]);
 
-export const variantStatusEnum = pgEnum("variant_status", ["active", "inactive"]);
+/**
+ * A pack size's state, as the owner thinks about it.
+ *
+ *   active    — on sale.
+ *   inactive  — shown on the site as "Out of stock", and cannot be bought.
+ *   removed   — gone from the site and from the admin's list, but the row
+ *               stays: an order or a stock movement that refers to it must
+ *               still resolve. "Delete" in the admin means this whenever the
+ *               pack has any history.
+ */
+export const variantStatusEnum = pgEnum("variant_status", ["active", "inactive", "removed"]);
 
 /** The FSSAI labelling mark. `not_applicable` covers non-food items. */
 export const vegNonVegEnum = pgEnum("veg_non_veg", [

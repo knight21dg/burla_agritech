@@ -65,6 +65,13 @@ const laterSchema = z.object({
   REVALIDATE_SECRET: z.string().min(32).optional(),
   /** Where the admin sends that message. Admin only. */
   STOREFRONT_URL: z.string().url().optional(),
+
+  /**
+   * Where uploaded photographs are kept on disk, as an absolute path. Both
+   * applications need the same value: the admin writes there, the storefront
+   * serves from there. Production replaces this with object storage.
+   */
+  MEDIA_DIR: z.string().min(1).optional(),
 });
 
 const serverSchema = baseSchema.merge(laterSchema).superRefine((value, ctx) => {

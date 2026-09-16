@@ -28,6 +28,8 @@ import { env } from "@burla/core/env";
 
 const tagSchema = z.union([
   z.literal("catalogue"),
+  // Homepage words, contact details and company information.
+  z.literal("site"),
   z.string().regex(/^product:[a-z0-9-]{1,80}$/),
   z.string().regex(/^category:[a-z0-9-]{1,80}$/),
 ]);

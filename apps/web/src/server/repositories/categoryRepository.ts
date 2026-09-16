@@ -13,8 +13,9 @@ import "server-only";
 import { and, asc, count, eq, inArray, isNotNull, isNull } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@burla/core/db";
-import { categories, products } from "@burla/core/db/schema";
-import type { Category, CategorySummary } from "@/types/catalog";
+import { categories, media, products } from "@burla/core/db/schema";
+import { mediaPath } from "@burla/core/media";
+import type { Category, CategorySummary, Photo } from "@/types/catalog";
 
 /** The columns every category read needs. Selected explicitly, never `*`. */
 const categoryColumns = {
@@ -27,6 +28,7 @@ const categoryColumns = {
   description: categories.description,
   sortOrder: categories.sortOrder,
   tone: categories.tone,
+  heroImageId: categories.heroImageId,
 } as const;
 
 type CategoryRow = {
@@ -39,7 +41,33 @@ type CategoryRow = {
   description: string | null;
   sortOrder: number;
   tone: Category["tone"];
+  heroImageId: string | null;
 };
+
+/**
+ * The pictures for a set of categories, in one query.
+ *
+ * A separate lookup rather than a join in every category query: only the
+ * tile lists need pictures, and the other reads stay as simple as they were.
+ */
+async function photosFor(rows: readonly CategoryRow[]): Promise<Map<string, Photo>> {
+  const ids = [...new Set(rows.flatMap((row) => (row.heroImageId ? [row.heroImageId] : [])))];
+  const photos = new Map<string, Photo>();
+  if (ids.length === 0) return photos;
+
+  const found = await db
+    .select({ id: media.id, key: media.r2Key, width: media.width, height: media.height })
+    .from(media)
+    .where(inArray(media.id, ids));
+
+  for (const row of found) {
+    const url = mediaPath(row.key);
+    if (!url) continue;
+    // Decorative: a tile's name, beside the picture, is its label.
+    photos.set(row.id, { url, alt: "", width: row.width ?? 480, height: row.height ?? 360 });
+  }
+  return photos;
+}
 
 /**
  * Maps a row to the read model.
@@ -48,7 +76,12 @@ type CategoryRow = {
  * interface, because the UI always has something to render. The fallbacks are
  * here rather than in a component so every surface agrees.
  */
-function toCategory(row: CategoryRow, parentSlug?: string): Category {
+function toCategory(
+  row: CategoryRow,
+  parentSlug?: string,
+  photos?: Map<string, Photo>,
+): Category {
+  const photo = row.heroImageId ? photos?.get(row.heroImageId) : undefined;
   return {
     slug: row.slug,
     name: row.name,
@@ -58,6 +91,7 @@ function toCategory(row: CategoryRow, parentSlug?: string): Category {
     description: row.description ?? "",
     tone: row.tone,
     ...(parentSlug ? { parentSlug } : {}),
+    ...(photo ? { photo } : {}),
   };
 }
 
@@ -69,7 +103,8 @@ export async function listTopLevel(): Promise<Category[]> {
     .where(and(isNull(categories.parentId), eq(categories.status, "published")))
     .orderBy(asc(categories.sortOrder), asc(categories.name));
 
-  return rows.map((row) => toCategory(row));
+  const photos = await photosFor(rows);
+  return rows.map((row) => toCategory(row, undefined, photos));
 }
 
 /**
@@ -107,11 +142,13 @@ export async function listTopLevelWithCounts(): Promise<CategorySummary[]> {
       categories.description,
       categories.sortOrder,
       categories.tone,
+      categories.heroImageId,
     )
     .orderBy(asc(categories.sortOrder), asc(categories.name));
 
+  const photos = await photosFor(rows);
   return rows.map((row) => ({
-    ...toCategory(row),
+    ...toCategory(row, undefined, photos),
     productCount: row.productCount,
   }));
 }

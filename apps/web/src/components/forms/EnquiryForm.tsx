@@ -5,6 +5,7 @@ import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import type { Category } from "@/types/catalog";
 import { cn } from "@/lib/utils";
+import { submitEnquiry } from "@/app/contact/actions";
 
 type Kind = "contact" | "wholesale";
 type Status = "idle" | "submitting" | "success" | "error";
@@ -16,10 +17,10 @@ interface Errors {
 /**
  * Contact and wholesale enquiry form (FR-100, FR-101).
  *
- * Demo build: submission is not wired to a backend. In production this posts
- * to a Server Action that validates with the same Zod schema, persists to
- * Postgres *before* sending email, applies rate limiting and Turnstile, and
- * returns field-level errors (USER-FLOWS UF-05).
+ * Checked here for a quick answer, then sent to `submitEnquiry`, which checks
+ * again with a strict schema, saves the enquiry to the database — where the
+ * owner reads it in the admin — and returns field errors if anything was
+ * refused. The server's answer is the one that counts.
  */
 export function EnquiryForm({
   kind,
@@ -32,12 +33,15 @@ export function EnquiryForm({
   const id = useId();
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<Errors>({});
+  const [formError, setFormError] = useState<string>();
 
   const wholesale = kind === "wholesale";
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
+    data.set("kind", kind);
+    setFormError(undefined);
     const next: Errors = {};
 
     const name = String(data.get("name") ?? "").trim();
@@ -64,8 +68,19 @@ export function EnquiryForm({
     }
 
     setStatus("submitting");
-    // Demo: no network call. Production replaces this with a Server Action.
-    setTimeout(() => setStatus("success"), 700);
+    try {
+      const result = await submitEnquiry(data);
+      if (result.ok) {
+        setStatus("success");
+        return;
+      }
+      setErrors(result.fieldErrors ?? {});
+      setFormError(result.message);
+      setStatus("idle");
+    } catch {
+      setFormError("Your message could not be sent just now. Please try again, or call us.");
+      setStatus("idle");
+    }
   }
 
   if (status === "success") {
@@ -84,15 +99,21 @@ export function EnquiryForm({
           Someone from the team will come back to you. If it is urgent, WhatsApp
           is faster.
         </p>
-        <p className="mt-4 text-[0.8125rem] text-ink-3">
-          Demo build — nothing was actually sent.
-        </p>
       </div>
     );
   }
 
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-5">
+      {formError && (
+        <p
+          role="alert"
+          className="flex items-start gap-2 rounded-sm border border-terracotta/30 bg-white px-3 py-2 text-[0.875rem] text-ink"
+        >
+          <AlertCircle className="mt-0.5 size-4 shrink-0 text-terracotta" aria-hidden="true" />
+          {formError}
+        </p>
+      )}
       {/* Honeypot — real submissions leave this empty */}
       <div aria-hidden="true" className="absolute left-[-9999px]">
         <label htmlFor={`${id}-website`}>Website</label>

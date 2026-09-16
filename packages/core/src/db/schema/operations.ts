@@ -207,6 +207,14 @@ export const siteSettings = pgTable(
     partners: jsonb("partners"),
     socialLinks: jsonb("social_links"),
 
+    /**
+     * The homepage words the owner may change: the hero heading and line,
+     * and the about section. One validated object rather than a content
+     * system — there are four strings, and each has a place in a fixed
+     * layout. Absent keys fall back to the text in the code.
+     */
+    homepage: jsonb("homepage"),
+
     ...timestamps,
   },
   (table) => [

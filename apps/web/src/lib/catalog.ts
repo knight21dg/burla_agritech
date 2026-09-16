@@ -87,11 +87,19 @@ export const availabilityLabel: Record<Availability, string> = {
  * docs/PRODUCT-DOMAIN.md §8.
  */
 export function deriveAvailability(input: {
+  status: "active" | "inactive" | "removed";
   trackInventory: boolean;
   stockQuantity: number;
   lowStockThreshold: number;
 }): Availability {
-  if (!input.trackInventory) return "enquire_only";
+  // The owner said "not available" in the admin. Shown, not hidden: a
+  // customer who knows the pack exists is told it is out, rather than
+  // wondering where it went.
+  if (input.status !== "active") return "out_of_stock";
+  // Stock is not being counted for this pack, so it is simply on sale.
+  // (Stock counting is internal, and off for anything the owner manages by
+  // hand: nothing runs out behind their back with no screen to restock it.)
+  if (!input.trackInventory) return "in_stock";
   if (input.stockQuantity <= 0) return "out_of_stock";
   if (input.stockQuantity <= input.lowStockThreshold) return "low_stock";
   return "in_stock";

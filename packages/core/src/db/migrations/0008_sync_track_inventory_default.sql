@@ -1,0 +1,1 @@
+ALTER TABLE "product_variants" ALTER COLUMN "track_inventory" SET DEFAULT false;

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getContact } from "@/server/siteContent";
 import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container, Section } from "@/components/ui/Section";
@@ -17,6 +18,8 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactPage() {
+  // Edited in the admin (Settings); falls back to the site's original details.
+  const contact = await getContact();
   const categories = await listCategories();
 
   return (
@@ -56,35 +59,35 @@ export default async function ContactPage() {
                 <li className="p-5">
                   <p className="t-label text-ink-3">Phone</p>
                   <a
-                    href={`tel:${site.contact.phoneRaw}`}
+                    href={`tel:${contact.phoneRaw}`}
                     className="mt-1 inline-flex min-h-11 items-center gap-2 font-medium text-ink hover:text-green-700"
                   >
                     <Phone className="size-4 text-green" aria-hidden="true" />
-                    {site.contact.phone}
+                    {contact.phone}
                   </a>
                 </li>
                 <li className="p-5">
                   <p className="t-label text-ink-3">Email</p>
                   <a
-                    href={`mailto:${site.contact.email}`}
+                    href={`mailto:${contact.email}`}
                     className="mt-1 inline-flex min-h-11 items-center gap-2 break-all font-medium text-ink hover:text-green-700"
                   >
                     <Mail className="size-4 shrink-0 text-green" aria-hidden="true" />
-                    {site.contact.email}
+                    {contact.email}
                   </a>
                 </li>
                 <li className="p-5">
                   <p className="t-label text-ink-3">Address</p>
                   <address className="mt-1.5 flex items-start gap-2 not-italic text-ink">
                     <MapPin className="mt-1 size-4 shrink-0 text-green" aria-hidden="true" />
-                    {site.legal.address}
+                    {contact.address}
                   </address>
                 </li>
                 <li className="p-5">
                   <p className="t-label text-ink-3">Hours</p>
                   <p className="mt-1.5 flex items-center gap-2 text-ink-2">
                     <Clock className="size-4 text-green" aria-hidden="true" />
-                    {site.contact.hours}
+                    {contact.hours}
                   </p>
                 </li>
               </ul>
@@ -102,7 +105,7 @@ export default async function ContactPage() {
                   Chat on WhatsApp
                 </ButtonLink>
                 <ButtonLink
-                  href={`tel:${site.contact.phoneRaw}`}
+                  href={`tel:${contact.phoneRaw}`}
                   variant="secondary"
                   size="lg"
                 >

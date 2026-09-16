@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { imagery } from "@/lib/imagery";
+import { linesOf } from "@burla/core/content";
 import { HeroLeaves } from "./HeroLeaves";
 
 /**
@@ -36,7 +37,7 @@ import { HeroLeaves } from "./HeroLeaves";
  * screen (`container-page`, fluid past ~1456px): at 2560px the products grow,
  * the paragraph does not.
  */
-export function Hero() {
+export function Hero({ heading, text }: { heading: string; text: string }) {
   const products = imagery.heroProducts;
 
   return (
@@ -62,16 +63,17 @@ export function Hero() {
               id="hero-title"
               className="enter enter-delay-1 mt-7 font-serif text-[clamp(1.75rem,1.1rem+1.9vw,2.85rem)] font-normal leading-[1.16] tracking-[-0.01em] text-forest"
             >
-              Pure Goodness from
-              <br />
-              India&rsquo;s Soil
-              <br />
-              To Your Table
+              {/* The owner writes this in the admin; each line they type is a
+                  line here, as the design sets it on three. */}
+              {linesOf(heading).map((line, index) => (
+                <span key={index} className="block">
+                  {line}
+                </span>
+              ))}
             </h1>
 
             <p className="enter enter-delay-2 mt-5 max-w-[34ch] text-[clamp(0.9375rem,0.9rem+0.2vw,1.0625rem)] leading-relaxed text-ink-2">
-              Wholesome agricultural products, carefully processed for a
-              healthier, happier tomorrow.
+              {text}
             </p>
 
             <div className="enter enter-delay-3 mt-7">
