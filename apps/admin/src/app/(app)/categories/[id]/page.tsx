@@ -7,6 +7,7 @@ import { can } from "@burla/core/auth/rbac";
 import { requirePermission } from "@/server/auth/session";
 import { find, listAll } from "@/server/services/taxonomyService";
 import { when } from "@/lib/format";
+import { isUuid } from "@/lib/ids";
 import { CategoryForm } from "@/components/categories/CategoryForm";
 import { CategoryStatusPanel } from "@/components/categories/CategoryStatusPanel";
 import { CategoryStatusBadge } from "@/components/categories/CategoryStatusBadge";
@@ -27,6 +28,7 @@ export default async function CategoryPage({
 }) {
   const actor = await requirePermission("catalogue.read_draft");
   const { id } = await params;
+  if (!isUuid(id)) notFound();
 
   const category = await find(id);
   if (!category) notFound();

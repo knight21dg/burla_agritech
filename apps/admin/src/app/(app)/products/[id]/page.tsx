@@ -11,6 +11,7 @@ import { requirePermission } from "@/server/auth/session";
 import { findProduct, listTaxonomy } from "@/server/repositories/catalogueRepository";
 import { checkPublishable } from "@/lib/product";
 import { when } from "@/lib/format";
+import { isUuid } from "@/lib/ids";
 import { ProductForm } from "@/components/products/ProductForm";
 import { VariantsEditor } from "@/components/products/VariantsEditor";
 import { StatusPanel } from "@/components/products/StatusPanel";
@@ -36,6 +37,9 @@ export default async function ProductPage({
 }) {
   const actor = await requirePermission("catalogue.read_draft");
   const { id } = await params;
+  // A malformed id is not found, exactly like one that matches nothing — and
+  // it never reaches Postgres, which would reject it as a server error.
+  if (!isUuid(id)) notFound();
 
   const product = await findProduct(id);
   // A bad id is not found, never "forbidden": a 403 would confirm which ids
@@ -102,13 +106,8 @@ export default async function ProductPage({
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_20rem]">
-        <div className="min-w-0 space-y-4">
+        <div className="min-w-0">
           <ProductForm product={product} taxonomy={taxonomy} canEdit={canEdit} />
-          <VariantsEditor
-            productId={product.id}
-            variants={product.variants}
-            canEdit={canEdit}
-          />
         </div>
 
         <div className="space-y-4">
@@ -137,6 +136,16 @@ export default async function ProductPage({
           </div>
         </div>
       </div>
+
+      {/* Full width, below both columns. Pack sizes are a nine-column table
+          and the screen the client will use most — squeezed beside the
+          visibility panel, a laptop hid a third of it behind a sideways
+          scroll, including stock and status. */}
+      <VariantsEditor
+        productId={product.id}
+        variants={product.variants}
+        canEdit={canEdit}
+      />
     </div>
   );
 }

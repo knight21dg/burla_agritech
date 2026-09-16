@@ -5,6 +5,7 @@ import { useFormStatus } from "react-dom";
 import { saveProductDetails, type FormState } from "@/app/(app)/products/actions";
 import type { AdminProduct, TaxonomyOption } from "@/server/repositories/catalogueRepository";
 import { FormFeedback } from "./FormFeedback";
+import { useUnsavedChangesWarning } from "@/lib/useUnsavedChangesWarning";
 
 /**
  * The product's own fields.
@@ -79,6 +80,8 @@ export function ProductForm({
   useEffect(() => {
     if (state.ok) setDirty(false);
   }, [state]);
+
+  useUnsavedChangesWarning(dirty);
 
   const categories = taxonomy.filter((t) => t.parentId === null);
   const types = taxonomy.filter((t) => t.parentId === categoryId);

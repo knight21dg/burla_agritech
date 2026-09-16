@@ -7,6 +7,7 @@ import type { FormState } from "@/app/(app)/products/actions";
 import { TONES, suggestSlug } from "@/lib/taxonomy";
 import type { TaxonomyRow } from "@/server/services/taxonomyService";
 import { FormFeedback } from "@/components/products/FormFeedback";
+import { useUnsavedChangesWarning } from "@/lib/useUnsavedChangesWarning";
 
 /**
  * One form for a range and for a type, and for creating and for editing.
@@ -83,6 +84,10 @@ export function CategoryForm({
   useEffect(() => {
     if (state.ok) setDirty(false);
   }, [state]);
+
+  // Not while creating: an untouched "new" form starts dirty so its button is
+  // enabled, and warning about losing nothing would be noise.
+  useUnsavedChangesWarning(dirty && (!creating || name.trim().length > 0));
 
   const isType = Boolean(parentId ?? category?.parentId);
   const noun = isType ? "type" : "range";

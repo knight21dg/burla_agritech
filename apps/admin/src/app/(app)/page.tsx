@@ -116,21 +116,19 @@ export default async function DashboardPage() {
         )}
 
         {customers !== undefined && (
-          <Stat label="Registered customers" value={customers} />
+          <Stat label="Customers" value={customers} note="Accounts on the shop, not staff" />
         )}
       </div>
 
       <section className="panel p-4">
-        <h2 className="text-[0.9375rem] font-semibold">What is built so far</h2>
+        <h2 className="text-[0.9375rem] font-semibold">What you can do here</h2>
         <p className="mt-1 text-[0.8125rem] text-ink-2">
-          Sign-in, sessions, roles and permissions. The sections in the sidebar
-          marked <em>Soon</em> are the next phases, in the order set out in{" "}
-          <code className="font-mono text-[0.75rem]">docs/ADMIN-ARCHITECTURE.md</code>.
+          Edit products, their pack sizes and prices, and the ranges and types
+          they sit in, and decide what is on the public site. Changes appear on
+          the site within a few seconds — nothing needs to be rebuilt.
         </p>
         <p className="mt-2 text-[0.8125rem] text-ink-2">
-          Editing the catalogue here will not change the public site until the
-          storefront reads the database rather than its built-in copy — that is
-          the next phase, and it is deliberately before any editing screen.
+          Sections marked <em>Soon</em> in the menu are not built yet.
         </p>
       </section>
     </div>

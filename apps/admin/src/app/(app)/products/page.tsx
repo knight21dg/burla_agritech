@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { isUuid } from "@/lib/ids";
 import { Search } from "lucide-react";
 import { requirePermission } from "@/server/auth/session";
 import {
@@ -46,7 +48,9 @@ export default async function ProductsPage({
       status === "draft" || status === "published" || status === "archived"
         ? status
         : undefined,
-    categoryId: one(params.category),
+    // A filter is a convenience, not a lookup: a malformed one is ignored
+    // rather than turned into a server error.
+    categoryId: isUuid(one(params.category)) ? one(params.category) : undefined,
     page: Number(one(params.page) ?? 1) || 1,
     perPage: PER_PAGE,
   };
@@ -69,6 +73,11 @@ export default async function ProductsPage({
     const search = query.toString();
     return search ? `/products?${search}` : "/products";
   };
+
+  // A page past the end — an old bookmark, or the last product archived from
+  // under someone — goes to the last page that exists, rather than showing
+  // "No products match" over a catalogue that plainly has products in it.
+  if (total > 0 && page > pages) redirect(pageHref(pages));
 
   return (
     <div className="space-y-4">

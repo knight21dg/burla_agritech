@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { requirePermission } from "@/server/auth/session";
 import { find } from "@/server/services/taxonomyService";
+import { isUuid } from "@/lib/ids";
 import { CategoryForm } from "@/components/categories/CategoryForm";
 
 export const metadata: Metadata = { title: "New category" };
@@ -28,6 +29,7 @@ export default async function NewCategoryPage({
 
   const { parent } = await searchParams;
   const parentId = typeof parent === "string" ? parent : undefined;
+  if (parentId !== undefined && !isUuid(parentId)) notFound();
 
   const parentRow = parentId ? await find(parentId) : undefined;
   if (parentId && !parentRow) notFound();

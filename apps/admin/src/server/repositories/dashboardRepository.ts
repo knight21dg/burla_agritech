@@ -1,12 +1,13 @@
 import "server-only";
-import { and, count, eq, lte, sql } from "drizzle-orm";
+import { and, count, countDistinct, eq, lte, sql } from "drizzle-orm";
 import { db } from "@burla/core/db";
 import {
   enquiries,
   orders,
   productVariants,
   products,
-  users,
+  roles,
+  userRoles,
 } from "@burla/core/db/schema";
 
 /**
@@ -69,7 +70,17 @@ export async function enquiryCounts() {
   return row ?? { total: 0, unanswered: 0 };
 }
 
+/**
+ * Customers — people holding the `customer` role.
+ *
+ * Not "rows in `users`": staff accounts live in the same table, so counting
+ * the table would report every new member of staff as a new customer.
+ */
 export async function customerCount(): Promise<number> {
-  const [row] = await db.select({ n: count() }).from(users);
+  const [row] = await db
+    .select({ n: countDistinct(userRoles.userId) })
+    .from(userRoles)
+    .innerJoin(roles, eq(roles.id, userRoles.roleId))
+    .where(eq(roles.key, "customer"));
   return row?.n ?? 0;
 }

@@ -1,3 +1,4 @@
+import { capabilitiesOf } from "@burla/core/auth/rbac";
 import { requireStaff } from "@/server/auth/session";
 import { Nav } from "@/components/Nav";
 import { SignOutButton } from "@/components/SignOutButton";
@@ -23,7 +24,7 @@ export default async function AppLayout({
   return (
     <div className="min-h-dvh md:grid md:grid-cols-[13.5rem_1fr]">
       <aside className="border-line bg-panel md:min-h-dvh md:border-r">
-        <div className="flex items-center gap-2 border-b border-line px-4 py-3 md:py-4">
+        <div className="flex items-center gap-2 border-b border-line px-4 py-2.5 md:py-4">
           <span
             aria-hidden="true"
             className="grid size-7 place-items-center rounded-sm bg-accent-dark text-[0.6875rem] font-bold text-white"
@@ -35,7 +36,7 @@ export default async function AppLayout({
             <p className="text-[0.6875rem] text-ink-3">Internal</p>
           </div>
         </div>
-        <Nav actor={actor} />
+        <Nav capabilities={[...capabilitiesOf(actor)]} />
       </aside>
 
       <div className="flex min-w-0 flex-col">

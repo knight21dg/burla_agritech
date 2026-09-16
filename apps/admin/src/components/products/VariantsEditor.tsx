@@ -7,6 +7,7 @@ import { saveVariants, type FormState } from "@/app/(app)/products/actions";
 import type { AdminVariant } from "@/server/repositories/catalogueRepository";
 import { toRupees } from "@/lib/product";
 import { FormFeedback } from "./FormFeedback";
+import { useUnsavedChangesWarning } from "@/lib/useUnsavedChangesWarning";
 
 /**
  * Pack sizes — the screen that turns our sample prices into the client's real
@@ -81,6 +82,8 @@ export function VariantsEditor({
       setDirty(false);
     }
   }, [state]);
+
+  useUnsavedChangesWarning(dirty);
 
   const update = (index: number, patch: Partial<Row>) => {
     setRows((current) =>
@@ -160,34 +163,34 @@ export function VariantsEditor({
         </p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[52rem] border-collapse text-left">
+          <table className="w-full min-w-[48rem] border-collapse text-left">
             <thead>
               <tr className="border-b border-line">
-                <th scope="col" className="label px-2 py-2">
+                <th scope="col" className="label px-1.5 py-2">
                   Label
                 </th>
-                <th scope="col" className="label px-2 py-2">
+                <th scope="col" className="label px-1.5 py-2">
                   SKU
                 </th>
-                <th scope="col" className="label px-2 py-2 text-right">
+                <th scope="col" className="label px-1.5 py-2 text-right">
                   Price ₹
                 </th>
-                <th scope="col" className="label px-2 py-2 text-right">
+                <th scope="col" className="label px-1.5 py-2 text-right">
                   MRP ₹
                 </th>
-                <th scope="col" className="label px-2 py-2 text-right">
+                <th scope="col" className="label px-1.5 py-2 text-right">
                   Grams
                 </th>
-                <th scope="col" className="label px-2 py-2 text-right">
+                <th scope="col" className="label px-1.5 py-2 text-right">
                   Stock
                 </th>
-                <th scope="col" className="label px-2 py-2">
+                <th scope="col" className="label px-1.5 py-2">
                   Default
                 </th>
-                <th scope="col" className="label px-2 py-2">
+                <th scope="col" className="label px-1.5 py-2">
                   Status
                 </th>
-                <th scope="col" className="label px-2 py-2">
+                <th scope="col" className="label px-1.5 py-2">
                   <span className="sr-only">Remove</span>
                 </th>
               </tr>
@@ -195,7 +198,7 @@ export function VariantsEditor({
             <tbody>
               {rows.map((row, index) => (
                 <tr key={`${row.id}-${index}`} className="border-b border-line/70 last:border-0">
-                  <td className="px-2 py-2">
+                  <td className="px-1.5 py-2">
                     <input
                       aria-label={`Pack ${index + 1} label`}
                       value={row.label}
@@ -203,7 +206,7 @@ export function VariantsEditor({
                       disabled={!canEdit}
                       placeholder="250 g"
                       aria-invalid={rowError(index, "label") ? true : undefined}
-                      className="field w-28"
+                      className="field w-24"
                     />
                     {rowError(index, "label") && (
                       <span className="mt-1 block text-[0.6875rem] text-danger">
@@ -211,14 +214,14 @@ export function VariantsEditor({
                       </span>
                     )}
                   </td>
-                  <td className="px-2 py-2">
+                  <td className="px-1.5 py-2">
                     <input
                       aria-label={`Pack ${index + 1} SKU`}
                       value={row.sku}
                       onChange={(e) => update(index, { sku: e.target.value })}
                       disabled={!canEdit}
                       aria-invalid={rowError(index, "sku") ? true : undefined}
-                      className="field w-36 font-mono text-[0.75rem]"
+                      className="field w-52 font-mono text-[0.75rem]"
                     />
                     {rowError(index, "sku") && (
                       <span className="mt-1 block text-[0.6875rem] text-danger">
@@ -226,7 +229,7 @@ export function VariantsEditor({
                       </span>
                     )}
                   </td>
-                  <td className="px-2 py-2">
+                  <td className="px-1.5 py-2">
                     <input
                       aria-label={`Pack ${index + 1} price in rupees`}
                       type="number"
@@ -236,7 +239,7 @@ export function VariantsEditor({
                       onChange={(e) => update(index, { priceRupees: e.target.value })}
                       disabled={!canEdit}
                       aria-invalid={rowError(index, "priceRupees") ? true : undefined}
-                      className="field w-24 text-right tabular-nums"
+                      className="field w-20 text-right tabular-nums"
                     />
                     {rowError(index, "priceRupees") && (
                       <span className="mt-1 block text-[0.6875rem] text-danger">
@@ -244,7 +247,7 @@ export function VariantsEditor({
                       </span>
                     )}
                   </td>
-                  <td className="px-2 py-2">
+                  <td className="px-1.5 py-2">
                     <input
                       aria-label={`Pack ${index + 1} MRP in rupees`}
                       type="number"
@@ -255,7 +258,7 @@ export function VariantsEditor({
                       disabled={!canEdit}
                       placeholder="—"
                       aria-invalid={rowError(index, "mrpRupees") ? true : undefined}
-                      className="field w-24 text-right tabular-nums"
+                      className="field w-20 text-right tabular-nums"
                     />
                     {rowError(index, "mrpRupees") && (
                       <span className="mt-1 block text-[0.6875rem] text-danger">
@@ -263,7 +266,7 @@ export function VariantsEditor({
                       </span>
                     )}
                   </td>
-                  <td className="px-2 py-2">
+                  <td className="px-1.5 py-2">
                     <input
                       aria-label={`Pack ${index + 1} weight in grams`}
                       type="number"
@@ -272,7 +275,7 @@ export function VariantsEditor({
                       onChange={(e) => update(index, { netWeightGrams: e.target.value })}
                       disabled={!canEdit}
                       aria-invalid={rowError(index, "netWeightGrams") ? true : undefined}
-                      className="field w-24 text-right tabular-nums"
+                      className="field w-20 text-right tabular-nums"
                     />
                     {rowError(index, "netWeightGrams") && (
                       <span className="mt-1 block text-[0.6875rem] text-danger">
@@ -280,10 +283,10 @@ export function VariantsEditor({
                       </span>
                     )}
                   </td>
-                  <td className="px-2 py-2 text-right tabular-nums text-ink-3">
+                  <td className="px-1.5 py-2 text-right tabular-nums text-ink-3">
                     {row.stock ?? "—"}
                   </td>
-                  <td className="px-2 py-2">
+                  <td className="px-1.5 py-2">
                     <input
                       type="radio"
                       name="defaultPack"
@@ -294,7 +297,7 @@ export function VariantsEditor({
                       className="size-4"
                     />
                   </td>
-                  <td className="px-2 py-2">
+                  <td className="px-1.5 py-2">
                     <select
                       aria-label={`Pack ${index + 1} status`}
                       value={row.status}
@@ -302,13 +305,13 @@ export function VariantsEditor({
                         update(index, { status: e.target.value as "active" | "inactive" })
                       }
                       disabled={!canEdit}
-                      className="field w-28"
+                      className="field w-24"
                     >
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                     </select>
                   </td>
-                  <td className="px-2 py-2">
+                  <td className="px-1.5 py-2">
                     {canEdit && (
                       <button
                         type="button"
