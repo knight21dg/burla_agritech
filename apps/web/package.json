@@ -17,6 +17,7 @@
     "db:parity": "tsx --conditions=react-server scripts/cutover-parity.mts"
   },
   "dependencies": {
+    "@burla/core": "*",
     "clsx": "2.1.1",
     "drizzle-orm": "0.45.2",
     "lucide-react": "0.544.0",

@@ -10,14 +10,14 @@
  */
 import "server-only";
 import { count, eq, inArray } from "drizzle-orm";
-import { isProduction } from "@/lib/env";
-import { type Database } from "./index";
+import { isProduction } from "@burla/core/env";
+import { type Database } from "@burla/core/db";
 import {
   categories,
   inventoryMovements,
   productVariants,
   products,
-} from "./schema";
+} from "@burla/core/db/schema";
 
 export interface SampleDataReport {
   sampleCategories: number;

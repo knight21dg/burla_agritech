@@ -114,7 +114,7 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
     // Two identical requests at once: the idempotency key's unique index let
     // one through. The other finds that order.
     if (isUniqueViolation(error)) {
-      const { db } = await import("@/server/db");
+      const { db } = await import("@burla/core/db");
       const { findByIdempotencyKey } = await import("@/server/repositories/orderRepository");
       const existing = await findByIdempotencyKey(db, user.id, request.idempotencyKey);
       if (existing) return { ok: true, orderNumber: existing.orderNumber };

@@ -2,7 +2,7 @@ import "server-only";
 import { productBySlug } from "@/data/catalog";
 import type { Address, OrderRequest } from "@/lib/checkout";
 import { deliveryFeeMinor } from "@/lib/delivery";
-import { db } from "@/server/db";
+import { db } from "@burla/core/db";
 import * as addressRepository from "@/server/repositories/addressRepository";
 import * as orderRepository from "@/server/repositories/orderRepository";
 import type { OrderStatus } from "@/server/repositories/orderRepository";

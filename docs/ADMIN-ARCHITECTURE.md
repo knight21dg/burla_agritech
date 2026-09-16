@@ -5,9 +5,21 @@
 | Document | `docs/ADMIN-ARCHITECTURE.md` |
 | Version | 0.1 |
 | Date | 2026-09-16 |
-| Status | **Proposed — awaiting approval. No admin code has been written.** |
+| Status | **Approved 2026-09-16**, with the decisions in §0. Implementation follows this document |
 | Companion | `ADMIN-CURRENT-SYSTEM.md` — what exists. This document — what we propose to add |
 | Implements | `AUTHORIZATION.md`, `SECURITY.md` §3, `DATA-OWNERSHIP.md` |
+
+---
+
+## 0. Decisions taken
+
+| # | Question | Decision, 2026-09-16 |
+|---|---|---|
+| A-01 | Where the admin lives | **A separate application**, `apps/admin`, on its own domain (`admin.burla.com`). §2 is rewritten accordingly; the deviation discussed there is not taken |
+| — | What is built first | **Authorization before anything else**: the shared package, admin sign-in, sessions, roles and the capability checks. The cutover (§6) follows it, before any catalogue screen |
+| `OQ-058` | Roles at launch | **`admin` and `staff` only.** The other three role rows stay in the database, unused, and can be switched on without a migration |
+
+Two questions remain open and are not assumed: whether MFA is required from day one (**A-03**), and whether staff accounts are created directly or by invitation email (`OQ-059`). Until answered, accounts are created directly by an existing admin, and the MFA columns stay unused.
 
 ---
 
@@ -25,51 +37,65 @@ Everything else — tables, forms, filters — is ordinary work on top of a data
 
 ## 2. Where the admin lives
 
-### 2.1 Recommendation: one application, an `/admin` segment
+### 2.1 A separate application, as `SECURITY.md` §3.1 requires
 
 ```
-apps/web/src/app/
-├── (storefront)/      existing routes, untouched
-└── admin/             new — its own layout, its own shell
+Agri/
+├── apps/web/        the customer site — burla.com
+├── apps/admin/      NEW — the admin — admin.burla.com
+└── packages/core/   NEW — what both of them share
 ```
 
-`SECURITY.md` §3.1 proposes a separate application on `admin.burla.com`. That is the stronger position and we should say plainly that this proposal deviates from it.
+The isolation this buys is not a matter of discipline; the browser enforces it:
 
-| | Separate app (`apps/admin`) | One app, `/admin` segment |
-|---|---|---|
-| Cookie isolation | Host-scoped by the browser | By cookie name + `scope` column + path |
-| Blast radius of storefront XSS | None | Contained by HttpOnly cookies and a strict CSP on `/admin`, but the origin is shared |
-| Service layer | Duplicated or extracted into `packages/` | Shared directly |
-| Deployment | Two projects, two domains, two pipelines | One |
-| Cost to maintain | Real, ongoing | None |
+| Property | How |
+|---|---|
+| A customer session can never become an admin session | Cookies are host-scoped. Separately, the cookie name differs (`burla_admin_session`) and the query requires `sessions.scope = 'admin'` |
+| A flaw on a public page cannot reach admin functionality | Different origin. Nothing on `burla.com` can read `admin.burla.com`'s cookies or DOM |
+| The admin can be locked down further | Its own CSP, its own headers, and an IP allowlist or Cloudflare Access in front of the domain without affecting customers |
+| No admin surface is exposed publicly at all | There is no `/admin` path on the customer site to find, probe or rate-limit |
 
-For a two-partner business, one application is the right trade **provided the isolation is deliberate rather than accidental**:
+The costs, stated honestly: a second deployment target, a second domain, and the shared code has to live somewhere both can import. That last point is the real work, and it is bounded — the shared surface today is about twenty files.
 
-- A distinct cookie, `burla_admin_session`, with `Path=/admin` and the existing `sessions.scope = 'admin'`. A customer cookie can never be an admin session: the scope is checked in the query, exactly as `findUserBySessionHash` already checks `scope = 'web'`.
-- Admin sessions are short — 12 hours, not 30 days.
-- `middleware.ts` gates `/admin/*` before a page renders, and every service call re-checks. Middleware is UX; the service check is the control.
-- `/admin` responses carry `X-Robots-Tag: noindex, nofollow` and a stricter CSP than the storefront.
-- No public sign-up on `/admin`. Staff accounts are created by an admin, or by a single-use invitation token — `verification_tokens.type = 'staff_invitation'` already exists.
+Rules that hold regardless:
 
-The split into a separate app remains possible later precisely because the decision-making lives in services, not in pages. **This is a decision for you to accept or reject, not one to discover in a diff.**
+- Admin sessions last **12 hours**, not 30 days.
+- `middleware.ts` gates every route before a page renders, and every service re-checks. Middleware is UX; the service check is the control.
+- Every admin response carries `X-Robots-Tag: noindex, nofollow`, and `robots.txt` disallows everything.
+- **There is no sign-up route on the admin.** Accounts are created by an existing admin, or by a single-use invitation token — `verification_tokens.type = 'staff_invitation'` already exists for it.
 
-### 2.2 Route map
+### 2.2 The shared package
+
+`packages/core` holds exactly what both applications must agree on, and nothing else:
+
+| Module | Contents |
+|---|---|
+| `@burla/core/env` | the single environment parser |
+| `@burla/core/db` | the postgres client, the Drizzle schema, the migrations |
+| `@burla/core/auth` | password hashing, session-token hashing, the capability matrix |
+| `@burla/core/repositories/*` | shared data access — users, roles, sessions, audit, and later the catalogue |
+
+The schema lives in one place because two copies of a schema is the same failure as two copies of a price. Storefront-only concerns (the cart, checkout copy, imagery) stay in `apps/web`; admin-only concerns stay in `apps/admin`.
+
+### 2.3 Route map
+
+Routes are at the root of the admin domain — there is no `/admin` prefix.
 
 | Route | Purpose |
 |---|---|
-| `/admin/login` | staff sign-in (separate from `/login`) |
-| `/admin` | dashboard |
-| `/admin/products`, `/new`, `/[id]` | product list and editor |
-| `/admin/categories`, `/admin/categories/[id]` | categories and types (one table, two levels) |
-| `/admin/inventory` | stock, adjustments, low-stock |
-| `/admin/orders`, `/admin/orders/[orderNumber]` | fulfilment |
-| `/admin/customers`, `/admin/customers/[id]` | read-mostly |
-| `/admin/enquiries`, `/admin/enquiries/[id]` | contact and wholesale |
-| `/admin/content/homepage` | featured products, category order |
-| `/admin/content/pages`, `/admin/content/policies` | company copy and legal pages |
-| `/admin/settings` | business identity, delivery, feature flags |
-| `/admin/users` | staff accounts and roles (admin only) |
-| `/admin/audit` | audit log (admin only) |
+| `/login` | staff sign-in |
+| `/` | dashboard |
+| `/products`, `/products/new`, `/products/[id]` | product list and editor |
+| `/categories`, `/categories/[id]` | categories and types (one table, two levels) |
+| `/inventory` | stock, adjustments, low stock |
+| `/orders`, `/orders/[orderNumber]` | fulfilment |
+| `/customers`, `/customers/[id]` | read-mostly |
+| `/enquiries`, `/enquiries/[id]` | contact and wholesale |
+| `/content/homepage` | featured products, category order |
+| `/content/pages`, `/content/policies` | company copy and legal pages |
+| `/settings` | business identity, delivery, feature flags |
+| `/users` | staff accounts and roles (admin only) |
+| `/audit` | audit log (admin only) |
 
 Order detail is keyed by `order_number`, not by `id`: it is the number staff and customers actually say out loud, and it is already unique.
 
@@ -176,19 +202,20 @@ Each phase ends in something demonstrable. Phases 1–3 are the ones that turn t
 
 | # | Phase | Output | Days |
 |---|---|---|---|
-| 1 | **Cutover** — pages read the database; cache tags added; `catalog.ts` deleted | The site runs on Postgres, looking identical | 3–4 |
-| 2 | **Authorization** — `Actor`, capabilities, `middleware.ts`, admin sessions, staff sign-in, audit writer | A locked door with nothing behind it yet | 3–4 |
-| 3 | **Shell and dashboard** — layout, navigation, tables, forms, empty/loading/error states | The frame every module drops into | 3 |
-| 4 | **Catalogue** — categories, types, products, variants, publish rules | The client can edit the catalogue | 5–6 |
-| 5 | **Images** — R2, presigned uploads, gallery, primary image, backfill | Photographs without a developer | 3–4 |
-| 6 | **Inventory** — ledger-backed adjustments, low stock | Stock is answerable | 2 |
-| 7 | **Orders** — list, detail, state machine, courier and tracking | The shop can be run | 3–4 |
-| 8 | **Customers and enquiries** — plus wiring the contact form to the database | Leads stop being lost | 3 |
-| 9 | **Content** — homepage featured, pages, policies, settings | Copy without a deployment | 4 |
-| 10 | **Users, roles, audit view** | Staff accounts, traceability | 2 |
-| 11 | **Hardening and tests** — Vitest, Playwright, the twelve authorization tests, rate limiting on durable storage, security audit document | Provable, not asserted | 5–6 |
+| 1 | **`packages/core`** — extract the schema, the database client, the environment parser and password hashing; `apps/web` keeps working, unchanged in behaviour | One source of truth both applications can import | 1–2 |
+| 2 | **`apps/admin` and authorization** — the application, `Actor`, capabilities, `middleware.ts`, admin sessions, staff sign-in, the first admin account, the audit writer | A locked door with nothing behind it yet | 3–4 |
+| 3 | **Cutover** — storefront pages read the database; cache tags added; `catalog.ts` deleted | The site runs on Postgres, looking identical | 3–4 |
+| 4 | **Shell and dashboard** — layout, navigation, tables, forms, empty/loading/error states | The frame every module drops into | 3 |
+| 5 | **Catalogue** — categories, types, products, variants, publish rules | The client can edit the catalogue | 5–6 |
+| 6 | **Images** — R2, presigned uploads, gallery, primary image, backfill | Photographs without a developer | 3–4 |
+| 7 | **Inventory** — ledger-backed adjustments, low stock | Stock is answerable | 2 |
+| 8 | **Orders** — list, detail, state machine, courier and tracking | The shop can be run | 3–4 |
+| 9 | **Customers and enquiries** — plus wiring the contact form to the database | Leads stop being lost | 3 |
+| 10 | **Content** — homepage featured, pages, policies, settings | Copy without a deployment | 4 |
+| 11 | **Users, roles, audit view** | Staff accounts, traceability | 2 |
+| 12 | **Hardening and tests** — Playwright, the twelve authorization tests, rate limiting on durable storage, security audit document, deployment of the second domain | Provable, not asserted | 5–6 |
 
-**Roughly 36–44 working days**, and the sequence matters more than the estimate: 1 and 2 before anything else.
+**Roughly 38–47 working days**, and the sequence matters more than the estimate: 1, 2 and 3 before any screen.
 
 ---
 
@@ -224,7 +251,8 @@ Tests use a seeded throwaway database. Never production data, and never the deve
 |---|---|
 | The cutover changes rendered output subtly | `db:parity` at each step; visual check of the eight page types before merge |
 | Static pages serve stale data after an edit | Cache tags added in the same phase as the cutover, not later |
-| Admin and storefront share an origin | §2.1 mitigations, accepted explicitly or the separate app is built instead |
+| Extracting `packages/core` breaks the storefront | Mechanical move, no behaviour change, verified by typecheck, the 129 parity checks, a production build and a manual sign-in before it is committed |
+| Two applications drift apart | Everything they must agree on lives in `packages/core`; a second copy of the schema is the failure mode, and there is none |
 | Sample prices are edited and look real | `is_sample` stays until the client supplies real values; the admin shows it plainly |
 | Publishing a product without legal food fields | `product_details` completeness is part of the publish rule |
 | No tests exist today | Phase 11 is not optional, and authorization tests are written with the code, not after |
@@ -237,9 +265,9 @@ Tests use a seeded throwaway database. Never production data, and never the deve
 
 | ID | Question | Blocks |
 |---|---|---|
-| `OQ-055` | Custom admin rather than a hosted CMS — your prompt answers this, and this document assumes it | everything (now answered) |
-| **A-01** | One application with `/admin`, or a separate `apps/admin` on its own domain? | §2, phase 2 |
-| `OQ-058` | Are four staff roles needed at launch, or only `admin` and `staff`? | phase 2 |
+| ~~`OQ-055`~~ | Custom admin rather than a hosted CMS | **Answered** — custom |
+| ~~**A-01**~~ | Where the admin lives | **Answered** — separate application, own domain |
+| ~~`OQ-058`~~ | Roles at launch | **Answered** — `admin` and `staff` only |
 | `OQ-059` | Staff accounts created by an admin directly, or by invitation email? | phase 2, needs Resend |
 | **A-02** | Cloudflare R2, or Vercel Blob, for photographs? | phase 5 |
 | **A-03** | Is MFA required from day one, or after launch? | phase 2 |

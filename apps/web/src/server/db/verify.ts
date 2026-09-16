@@ -14,8 +14,8 @@ import { config as loadEnv } from "dotenv";
 loadEnv({ path: [".env.local", ".env"], quiet: true });
 
 async function main(): Promise<void> {
-  const { db } = await import("./index");
-  const { env, isProduction } = await import("@/lib/env");
+  const { db } = await import("@burla/core/db");
+  const { env, isProduction } = await import("@burla/core/env");
   const { countSampleData, assertNoSampleData } = await import("./guards");
 
   console.log(`APP_ENV=${env.APP_ENV}`);

@@ -46,15 +46,15 @@ import {
   products as sourceProducts,
   productTypes as sourceTypes,
 } from "@/data/catalog";
-import { assertNotProduction } from "@/lib/env";
-import { type Database } from "../index";
+import { assertNotProduction } from "@burla/core/env";
+import { type Database } from "@burla/core/db";
 import { purgeSampleData } from "../guards";
 import {
   categories,
   inventoryMovements,
   productVariants,
   products,
-} from "../schema";
+} from "@burla/core/db/schema";
 
 /**
  * Stock levels chosen to reproduce the availability each sample variant

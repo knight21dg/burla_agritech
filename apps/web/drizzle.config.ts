@@ -30,8 +30,10 @@ if (!url && needsConnection) {
 
 export default defineConfig({
   dialect: "postgresql",
-  schema: "./src/server/db/schema/index.ts",
-  out: "./src/server/db/migrations",
+  // The schema and its migrations live in the package both applications
+  // share; the commands stay here, where .env.local is.
+  schema: "../../packages/core/src/db/schema/index.ts",
+  out: "../../packages/core/src/db/migrations",
   // Non-null asserted: the guard above has already failed loudly for every
   // verb that actually opens a connection.
   dbCredentials: { url: url ?? "" },

@@ -1,0 +1,27 @@
+{
+  "name": "@burla/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "What the customer site and the admin must agree on: the environment, the database schema, and authentication.",
+  "type": "module",
+  "exports": {
+    "./env": "./src/env.ts",
+    "./db": "./src/db/index.ts",
+    "./db/schema": "./src/db/schema/index.ts",
+    "./auth": "./src/auth/index.ts",
+    "./repositories/users": "./src/repositories/userRepository.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "drizzle-orm": "0.45.2",
+    "postgres": "3.4.9",
+    "server-only": "^0.0.1",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "20.19.9",
+    "typescript": "5.9.2"
+  }
+}

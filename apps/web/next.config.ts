@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  /**
+   * `@burla/core` is TypeScript source in the workspace, not a built package:
+   * one schema, one environment parser, shared with the admin application.
+   */
+  transpilePackages: ["@burla/core"],
   poweredByHeader: false,
   images: { formats: ["image/avif", "image/webp"] },
   /**

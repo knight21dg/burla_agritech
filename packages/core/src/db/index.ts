@@ -8,7 +8,7 @@
 import "server-only";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { env, isProduction } from "@/lib/env";
+import { env, isProduction } from "../env";
 import * as schema from "./schema";
 
 /**

@@ -14,8 +14,8 @@ import "server-only";
 import { and, asc, desc, eq, inArray, ne, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { deriveAvailability } from "@/lib/catalog";
-import { db } from "@/server/db";
-import { categories, productVariants, products } from "@/server/db/schema";
+import { db } from "@burla/core/db";
+import { categories, productVariants, products } from "@burla/core/db/schema";
 import type { Product, Variant } from "@/types/catalog";
 
 const categoryAlias = alias(categories, "category");

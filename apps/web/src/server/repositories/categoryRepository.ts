@@ -12,8 +12,8 @@
 import "server-only";
 import { and, asc, count, eq, inArray, isNotNull, isNull } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
-import { db } from "@/server/db";
-import { categories, products } from "@/server/db/schema";
+import { db } from "@burla/core/db";
+import { categories, products } from "@burla/core/db/schema";
 import type { Category, CategorySummary } from "@/types/catalog";
 
 /** The columns every category read needs. Selected explicitly, never `*`. */

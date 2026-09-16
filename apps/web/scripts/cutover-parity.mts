@@ -22,7 +22,7 @@ import { config as loadEnv } from "dotenv";
 import type { Product } from "@/types/catalog";
 
 // Static ESM imports are hoisted above any statement, so a plain
-// `import "@/server/db"` would parse the environment before dotenv had loaded
+// `import "@burla/core/db"` would parse the environment before dotenv had loaded
 // it. Everything that reads config is therefore imported dynamically, after.
 loadEnv({ path: [".env.local", ".env"], quiet: true });
 

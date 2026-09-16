@@ -18,8 +18,8 @@ loadEnv({ path: [".env.local", ".env"], quiet: true });
 async function main(): Promise<void> {
   // Imported after the environment is loaded: lib/env parses at import time,
   // and a static import would run before loadEnv above.
-  const { db } = await import("../index");
-  const { env, isProduction } = await import("@/lib/env");
+  const { db } = await import("@burla/core/db");
+  const { env, isProduction } = await import("@burla/core/env");
   const { countSampleData } = await import("../guards");
   const { seedReal } = await import("./real");
   const { purgeDemo, seedDemo } = await import("./demo");

@@ -15,8 +15,8 @@
  */
 import "server-only";
 import { eq } from "drizzle-orm";
-import { db } from "@/server/db";
-import { siteSettings } from "@/server/db/schema";
+import { db } from "@burla/core/db";
+import { siteSettings } from "@burla/core/db/schema";
 
 export interface Partner {
   name: string;

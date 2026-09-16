@@ -1,7 +1,7 @@
 import "server-only";
 import { and, asc, desc, eq } from "drizzle-orm";
-import { db } from "@/server/db";
-import { addresses } from "@/server/db/schema";
+import { db } from "@burla/core/db";
+import { addresses } from "@burla/core/db/schema";
 import type { Address, SavedAddress } from "@/lib/checkout";
 
 /** A transaction or the database: repository writes take either. */

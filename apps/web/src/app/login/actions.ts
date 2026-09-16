@@ -2,14 +2,14 @@
 
 import { redirect } from "next/navigation";
 import { safeNextPath, signInSchema, signUpSchema } from "@/lib/account";
-import { decoyHash, hashPassword, verifyPassword } from "@/server/auth/password";
+import { decoyHash, hashPassword, verifyPassword } from "@burla/core/auth";
 import { clearFailures, isLockedOut, recordFailure } from "@/server/auth/rateLimit";
 import { endSession, startSession } from "@/server/auth/session";
 import {
   createCustomer,
   findCredentialsByEmail,
   recordSignIn,
-} from "@/server/repositories/userRepository";
+} from "@burla/core/repositories/users";
 
 export interface AuthFormState {
   error?: string;

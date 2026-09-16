@@ -21,8 +21,8 @@
 import { and, eq, isNull } from "drizzle-orm";
 import { categories as sourceCategories } from "@/data/catalog";
 import { site } from "@/lib/site";
-import { type Database } from "../index";
-import { categories, siteSettings } from "../schema";
+import { type Database } from "@burla/core/db";
+import { categories, siteSettings } from "@burla/core/db/schema";
 
 export interface SeedResult {
   categoriesInserted: number;

@@ -54,7 +54,9 @@ async function main(): Promise<void> {
     await db.execute(sql`SELECT pg_advisory_lock(${MIGRATION_LOCK_ID})`);
 
     const started = Date.now();
-    await migrate(db, { migrationsFolder: "./src/server/db/migrations" });
+    await migrate(db, {
+      migrationsFolder: "../../packages/core/src/db/migrations",
+    });
     console.log(`Migrations applied in ${Date.now() - started}ms`);
   } finally {
     await client.end({ timeout: 5 });

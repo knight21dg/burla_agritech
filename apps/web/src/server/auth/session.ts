@@ -1,15 +1,15 @@
 import "server-only";
-import { createHash, randomBytes } from "node:crypto";
 import { cache } from "react";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { isProduction } from "@/lib/env";
+import { isProduction } from "@burla/core/env";
+import { hashToken, newSessionToken } from "@burla/core/auth";
 import {
   deleteSessionByHash,
   findUserBySessionHash,
   insertSession,
   type AccountUser,
-} from "@/server/repositories/userRepository";
+} from "@burla/core/repositories/users";
 
 /**
  * Customer sessions: an opaque random token in an HttpOnly cookie, and only
@@ -29,14 +29,12 @@ import {
 const COOKIE = "burla_session";
 const SESSION_DAYS = 30;
 
-const hash = (token: string) => createHash("sha256").update(token).digest("hex");
-
 export async function startSession(userId: string) {
-  const token = randomBytes(32).toString("base64url");
+  const token = newSessionToken();
   const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
   const userAgent = (await headers()).get("user-agent")?.slice(0, 300) ?? null;
 
-  await insertSession({ userId, tokenHash: hash(token), expiresAt, userAgent });
+  await insertSession({ userId, tokenHash: hashToken(token), expiresAt, userAgent });
 
   (await cookies()).set(COOKIE, token, {
     httpOnly: true,
@@ -50,7 +48,7 @@ export async function startSession(userId: string) {
 export async function endSession() {
   const store = await cookies();
   const token = store.get(COOKIE)?.value;
-  if (token) await deleteSessionByHash(hash(token));
+  if (token) await deleteSessionByHash(hashToken(token));
   store.delete(COOKIE);
 }
 
@@ -61,7 +59,7 @@ export async function endSession() {
 export const currentUser = cache(async (): Promise<AccountUser | undefined> => {
   const token = (await cookies()).get(COOKIE)?.value;
   if (!token || token.length > 100) return undefined;
-  return findUserBySessionHash(hash(token));
+  return findUserBySessionHash(hashToken(token));
 });
 
 /** For pages that need a customer: sends anyone else to sign in, then back. */

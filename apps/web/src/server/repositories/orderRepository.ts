@@ -1,6 +1,6 @@
 import "server-only";
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
-import { db } from "@/server/db";
+import { db } from "@burla/core/db";
 import {
   inventoryMovements,
   orderEvents,
@@ -8,7 +8,7 @@ import {
   orders,
   productVariants,
   products,
-} from "@/server/db/schema";
+} from "@burla/core/db/schema";
 import type { Executor } from "./addressRepository";
 
 export type OrderRow = typeof orders.$inferSelect;

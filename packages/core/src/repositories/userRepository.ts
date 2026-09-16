@@ -1,7 +1,7 @@
 import "server-only";
 import { and, eq, gt } from "drizzle-orm";
-import { db } from "@/server/db";
-import { passwordCredentials, roles, sessions, userRoles, users } from "@/server/db/schema";
+import { db } from "../db";
+import { passwordCredentials, roles, sessions, userRoles, users } from "../db/schema";
 
 /** What the rest of the app knows about a signed-in customer. Never a hash. */
 export interface AccountUser {
