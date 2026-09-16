@@ -42,7 +42,7 @@ const ITEMS: Item[] = [
     label: "Products",
     icon: Package,
     capability: "catalogue.read_draft",
-    built: false,
+    built: true,
   },
   {
     href: "/categories",

@@ -111,9 +111,13 @@ Written today: `session.signed_in`, `session.signed_out`, `session.sign_in_faile
 | Only hashes are stored | `password_credentials.password_hash` begins `scrypt$32768$…` |
 | The matrix behaves | 22 unit tests, `npm test` |
 | Admin is never indexed | `robots.txt` disallows all; `X-Robots-Tag: noindex, nofollow, noarchive` on every response |
-| Admin cannot be framed, and loads no third-party code | `X-Frame-Options: DENY`; CSP with `frame-ancestors 'none'`, `default-src 'self'` |
+| Admin cannot be framed, and loads no third-party code | `X-Frame-Options: DENY`; CSP with `frame-ancestors 'none'`, `default-src 'self'` — and proved in passing when a cross-origin `fetch` from the admin page to the shop was blocked |
+| A catalogue edit reaches the public site | Price changed in the editor → new price on the shop within the second, one `product.variants_replaced` audit row |
+| Publishing controls what customers see | Unpublish → the shop's product page 404s and it leaves the listing; publish → both return |
+| Two people cannot overwrite each other | With the form open, another save touched the row; the next save was refused and nothing was written |
+| Staff can read the catalogue but not change it | A `staff` session sees the editor with no save or publish controls and both refusals in words |
 
-**Not yet verified end to end:** the sign-in POST itself. Sign-out exercises the same action, session and audit machinery, but a full "type a password, get a session" pass belongs in the Playwright suite in the hardening phase, with a seeded test account. It is listed here rather than left to be assumed.
+**Not yet verified end to end:** two things, named rather than assumed. The sign-in POST itself. Sign-out exercises the same action, session and audit machinery, but a full "type a password, get a session" pass belongs in the Playwright suite in the hardening phase, with a seeded test account. And a forbidden *action* post — the editor hides its controls from `staff` and both the action and the service call the permission check first, but nothing yet drives an HTTP post from an account that may not make it. Both belong in the Playwright suite in the hardening phase.
 
 ## 8. Still to do
 

@@ -149,3 +149,17 @@ export const locationTypeEnum = pgEnum("location_type", [
   "retail",
   "partner",
 ]);
+
+/**
+ * Enum values as TypeScript unions.
+ *
+ * Derived from the enum itself rather than retyped, so adding a value to the
+ * database and forgetting the type is impossible. The admin needs these to
+ * type a status filter or a state transition without importing Drizzle.
+ */
+export type ProductStatus = (typeof productStatusEnum.enumValues)[number];
+export type VariantStatus = (typeof variantStatusEnum.enumValues)[number];
+export type CategoryStatus = (typeof categoryStatusEnum.enumValues)[number];
+export type OrderStatus = (typeof orderStatusEnum.enumValues)[number];
+export type PaymentStatus = (typeof paymentStatusEnum.enumValues)[number];
+export type EnquiryStatus = (typeof enquiryStatusEnum.enumValues)[number];

@@ -209,8 +209,8 @@ Each phase ends in something demonstrable. Phases 1–3 are the ones that turn t
 | 1 | ~~**`packages/core`**~~ — **done** — extract the schema, the database client, the environment parser and password hashing; `apps/web` keeps working, unchanged in behaviour | One source of truth both applications can import | 1–2 |
 | 2 | ~~**`apps/admin` and authorization**~~ — **done** — the application, `Actor`, capabilities, `middleware.ts`, admin sessions, staff sign-in, the first admin account, the audit writer | A locked door with nothing behind it yet | 3–4 |
 | 3 | ~~**Cutover**~~ — **done** | The site runs on Postgres, rendering identically | — |
-| 4 | **Shell and dashboard** — layout, navigation, tables, forms, empty/loading/error states | The frame every module drops into | 3 |
-| 5 | **Catalogue** — categories, types, products, variants, publish rules | The client can edit the catalogue | 5–6 |
+| 4 | ~~**Shell and dashboard**~~ — **done** (phase 2) — layout, navigation, tables, forms, empty/loading/error states | The frame every module drops into | 3 |
+| 5 | **Catalogue** — products, packs and publishing **done**; categories and types still to come | The client can edit products, prices and what is on the site | 2–3 left |
 | 6 | **Images** — R2, presigned uploads, gallery, primary image, backfill | Photographs without a developer | 3–4 |
 | 7 | **Inventory** — ledger-backed adjustments, low stock | Stock is answerable | 2 |
 | 8 | **Orders** — list, detail, state machine, courier and tracking | The shop can be run | 3–4 |
