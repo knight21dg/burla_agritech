@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, count, desc, eq, ilike, or, sql, type SQL } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, inArray, or, sql, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@burla/core/db";
 import {
@@ -63,7 +63,16 @@ function whereFor(filters: ProductFilters): SQL | undefined {
     const match = or(
       ilike(products.name, like),
       ilike(products.slug, like),
-      sql`exists (select 1 from ${productVariants} v where v.product_id = ${products.id} and v.sku ilike ${like})`,
+      // Built rather than hand-written, for the reason in listProducts below:
+      // a correlated subquery written as SQL text can bind to the wrong table
+      // and quietly match nothing.
+      inArray(
+        products.id,
+        db
+          .select({ id: productVariants.productId })
+          .from(productVariants)
+          .where(ilike(productVariants.sku, like)),
+      ),
     );
     if (match) clauses.push(match);
   }
@@ -79,9 +88,13 @@ function whereFor(filters: ProductFilters): SQL | undefined {
 /**
  * One page of products, with everything the table shows.
  *
- * The variant aggregates are a lateral subquery rather than a join plus group
- * by: a product with three packs must be one row, and counting in the
- * application would mean loading every variant to render a number.
+ * Two queries and a join in the application, not a correlated subquery per
+ * column. Writing `where v.product_id = <outer id>` by hand inside a `sql`
+ * template is only safe while the outer query happens to have a join —
+ * without one, Drizzle renders the outer column unqualified, Postgres binds
+ * it to the subquery's own table, and every number silently comes back zero.
+ * The pack counts are aggregated for the page's ids instead, where nothing is
+ * ambiguous.
  */
 export async function listProducts(
   filters: ProductFilters,
@@ -101,18 +114,6 @@ export async function listProducts(
       categoryName: categoryAlias.name,
       typeName: typeAlias.name,
       updatedAt: products.updatedAt,
-      variantCount: sql<number>`(
-        select count(*)::int from ${productVariants} v
-        where v.product_id = ${products.id}
-      )`,
-      fromPriceMinor: sql<number | null>`(
-        select min(v.price_minor)::int from ${productVariants} v
-        where v.product_id = ${products.id} and v.status = 'active'
-      )`,
-      stock: sql<number>`(
-        select coalesce(sum(v.stock_quantity), 0)::int from ${productVariants} v
-        where v.product_id = ${products.id}
-      )`,
     })
     .from(products)
     .innerJoin(categoryAlias, eq(categoryAlias.id, products.categoryId))
@@ -128,7 +129,35 @@ export async function listProducts(
     where ? totalQuery.where(where) : totalQuery,
   ]);
 
-  return { rows, total: totalRows[0]?.n ?? 0 };
+  const ids = rows.map((row) => row.id);
+  const packs =
+    ids.length === 0
+      ? []
+      : await db
+          .select({
+            productId: productVariants.productId,
+            variantCount: count(),
+            fromPriceMinor: sql<number | null>`min(${productVariants.priceMinor}) filter (where ${productVariants.status} = 'active')::int`,
+            stock: sql<number>`coalesce(sum(${productVariants.stockQuantity}), 0)::int`,
+          })
+          .from(productVariants)
+          .where(inArray(productVariants.productId, ids))
+          .groupBy(productVariants.productId);
+
+  const byProduct = new Map(packs.map((row) => [row.productId, row]));
+
+  return {
+    rows: rows.map((row) => {
+      const tally = byProduct.get(row.id);
+      return {
+        ...row,
+        variantCount: tally?.variantCount ?? 0,
+        fromPriceMinor: tally?.fromPriceMinor ?? null,
+        stock: tally?.stock ?? 0,
+      };
+    }),
+    total: totalRows[0]?.n ?? 0,
+  };
 }
 
 export interface AdminVariant {

@@ -48,8 +48,8 @@ const ITEMS: Item[] = [
     href: "/categories",
     label: "Categories",
     icon: Tags,
-    capability: "catalogue.write",
-    built: false,
+    capability: "catalogue.read_draft",
+    built: true,
   },
   {
     href: "/media",
