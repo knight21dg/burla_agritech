@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { CONTENTS_FOR_CATEGORY } from "@/components/art/Bowl";
 import { ProductImage } from "@/components/ui/ProductImage";
-import type { Product } from "@/data/catalog";
+import type { Product } from "@/types/catalog";
 import { imagery } from "@/lib/imagery";
 import { cn } from "@/lib/utils";
 

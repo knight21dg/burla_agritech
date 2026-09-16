@@ -7,11 +7,8 @@ import { QuantityStepper } from "@/components/cart/QuantityStepper";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { ProductImage } from "@/components/ui/ProductImage";
 import { ProductPhoto } from "./ProductPhoto";
-import {
-  availabilityLabel,
-  defaultVariant,
-  type Product,
-} from "@/data/catalog";
+import { availabilityLabel, defaultVariant } from "@/lib/catalog";
+import type { Product } from "@/types/catalog";
 import { cn, formatPrice } from "@/lib/utils";
 
 /**

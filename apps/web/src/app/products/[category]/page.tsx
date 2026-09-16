@@ -6,19 +6,14 @@ import { Container, Section } from "@/components/ui/Section";
 import { ProductCard } from "@/components/product/ProductCard";
 import { TypeChips } from "@/components/product/TypeChips";
 import { ButtonLink } from "@/components/ui/Button";
-import {
-  categories,
-  categoryBySlug,
-  productHref,
-  productsByCategory,
-  productsByType,
-  typesOf,
-} from "@/data/catalog";
+import { productHref, typeChips } from "@/lib/catalog";
+import { getCategoryPage, listCategories } from "@/server/catalogue";
 import { site } from "@/lib/site";
 
 type Params = { category: string };
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const categories = await listCategories();
   return categories.map((c) => ({ category: c.slug }));
 }
 
@@ -28,8 +23,9 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { category } = await params;
-  const c = categoryBySlug(category);
-  if (!c) return {};
+  const page = await getCategoryPage(category);
+  if (!page) return {};
+  const c = page.category;
   // No category description has been supplied yet; describe the page by
   // what it is rather than inventing copy.
   const description =
@@ -57,12 +53,12 @@ export default async function CategoryPage({
   params: Promise<Params>;
 }) {
   const { category } = await params;
-  const c = categoryBySlug(category);
-  if (!c) notFound();
+  const page = await getCategoryPage(category);
+  if (!page) notFound();
 
-  const list = productsByCategory(c.slug);
-  const types = typesOf(c.slug);
-  const others = categories.filter((x) => x.slug !== c.slug);
+  const { category: c, types, products: list } = page;
+  const chips = typeChips(c.slug, types, list);
+  const others = (await listCategories()).filter((x) => x.slug !== c.slug);
 
   // Where the types genuinely group the products — Veg and Non-Veg Pickles,
   // Powders and Flakes — the list is split under one heading per type, as
@@ -70,7 +66,10 @@ export default async function CategoryPage({
   // (Millet Powders), headings would only repeat the product names, so the
   // list stays flat. So does any category with a product outside its types.
   const groups = types
-    .map((type) => ({ type, items: productsByType(c.slug, type.slug) }))
+    .map((type) => ({
+      type,
+      items: list.filter((p) => p.typeSlug === type.slug),
+    }))
     .filter((group) => group.items.length > 0);
   const grouped =
     groups.some((group) => group.items.length > 1) &&
@@ -104,7 +103,7 @@ export default async function CategoryPage({
           {types.length > 0 && (
             <div className="mt-5">
               <h2 className="t-label mb-2.5 text-ink-3">Browse by type</h2>
-              <TypeChips categorySlug={c.slug} types={types} />
+              <TypeChips chips={chips} />
             </div>
           )}
 

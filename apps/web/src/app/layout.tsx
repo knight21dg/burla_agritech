@@ -6,6 +6,7 @@ import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
 import { DemoNotice } from "@/components/layout/DemoNotice";
 import { ChromeMeasure } from "@/components/layout/ChromeMeasure";
 import { site } from "@/lib/site";
+import { listCategories } from "@/server/catalogue";
 import "./globals.css";
 
 /**
@@ -71,9 +72,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // The category bar and the footer's range list, read once for the whole
+  // page. Cached and tagged, so an admin change appears without a build, and
+  // the header does not query on every navigation.
+  const categories = await listCategories();
+
   const orgJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -92,7 +98,7 @@ export default function RootLayout({
       <body className="flex min-h-screen flex-col antialiased">
         <ChromeMeasure />
         <DemoNotice />
-        <Header />
+        <Header categories={categories} />
         <main id="main" className="flex-1">
           {children}
         </main>

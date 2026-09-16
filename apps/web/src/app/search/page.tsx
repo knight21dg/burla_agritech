@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container, Section } from "@/components/ui/Section";
 import { ProductCard } from "@/components/product/ProductCard";
-import { categories, searchProducts } from "@/data/catalog";
+import { listCategories, search } from "@/server/catalogue";
 import { whatsappLink } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -14,7 +14,13 @@ export const metadata: Metadata = {
 };
 
 async function Results({ q }: { q: string }) {
-  const results = q ? searchProducts(q) : [];
+  // Two reads, in parallel: the matches, and the ranges shown when there is
+  // no query or nothing matched.
+  const [found, categories] = await Promise.all([
+    q ? search(q) : Promise.resolve(undefined),
+    listCategories(),
+  ]);
+  const results = found?.products ?? [];
 
   if (!q) {
     return (

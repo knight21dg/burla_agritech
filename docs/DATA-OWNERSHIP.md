@@ -43,15 +43,17 @@ Everything the business changes lives in Postgres. Everything that changes per e
 
 ---
 
-## 3. Where this is violated today
+## 3. Where this was violated, and what is left
 
-`apps/web/src/data/catalog.ts` owns the entire catalogue as a TypeScript literal, and `apps/web/src/lib/site.ts` owns the business identity the same way.
+**The catalogue is fixed.** As of 2026-09-16 every storefront page reads Postgres through `server/catalogue.ts`; `data/catalog.ts` no longer exists. What was that file is now `server/db/seed/catalogue.ts` — seed input only, which nothing under `app/` or `components/` may import.
+
+`apps/web/src/lib/site.ts` still owns some business identity as a TypeScript literal, and page copy is still hard-coded in components. Both are content phases of the admin, not yet done.
 
 That was correct for a frontend demo and is wrong for a running business — the client cannot edit a TypeScript file.
 
-| Today | After |
+| Was | Now |
 |---|---|
-| `catalog.ts` — 10 categories, 10 types, 28 products | Seed input for Postgres, then **deleted** |
+| `catalog.ts` — the catalogue, read by 28 files | **Done**: Postgres, read through `server/catalogue.ts`. The literal survives as seed input only |
 | `site.ts` — address, GSTIN, phone, email, partners | `site_settings` table, admin-editable |
 | `site.ts` — `NEXT_PUBLIC_SITE_URL`, WhatsApp number | Environment, validated at boot |
 | `site.ts` — nav structure | Stays in code. It is layout, not content |

@@ -4,22 +4,27 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Container, Section } from "@/components/ui/Section";
 import { ProductCard } from "@/components/product/ProductCard";
 import { TypeSiblings } from "@/components/product/TypeChips";
+import { productHref, typeChips } from "@/lib/catalog";
 import {
-  categoryBySlug,
-  productHref,
-  productsByType,
-  productTypes,
-  typeBySlug,
-  typesOf,
-} from "@/data/catalog";
+  listByCategory,
+  listIndexableTypePaths,
+  getTypePage,
+} from "@/server/catalogue";
 import { site } from "@/lib/site";
 
 type Params = { category: string; type: string };
 
-export function generateStaticParams() {
-  return productTypes.map((t) => ({
-    category: t.parentSlug!,
-    type: t.slug,
+/**
+ * Only the type pages worth having: those holding more than one product. A
+ * type with one product is linked straight past (PRODUCT-TAXONOMY §1.1), so
+ * prerendering it would build a page nothing links to. It still renders on
+ * request if someone has the URL.
+ */
+export async function generateStaticParams() {
+  const paths = await listIndexableTypePaths();
+  return paths.map((path) => ({
+    category: path.categorySlug,
+    type: path.typeSlug,
   }));
 }
 
@@ -29,9 +34,9 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { category, type } = await params;
-  const c = categoryBySlug(category);
-  const t = typeBySlug(category, type);
-  if (!c || !t) return {};
+  const page = await getTypePage(category, type);
+  if (!page) return {};
+  const { category: c, type: t } = page;
 
   // The catalogue's type names carry their own context ("Veg Pickles",
   // "Foxtail / Korralu"), so the category is appended after a separator
@@ -59,12 +64,13 @@ export default async function TypePage({
   params: Promise<Params>;
 }) {
   const { category, type } = await params;
-  const c = categoryBySlug(category);
-  const t = typeBySlug(category, type);
-  if (!c || !t) notFound();
+  const page = await getTypePage(category, type);
+  if (!page) notFound();
 
-  const list = productsByType(c.slug, t.slug);
-  const siblings = typesOf(c.slug);
+  const { category: c, type: t, siblings, products: list } = page;
+  // The sibling chips carry counts, which need the whole category's products.
+  // Cached, so this is the same read the category page already warmed.
+  const chips = typeChips(c.slug, siblings, await listByCategory(c.slug));
 
   const itemListJsonLd = {
     "@context": "https://schema.org",
@@ -116,7 +122,7 @@ export default async function TypePage({
             <TypeSiblings
               categorySlug={c.slug}
               categoryName={c.name}
-              types={siblings}
+              chips={chips}
               activeType={t.slug}
             />
           </div>

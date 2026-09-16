@@ -6,6 +6,7 @@ import { ProductImage } from "@/components/ui/ProductImage";
 import { PageHeader } from "@/components/sections/PageHeader";
 import { TrustStrip } from "@/components/sections/TrustStrip";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
+import { listCategories } from "@/server/catalogue";
 import { site, whatsappLink } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -15,7 +16,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const categories = await listCategories();
+
   return (
     <>
       <PageHeader
@@ -120,7 +123,7 @@ export default function ContactPage() {
             <div className="lg:col-span-7">
               <h2 className="t-h2">Send us a message</h2>
               <div className="mt-6 rounded-md border border-line p-6 lg:p-7">
-                <EnquiryForm kind="contact" />
+                <EnquiryForm kind="contact" categories={categories} />
               </div>
 
               {/* Script accent from the mockup. Decorative. */}

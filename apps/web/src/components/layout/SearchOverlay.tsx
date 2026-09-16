@@ -1,32 +1,68 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { ProductImage } from "@/components/ui/ProductImage";
-import { categories, categoryBySlug, searchProducts } from "@/data/catalog";
+import { searchSuggestions } from "@/app/search/actions";
+import { defaultVariant } from "@/lib/catalog";
+import type { Category, Product } from "@/types/catalog";
 import { formatPrice } from "@/lib/utils";
-import { defaultVariant } from "@/data/catalog";
+
+/** Long enough that a fast typist makes one request, not eight. */
+const DEBOUNCE_MS = 180;
 
 /**
  * Search overlay (FR-081, FR-085).
  * Keyboard: "/" opens, arrows move, Enter selects, Esc closes, focus restored.
+ *
+ * Results come from the server now rather than from a copy of the catalogue
+ * in the bundle — debounced, with every stale reply discarded, so a slow
+ * response for "man" cannot overwrite the results for "mango".
  */
 export function SearchOverlay({
   open,
   onClose,
+  categories,
 }: {
   open: boolean;
   onClose: () => void;
+  categories: Category[];
 }) {
   const router = useRouter();
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
+  const [results, setResults] = useState<Product[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const restoreTo = useRef<HTMLElement | null>(null);
 
-  const results = useMemo(() => searchProducts(q).slice(0, 6), [q]);
+  const term = q.trim();
+
+  useEffect(() => {
+    if (term.length < 2) {
+      setResults([]);
+      return;
+    }
+
+    // `current` identifies this query; a reply that is not the latest is
+    // thrown away rather than rendered.
+    let current = true;
+    const timer = setTimeout(() => {
+      searchSuggestions(term)
+        .then((found) => {
+          if (current) setResults(found);
+        })
+        .catch(() => {
+          if (current) setResults([]);
+        });
+    }, DEBOUNCE_MS);
+
+    return () => {
+      current = false;
+      clearTimeout(timer);
+    };
+  }, [term]);
 
   useEffect(() => {
     if (open) {
@@ -177,7 +213,10 @@ export function SearchOverlay({
                             {p.name}
                           </span>
                           <span className="block truncate text-[0.8125rem] text-ink-2">
-                            {categoryBySlug(p.categorySlug)?.name}
+                            {
+                              categories.find((c) => c.slug === p.categorySlug)
+                                ?.name
+                            }
                           </span>
                         </span>
                         {variant && (

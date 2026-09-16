@@ -1,18 +1,16 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { ArrowRight, Lock, ShoppingCart } from "lucide-react";
 import { ProductPhoto } from "@/components/product/ProductPhoto";
 import { ButtonLink } from "@/components/ui/Button";
-import { productHref, trailFor } from "@/data/catalog";
+import { productHref } from "@/lib/catalog";
 import { formatPrice } from "@/lib/utils";
-import { removeFromCart, useCart } from "./cartStore";
-import { cartTotals, resolveLines } from "./lines";
+import { removeFromCart } from "./cartStore";
+import { cartTotals } from "./lines";
+import { useResolvedCart } from "./useResolvedCart";
 import { PriceDetails } from "./PriceDetails";
 import { QuantityStepper } from "./QuantityStepper";
-
-const noop = () => () => {};
 
 /**
  * The cart's contents, laid out as Amazon and Flipkart lay theirs: the lines
@@ -26,13 +24,11 @@ const noop = () => () => {};
  * refuses one with unpriced items.
  */
 export function CartView() {
-  const { items, count } = useCart();
-  // The cart lives in the browser, so the server renders it empty. Until the
-  // browser's copy is read, show nothing rather than a flash of "empty".
-  const hydrated = useSyncExternalStore(noop, () => true, () => false);
-  if (!hydrated) return <div className="min-h-[40vh]" aria-busy="true" />;
-
-  const lines = resolveLines(items);
+  // The cart lives in the browser, so the server renders it empty, and its
+  // products are read back from the server. Until both have happened, show
+  // nothing rather than a flash of "your cart is empty".
+  const { count, lines, ready } = useResolvedCart();
+  if (!ready) return <div className="min-h-[40vh]" aria-busy="true" />;
 
   if (lines.length === 0) {
     return (
@@ -59,8 +55,7 @@ export function CartView() {
           {count} {count === 1 ? "item" : "items"}
         </p>
         <ul className="mt-3 border-t border-line">
-          {lines.map(({ line, product, variant }) => {
-            const { category, type } = trailFor(product);
+          {lines.map(({ line, product, variant, trail }) => {
             const href = productHref(product);
             return (
               <li
@@ -85,7 +80,9 @@ export function CartView() {
                         </Link>
                       </h2>
                       <p className="mt-0.5 text-[0.8125rem] text-ink-3">
-                        {type ? `${category?.name} · ${type.name}` : category?.name}
+                        {trail.typeName
+                          ? `${trail.categoryName} · ${trail.typeName}`
+                          : trail.categoryName}
                       </p>
                       <p className="mt-0.5 text-[0.8125rem] text-ink-3">
                         {variant ? variant.label : "Pack size to be confirmed"}

@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { categories } from "@/data/catalog";
+import type { Category } from "@/types/catalog";
 import { cn } from "@/lib/utils";
 
 type Kind = "contact" | "wholesale";
@@ -21,7 +21,14 @@ interface Errors {
  * Postgres *before* sending email, applies rate limiting and Turnstile, and
  * returns field-level errors (USER-FLOWS UF-05).
  */
-export function EnquiryForm({ kind }: { kind: Kind }) {
+export function EnquiryForm({
+  kind,
+  categories,
+}: {
+  kind: Kind;
+  /** The ranges offered in "What are you interested in?" — from the page. */
+  categories: Category[];
+}) {
   const id = useId();
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<Errors>({});

@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container, Section } from "@/components/ui/Section";
-import { categories } from "@/data/catalog";
+import { listCategories } from "@/server/catalogue";
 
-export default function NotFound() {
+export default async function NotFound() {
+  const categories = await listCategories();
+
   return (
     <Section tone="white" size="lg">
       <Container>

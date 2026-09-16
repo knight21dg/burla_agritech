@@ -341,6 +341,28 @@ export async function search(query: string, limit = 20): Promise<Product[]> {
 }
 
 /**
+ * Several products by slug, in one query.
+ *
+ * The cart holds slugs, not rows, so showing it means reading those products
+ * back — one query for the whole cart rather than one per line, which is the
+ * same rule the rest of this file keeps. Unknown or unpublished slugs are
+ * simply absent from the result: a product withdrawn while it sat in someone's
+ * cart disappears from it, rather than 404ing the cart page.
+ */
+export async function listBySlugs(slugs: readonly string[]): Promise<Product[]> {
+  if (slugs.length === 0) return [];
+
+  const rows = await db
+    .select(productColumns)
+    .from(products)
+    .innerJoin(categoryAlias, eq(categoryAlias.id, products.categoryId))
+    .leftJoin(typeAlias, eq(typeAlias.id, products.typeId))
+    .where(and(inArray(products.slug, [...slugs]), eq(products.status, "published")));
+
+  return withVariants(rows);
+}
+
+/**
  * Slugs of every published product, for `generateStaticParams` and the sitemap.
  * Deliberately not the full product: those callers need one column.
  */

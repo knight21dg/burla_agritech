@@ -1,7 +1,8 @@
 "use client";
 
 import { ShoppingCart } from "lucide-react";
-import { defaultVariant, type Product } from "@/data/catalog";
+import { defaultVariant } from "@/lib/catalog";
+import type { Product } from "@/types/catalog";
 import { addToCart, useCart } from "./cartStore";
 import { QuantityStepper } from "./QuantityStepper";
 

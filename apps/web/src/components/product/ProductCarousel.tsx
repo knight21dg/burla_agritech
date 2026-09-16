@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ProductCard } from "./ProductCard";
-import type { Product } from "@/data/catalog";
+import type { Product } from "@/types/catalog";
 
 /**
  * Horizontal product rail (FR-021c).

@@ -67,6 +67,11 @@ export function getProduct(slug: string): Promise<Product | undefined> {
   return productRepository.findBySlug(slug);
 }
 
+/** Several products by slug — what the cart holds. One query, not one each. */
+export function listBySlugs(slugs: readonly string[]): Promise<Product[]> {
+  return productRepository.listBySlugs(slugs);
+}
+
 export function listByCategory(categorySlug: string): Promise<Product[]> {
   return productRepository.listByCategory(categorySlug);
 }

@@ -4,6 +4,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Container, Section, SectionHead } from "@/components/ui/Section";
 import { PageHeader, PendingContent } from "@/components/sections/PageHeader";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
+import { listCategories } from "@/server/catalogue";
 import { whatsappLink } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -28,7 +29,9 @@ const steps = [
   ["Supply", "Agreed schedule and packing format."],
 ];
 
-export default function WholesalePage() {
+export default async function WholesalePage() {
+  const categories = await listCategories();
+
   return (
     <>
       <PageHeader
@@ -107,7 +110,7 @@ export default function WholesalePage() {
                 lead="The more detail you give us, the more useful our first reply can be."
               />
               <div className="mt-8">
-                <EnquiryForm kind="wholesale" />
+                <EnquiryForm kind="wholesale" categories={categories} />
               </div>
             </div>
           </div>

@@ -4,14 +4,8 @@ import { Breadcrumbs, type Crumb } from "@/components/ui/Breadcrumbs";
 import { Container, Section } from "@/components/ui/Section";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductBuyPanel } from "@/components/product/ProductBuyPanel";
-import {
-  defaultVariant,
-  productBySlug,
-  productHref,
-  products,
-  relatedProducts,
-  trailFor,
-} from "@/data/catalog";
+import { defaultVariant, productHref } from "@/lib/catalog";
+import { getProductPage, listProductSlugs } from "@/server/catalogue";
 import { site } from "@/lib/site";
 
 type Params = { slug: string };
@@ -30,8 +24,14 @@ const INFO_FIELDS = [
   "Veg / Non-veg",
 ];
 
-export function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
+/**
+ * Every published product, read from the database at build time. A product
+ * published afterwards is rendered on first request and then cached, because
+ * `dynamicParams` defaults to true — a new product does not need a build.
+ */
+export async function generateStaticParams() {
+  const slugs = await listProductSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -40,10 +40,11 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const p = productBySlug(slug);
-  if (!p) return {};
+  const page = await getProductPage(slug);
+  if (!page) return {};
+  const { product: p, trail } = page;
   const variant = defaultVariant(p);
-  const { category } = trailFor(p);
+  const category = trail.category;
   // No descriptor has been supplied yet; describe the page by what it is.
   const description =
     p.shortDescriptor || `${p.name} — ${category?.name ?? "Products"} from ${site.name}.`;
@@ -72,11 +73,13 @@ export default async function ProductPage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const product = productBySlug(slug);
-  if (!product) notFound();
+  const page = await getProductPage(slug);
+  // Unknown, unpublished or withdrawn: all 404. Never a 403, which would
+  // confirm the row exists (docs/AUTHORIZATION.md §5).
+  if (!page) notFound();
 
-  const { category, type } = trailFor(product);
-  const related = relatedProducts(product);
+  const { product, trail, related } = page;
+  const { category, type } = trail;
 
   const crumbs: Crumb[] = [
     { label: "Products", href: "/products" },

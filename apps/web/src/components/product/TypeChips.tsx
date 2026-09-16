@@ -1,10 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import {
-  productHref,
-  productsByType,
-  type Category,
-} from "@/data/catalog";
+import type { TypeChip } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
 
 /**
@@ -15,35 +11,31 @@ import { cn } from "@/lib/utils";
  * matters, because "mango pickle" has far more search volume than "pickles"
  * (SEO.md §1).
  *
- * A type holding a single product links straight to that product, so nobody
- * lands on a page containing one card (PRODUCT-TAXONOMY §1.1).
+ * The chips arrive ready-made (`typeChips` in `lib/catalog`), counted from
+ * products the page has already loaded. This component used to count them
+ * itself by calling into the catalogue module, which was free while the
+ * catalogue was a TypeScript file and would be one query per chip now that it
+ * is a database.
  */
 export function TypeChips({
-  categorySlug,
-  types,
+  chips,
   activeType,
 }: {
-  categorySlug: string;
-  types: Category[];
+  chips: TypeChip[];
   activeType?: string;
 }) {
-  if (types.length === 0) return null;
+  if (chips.length === 0) return null;
 
   return (
     <nav aria-label="Product types">
       <ul className="rail -mx-1 gap-2 py-1">
-        {types.map((type) => {
-          const inType = productsByType(categorySlug, type.slug);
-          const single = inType.length === 1 ? inType[0] : undefined;
-          const href = single
-            ? productHref(single)
-            : `/products/${categorySlug}/${type.slug}`;
-          const active = activeType === type.slug;
+        {chips.map((chip) => {
+          const active = activeType === chip.slug;
 
           return (
-            <li key={type.slug} className="rail-item">
+            <li key={chip.slug} className="rail-item">
               <Link
-                href={href}
+                href={chip.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "block whitespace-nowrap rounded-sm border px-4 py-2.5 text-[0.875rem] transition-colors",
@@ -52,9 +44,9 @@ export function TypeChips({
                     : "border-line bg-white text-ink hover:border-green-700 hover:text-green-700",
                 )}
               >
-                {type.name}
-                {inType.length > 0 && (
-                  <span className="ml-1.5 text-ink-3">{inType.length}</span>
+                {chip.name}
+                {chip.count > 0 && (
+                  <span className="ml-1.5 text-ink-3">{chip.count}</span>
                 )}
               </Link>
             </li>
@@ -69,26 +61,22 @@ export function TypeChips({
 export function TypeSiblings({
   categorySlug,
   categoryName,
-  types,
+  chips,
   activeType,
 }: {
   categorySlug: string;
   categoryName: string;
-  types: Category[];
+  chips: TypeChip[];
   activeType: string;
 }) {
-  const others = types.filter((x) => x.slug !== activeType);
+  const others = chips.filter((chip) => chip.slug !== activeType);
   if (others.length === 0) return null;
 
   return (
     <div className="border-t border-line pt-8">
       <h2 className="t-label text-ink-3">More {categoryName.toLowerCase()}</h2>
       <div className="mt-4">
-        <TypeChips
-          categorySlug={categorySlug}
-          types={others}
-          activeType={undefined}
-        />
+        <TypeChips chips={others} activeType={undefined} />
       </div>
       <Link
         href={`/products/${categorySlug}`}

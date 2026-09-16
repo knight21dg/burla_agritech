@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
 import { useCart } from "@/components/cart/cartStore";
 import { Logo } from "@/components/ui/Logo";
-import { categories } from "@/data/catalog";
+import type { Category } from "@/types/catalog";
 import { mainNav, site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { SearchOverlay } from "./SearchOverlay";
@@ -32,7 +32,7 @@ const COMPANY_LABEL: Record<string, string> = {
   "/contact": "Contact Us",
 };
 
-export function Header() {
+export function Header({ categories }: { categories: Category[] }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -285,7 +285,11 @@ export function Header() {
         </div>
       )}
 
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <SearchOverlay
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        categories={categories}
+      />
     </>
   );
 }

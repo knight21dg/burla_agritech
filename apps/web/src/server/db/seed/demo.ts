@@ -45,7 +45,7 @@ import {
   type Product,
   products as sourceProducts,
   productTypes as sourceTypes,
-} from "@/data/catalog";
+} from "./catalogue";
 import { assertNotProduction } from "@burla/core/env";
 import { type Database } from "@burla/core/db";
 import { purgeSampleData } from "../guards";

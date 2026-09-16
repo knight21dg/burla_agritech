@@ -19,7 +19,7 @@
  * Category names and order remain provisional pending `OQ-013` / `OQ-064`.
  */
 import { and, eq, isNull } from "drizzle-orm";
-import { categories as sourceCategories } from "@/data/catalog";
+import { categories as sourceCategories } from "./catalogue";
 import { site } from "@/lib/site";
 import { type Database } from "@burla/core/db";
 import { categories, siteSettings } from "@burla/core/db/schema";

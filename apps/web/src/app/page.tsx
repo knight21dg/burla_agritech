@@ -7,7 +7,7 @@ import { Container } from "@/components/ui/Section";
 import { Reveal } from "@/components/ui/Reveal";
 import { CategoryCard } from "@/components/product/CategoryCard";
 import { ProductCarousel } from "@/components/product/ProductCarousel";
-import { categories, featuredProducts } from "@/data/catalog";
+import { listCategories, listFeatured } from "@/server/catalogue";
 import { imagery } from "@/lib/imagery";
 
 /**
@@ -67,8 +67,11 @@ function SectionHead({
   );
 }
 
-export default function HomePage() {
-  const featured = featuredProducts();
+export default async function HomePage() {
+  const [categories, featured] = await Promise.all([
+    listCategories(),
+    listFeatured(),
+  ]);
   const about = imagery.about;
 
   return (

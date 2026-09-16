@@ -1,16 +1,17 @@
 "use client";
 
-import { useState, useSyncExternalStore, useTransition, type ReactNode } from "react";
+import { useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle, ArrowRight, Check, Info, Loader2, Lock, ShoppingCart } from "lucide-react";
 import { placeOrder, type PlaceOrderResult } from "@/app/checkout/actions";
-import { clearCart, useCart } from "@/components/cart/cartStore";
-import { cartTotals, resolveLines } from "@/components/cart/lines";
+import { clearCart } from "@/components/cart/cartStore";
+import { cartTotals } from "@/components/cart/lines";
+import { useResolvedCart } from "@/components/cart/useResolvedCart";
 import { PriceDetails } from "@/components/cart/PriceDetails";
 import { ProductPhoto } from "@/components/product/ProductPhoto";
 import { Button, ButtonLink } from "@/components/ui/Button";
-import { productHref } from "@/data/catalog";
+import { productHref } from "@/lib/catalog";
 import { PAYMENT_LABEL, formatAddress, type PaymentMethod, type SavedAddress } from "@/lib/checkout";
 import { cn, formatPrice } from "@/lib/utils";
 import { AddressStep, type AddressChoice } from "./AddressStep";
@@ -18,8 +19,6 @@ import { PaymentOptions } from "./PaymentOptions";
 
 type Step = "address" | "payment" | "review";
 const STEPS: Step[] = ["address", "payment", "review"];
-
-const noop = () => () => {};
 
 /**
  * Checkout, laid out as Flipkart's: the steps down one page — delivery
@@ -36,8 +35,7 @@ const noop = () => () => {};
  */
 export function CheckoutView({ saved }: { saved: SavedAddress[] }) {
   const router = useRouter();
-  const { items } = useCart();
-  const hydrated = useSyncExternalStore(noop, () => true, () => false);
+  const { items, lines, ready } = useResolvedCart();
   const [step, setStep] = useState<Step>("address");
   const [choice, setChoice] = useState<AddressChoice>();
   const [payment, setPayment] = useState<PaymentMethod>();
@@ -46,9 +44,8 @@ export function CheckoutView({ saved }: { saved: SavedAddress[] }) {
   const [idempotencyKey] = useState(() => crypto.randomUUID());
   const address = choice?.address;
 
-  if (!hydrated) return <div className="min-h-[40vh]" aria-busy="true" />;
+  if (!ready) return <div className="min-h-[40vh]" aria-busy="true" />;
 
-  const lines = resolveLines(items);
   if (lines.length === 0) {
     return (
       <div className="py-16 text-center">

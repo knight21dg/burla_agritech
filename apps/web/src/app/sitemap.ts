@@ -1,15 +1,25 @@
 import type { MetadataRoute } from "next";
 import {
-  categories,
-  products,
-  productsByType,
-  productTypes,
-} from "@/data/catalog";
+  listCategories,
+  listIndexableTypePaths,
+  listProductSlugs,
+} from "@/server/catalogue";
 import { site } from "@/lib/site";
 
-/** Generated from live content, never hand-maintained (SEO.md §5). */
-export default function sitemap(): MetadataRoute.Sitemap {
+/**
+ * Generated from live content, never hand-maintained (SEO.md §5).
+ *
+ * "Live" now means the database: a product published in the admin is in the
+ * sitemap the next time it is fetched, without a deployment.
+ */
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+
+  const [categories, indexableTypes, productSlugs] = await Promise.all([
+    listCategories(),
+    listIndexableTypePaths(),
+    listProductSlugs(),
+  ]);
 
   const staticRoutes = [
     { path: "", priority: 1 },
@@ -40,17 +50,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     // Only types the navigation actually links to. A type holding a single
     // product sends visitors straight to that product, so listing its page
-    // here would submit a near-duplicate of the product page.
-    ...productTypes
-      .filter((t) => productsByType(t.parentSlug!, t.slug).length > 1)
-      .map((t) => ({
-        url: `${site.url}/products/${t.parentSlug}/${t.slug}`,
-        lastModified: now,
-        changeFrequency: "weekly" as const,
-        priority: 0.75,
-      })),
-    ...products.map((p) => ({
-      url: `${site.url}/products/p/${p.slug}`,
+    // here would submit a near-duplicate of the product page. The rule lives
+    // in the service, so the sitemap and the navigation cannot disagree.
+    ...indexableTypes.map((t) => ({
+      url: `${site.url}/products/${t.categorySlug}/${t.typeSlug}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.75,
+    })),
+    ...productSlugs.map((slug) => ({
+      url: `${site.url}/products/p/${slug}`,
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.7,

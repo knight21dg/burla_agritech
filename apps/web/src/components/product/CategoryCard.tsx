@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CONTENTS_FOR_CATEGORY } from "@/components/art/Bowl";
 import { ProductImage } from "@/components/ui/ProductImage";
-import type { Category } from "@/data/catalog";
+import type { Category } from "@/types/catalog";
 import { imagery } from "@/lib/imagery";
 
 /**

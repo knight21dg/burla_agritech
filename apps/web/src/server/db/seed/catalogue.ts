@@ -23,8 +23,18 @@
  * `tone` is presentational only — the tint of the placeholder illustration —
  * and is set per category, so it implies nothing about how a product looks.
  *
- * This module's shape mirrors the production schema (docs/DATABASE-DESIGN.md)
- * so the move to database queries stays a one-file change (Phase 8).
+ * ## What this file is now
+ *
+ * **Seed input, and nothing else.** It used to be the catalogue the site read
+ * on every page; the site reads Postgres now (`server/catalogue.ts`), and this
+ * is the file the seed loads those rows from when a database is first set up
+ * or a development one is reset.
+ *
+ * Nothing under `app/` or `components/` may import it. A second copy of the
+ * catalogue that the site could read is precisely what the cutover removed —
+ * see docs/DATA-OWNERSHIP.md §1. When the client supplies real prices and pack
+ * sizes they are entered in the admin, against the database; this file is the
+ * historical starting point, not the place to edit them.
  */
 
 /**

@@ -55,6 +55,16 @@ const laterSchema = z.object({
 
   /** Rotating salt for hashing IP addresses. Raw IPs are never stored. */
   IP_HASH_SALT: z.string().min(16).optional(),
+
+  /**
+   * Shared between the admin and the storefront, so the admin can tell the
+   * storefront to drop a cached product. The two are separate deployments
+   * with separate caches; without this, an edit waits for the safety net.
+   * Storefront: verifies it. Admin: sends it.
+   */
+  REVALIDATE_SECRET: z.string().min(32).optional(),
+  /** Where the admin sends that message. Admin only. */
+  STOREFRONT_URL: z.string().url().optional(),
 });
 
 const serverSchema = baseSchema.merge(laterSchema).superRefine((value, ctx) => {

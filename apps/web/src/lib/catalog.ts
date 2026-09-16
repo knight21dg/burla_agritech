@@ -9,7 +9,7 @@
  * Nothing here queries. If a function needs a row it does not already have,
  * it belongs in a service.
  */
-import type { Availability, Product, Variant } from "@/types/catalog";
+import type { Availability, Category, Product, Variant } from "@/types/catalog";
 
 /** The canonical URL for a product. Flat, so it survives recategorisation. */
 export function productHref(product: Pick<Product, "slug">): string {
@@ -34,6 +34,42 @@ export function typeHref(categorySlug: string, typeSlug: string): string {
  */
 export function defaultVariant(product: Product): Variant | undefined {
   return product.variants.find((v) => v.isDefault) ?? product.variants[0];
+}
+
+/** A type as the chips render it: its name, how many products, where it goes. */
+export interface TypeChip {
+  slug: string;
+  name: string;
+  count: number;
+  href: string;
+}
+
+/**
+ * Types with their product counts, worked out from a list the caller already
+ * has.
+ *
+ * Deliberately a pure function over loaded products rather than a query per
+ * chip: a category page holds its products anyway, and seven chips must not
+ * become seven round trips once the catalogue is in a database.
+ *
+ * A type holding exactly one product links straight to that product, so
+ * nobody lands on a page containing a single card (PRODUCT-TAXONOMY §1.1).
+ */
+export function typeChips(
+  categorySlug: string,
+  types: Category[],
+  products: Product[],
+): TypeChip[] {
+  return types.map((type) => {
+    const inType = products.filter((p) => p.typeSlug === type.slug);
+    const only = inType.length === 1 ? inType[0] : undefined;
+    return {
+      slug: type.slug,
+      name: type.name,
+      count: inType.length,
+      href: only ? productHref(only) : typeHref(categorySlug, type.slug),
+    };
+  });
 }
 
 export const availabilityLabel: Record<Availability, string> = {

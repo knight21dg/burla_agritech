@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Facebook, Instagram, Mail, MessageCircle, Youtube } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Container } from "@/components/ui/Section";
-import { categories } from "@/data/catalog";
+import { listCategories } from "@/server/catalogue";
 import { companyNav, policyNav, site, whatsappLink } from "@/lib/site";
 
 /**
@@ -39,7 +39,8 @@ const SOCIAL = [
 const linkClass =
   "text-[0.8125rem] leading-relaxed text-ink-2 underline-offset-4 transition-colors hover:text-green-700 hover:underline";
 
-export function Footer() {
+export async function Footer() {
+  const categories = await listCategories();
   const year = new Date().getFullYear();
 
   return (

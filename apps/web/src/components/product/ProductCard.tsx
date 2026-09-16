@@ -1,11 +1,7 @@
 import Link from "next/link";
 import { CardCartControl } from "@/components/cart/CardCartControl";
-import {
-  availabilityLabel,
-  defaultVariant,
-  productHref,
-  type Product,
-} from "@/data/catalog";
+import { availabilityLabel, defaultVariant, productHref } from "@/lib/catalog";
+import type { Product } from "@/types/catalog";
 import { formatPrice } from "@/lib/utils";
 import { ProductPhoto } from "./ProductPhoto";
 

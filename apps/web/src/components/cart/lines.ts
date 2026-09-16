@@ -1,4 +1,4 @@
-import { productBySlug, type Product, type Variant } from "@/data/catalog";
+import type { Product, Variant } from "@/types/catalog";
 import type { CartLine } from "./cartStore";
 
 /** A cart line with the product and pack size it refers to, for display. */
@@ -6,24 +6,22 @@ export interface ResolvedLine {
   line: CartLine;
   product: Product;
   variant?: Variant;
+  /** Where the product sits, for the line's second row of text. */
+  trail: { categoryName?: string; typeName?: string };
 }
 
 /**
- * The cart's lines, read against the catalogue for display — the cart and
- * checkout pages both show them. What an order costs is decided on the
- * server (`placeOrder`), never from these.
+ * Totals for display.
+ *
+ * `resolveLines` used to live here too, reading the catalogue straight out of
+ * the browser bundle. The catalogue is in Postgres now, so resolving is a
+ * server action (`app/cart/actions.ts`) and this file keeps only the part
+ * that is pure arithmetic over what came back.
+ *
+ * What an order costs is still decided by the server when it is placed, from
+ * its own records. These numbers are what the shopper sees, not what they
+ * are charged.
  */
-export function resolveLines(items: readonly CartLine[]): ResolvedLine[] {
-  return items.flatMap((line) => {
-    const product = productBySlug(line.slug);
-    if (!product) return [];
-    const variant = line.variantId
-      ? product.variants.find((v) => v.id === line.variantId)
-      : undefined;
-    return [{ line, product, variant }];
-  });
-}
-
 export function cartTotals(lines: readonly ResolvedLine[]) {
   return {
     /** Total units. */

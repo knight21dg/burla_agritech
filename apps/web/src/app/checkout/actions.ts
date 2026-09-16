@@ -1,6 +1,5 @@
 "use server";
 
-import { productBySlug } from "@/data/catalog";
 import {
   addressErrors,
   orderRequestSchema,
@@ -69,9 +68,16 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
   }
   const request = parsed.data;
 
-  const unpriced = request.lines
-    .filter((line) => !line.variantId)
-    .map((line) => productBySlug(line.slug)?.name ?? line.slug);
+  // Lines the shopper holds with no pack size chosen — named, so the message
+  // can say which ones rather than "some items".
+  const withoutPack = request.lines.filter((line) => !line.variantId);
+  let unpriced: string[] = [];
+  if (withoutPack.length > 0) {
+    const { listBySlugs } = await import("@/server/catalogue");
+    const products = await listBySlugs(withoutPack.map((line) => line.slug));
+    const names = new Map(products.map((p) => [p.slug, p.name]));
+    unpriced = withoutPack.map((line) => names.get(line.slug) ?? line.slug);
+  }
   if (unpriced.length > 0) {
     return { ok: false, code: "PRICES_PENDING", message: MESSAGES.PRICES_PENDING, items: unpriced };
   }

@@ -188,11 +188,15 @@ If R2 is not wanted, the fallback is Vercel Blob with the same shape. What is no
 
 ---
 
-## 6. Keeping the storefront correct
+## 6. Keeping the storefront correct — **done, phase 3**
 
-1. **The cutover.** 28 files import `data/catalog.ts`. They move to `catalogService`, page by page, with `db:parity` green at each step. `catalog.ts` is then deleted — not kept "just in case", because a dormant second source of product data is the exact failure `DATA-OWNERSHIP.md` exists to prevent.
-2. **Revalidation.** Catalogue pages get cache tags (`product:<slug>`, `category:<slug>`, `catalogue`). Every admin write calls `revalidateTag` in the same action. Editing a price must not require a deployment.
-3. **No visual change.** The storefront's rendered HTML must be identical before and after the cutover. That is what the parity script measures, and it is the acceptance test.
+1. **The cutover.** Done. Every page reads `server/catalogue.ts`, which wraps the service in a tagged cache. `data/catalog.ts` is gone from the application and survives only as seed input at `server/db/seed/catalogue.ts`, which nothing under `app/` may import.
+2. **Revalidation.** Done, and it is **not** a `revalidateTag` call inside the admin. The two applications are separate deployments with separate caches, so the admin telling its own cache to drop a product would do nothing at all to the storefront. The storefront exposes `POST /api/revalidate`, authenticated with `REVALIDATE_SECRET` (shared, 32+ characters, the same value in both) and accepting only catalogue-shaped tags. Every admin catalogue write must call it with `["catalogue", "product:<slug>"]` — the `catalogue` tag for the listings, the product tag for its own page.
+3. **No visual change.** Verified: the rendered markup of the homepage, the products index, a category page, a type page, a product page, search and the cart is **byte-identical** before and after.
+
+### 6.1 What the cart does now
+
+The cart still holds references only, in the browser. It used to resolve them against a catalogue that shipped in the bundle; it now posts them to `resolveCart`, a server action that reads the products in one query, drops unknown lines, and returns what to display. Money is unchanged: `placeOrder` still prices every line from the database by SKU inside a transaction, so what the browser thinks a thing costs has never mattered and still does not.
 
 ---
 
@@ -202,9 +206,9 @@ Each phase ends in something demonstrable. Phases 1–3 are the ones that turn t
 
 | # | Phase | Output | Days |
 |---|---|---|---|
-| 1 | **`packages/core`** — extract the schema, the database client, the environment parser and password hashing; `apps/web` keeps working, unchanged in behaviour | One source of truth both applications can import | 1–2 |
-| 2 | **`apps/admin` and authorization** — the application, `Actor`, capabilities, `middleware.ts`, admin sessions, staff sign-in, the first admin account, the audit writer | A locked door with nothing behind it yet | 3–4 |
-| 3 | **Cutover** — storefront pages read the database; cache tags added; `catalog.ts` deleted | The site runs on Postgres, looking identical | 3–4 |
+| 1 | ~~**`packages/core`**~~ — **done** — extract the schema, the database client, the environment parser and password hashing; `apps/web` keeps working, unchanged in behaviour | One source of truth both applications can import | 1–2 |
+| 2 | ~~**`apps/admin` and authorization**~~ — **done** — the application, `Actor`, capabilities, `middleware.ts`, admin sessions, staff sign-in, the first admin account, the audit writer | A locked door with nothing behind it yet | 3–4 |
+| 3 | ~~**Cutover**~~ — **done** | The site runs on Postgres, rendering identically | — |
 | 4 | **Shell and dashboard** — layout, navigation, tables, forms, empty/loading/error states | The frame every module drops into | 3 |
 | 5 | **Catalogue** — categories, types, products, variants, publish rules | The client can edit the catalogue | 5–6 |
 | 6 | **Images** — R2, presigned uploads, gallery, primary image, backfill | Photographs without a developer | 3–4 |

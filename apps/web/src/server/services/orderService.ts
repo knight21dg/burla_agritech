@@ -1,10 +1,10 @@
 import "server-only";
-import { productBySlug } from "@/data/catalog";
 import type { Address, OrderRequest } from "@/lib/checkout";
 import { deliveryFeeMinor } from "@/lib/delivery";
 import { db } from "@burla/core/db";
 import * as addressRepository from "@/server/repositories/addressRepository";
 import * as orderRepository from "@/server/repositories/orderRepository";
+import * as productRepository from "@/server/repositories/productRepository";
 import type { OrderStatus } from "@/server/repositories/orderRepository";
 
 /**
@@ -46,9 +46,17 @@ export async function placeCodOrder(
   address: { value: Address; savedId?: string },
 ): Promise<PlaceResult> {
   // Cart line → the catalogue pack it names → that pack's SKU, which is the
-  // key the database knows it by.
+  // key the database knows it by. One read for the whole cart, uncached: a
+  // withdrawn product must fail here, not be honoured from a cached copy.
+  // These rows decide nothing but the SKU; the price comes from the locked
+  // row inside the transaction below.
+  const products = await productRepository.listBySlugs(
+    request.lines.map((line) => line.slug),
+  );
+  const bySlug = new Map(products.map((product) => [product.slug, product]));
+
   const wanted = request.lines.map((line) => {
-    const product = productBySlug(line.slug);
+    const product = bySlug.get(line.slug);
     const variant = product?.variants.find((v) => v.id === line.variantId);
     return { line, name: product?.name ?? line.slug, sku: variant?.sku };
   });

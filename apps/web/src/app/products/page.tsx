@@ -3,7 +3,7 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Container, Section } from "@/components/ui/Section";
 import { CategoryCard } from "@/components/product/CategoryCard";
 import { ProductCard } from "@/components/product/ProductCard";
-import { categories, products } from "@/data/catalog";
+import { listCategories, listProducts } from "@/server/catalogue";
 
 export const metadata: Metadata = {
   title: "All Products",
@@ -12,7 +12,12 @@ export const metadata: Metadata = {
   alternates: { canonical: "/products" },
 };
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const [categories, products] = await Promise.all([
+    listCategories(),
+    listProducts(),
+  ]);
+
   return (
     <>
       <Section tone="white" size="compact">

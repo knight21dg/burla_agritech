@@ -1,5 +1,4 @@
 import { useSyncExternalStore } from "react";
-import { defaultVariant, productBySlug } from "@/data/catalog";
 import { CATALOGUE_ID, MAX_LINE_QTY } from "@/lib/checkout";
 
 /**
@@ -8,9 +7,10 @@ import { CATALOGUE_ID, MAX_LINE_QTY } from "@/lib/checkout";
  * across tabs.
  *
  * It holds references only: which product, which pack size, how many. Never a
- * price or a name. Those are read from the catalogue whenever the cart is
- * shown, and at checkout the server prices the order from its own records, so
- * a cart edited in the browser cannot change what anything costs.
+ * price or a name. Those are read from the server whenever the cart is shown
+ * (`useResolvedCart`), and at checkout the server prices the order from its
+ * own records, so a cart edited in the browser cannot change what anything
+ * costs.
  *
  * A module-level store behind `useSyncExternalStore` rather than a context
  * provider: every component that calls `useCart()` sees the same lines, with
@@ -38,8 +38,15 @@ const listeners = new Set<() => void>();
 
 /**
  * Whatever is in storage is untrusted: it may be from an older version of the
- * site, edited by hand, or name a product since removed. Only well-formed
- * lines for products (and pack sizes) that still exist survive.
+ * site, edited by hand, or name a product since removed. Only structurally
+ * well-formed lines survive.
+ *
+ * Whether a product still exists is no longer decided here. The browser has
+ * no catalogue to check against, and it was never the authority anyway — the
+ * server drops unknown lines when it resolves the cart for display, and
+ * refuses them outright when the order is placed. Checking here as well would
+ * mean shipping the catalogue to every visitor to guard something already
+ * guarded.
  */
 function parse(raw: string | null): CartLine[] {
   if (!raw) return [];
@@ -61,15 +68,13 @@ function parse(raw: string | null): CartLine[] {
     }
     if (typeof qty !== "number" || !Number.isInteger(qty) || qty < 1) continue;
 
-    const product = productBySlug(slug);
-    if (!product) continue;
-    if (variantId && !product.variants.some((v) => v.id === variantId)) continue;
-    // A line saved before the product had pack sizes takes its default one,
-    // rather than sitting in the cart unpriced.
-    const pack = variantId ?? defaultVariant(product)?.id;
-    if (out.some((l) => sameLine(l, slug, pack))) continue;
+    if (out.some((l) => sameLine(l, slug, variantId))) continue;
 
-    out.push({ slug, ...(pack ? { variantId: pack } : {}), qty: Math.min(qty, MAX_QTY) });
+    out.push({
+      slug,
+      ...(variantId ? { variantId } : {}),
+      qty: Math.min(qty, MAX_QTY),
+    });
   }
   return out;
 }
