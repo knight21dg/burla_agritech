@@ -106,6 +106,9 @@ export function describe(entry: ActivityEntry): string {
 
   if (area === "order" && what) {
     const orderNumber = field(entry.changes, "orderNumber");
+    const status = (entry.changes as { status?: { from?: unknown } } | null)?.status;
+    if (status?.from === "confirmed" && what === "processing") return `Accepted order ${orderNumber ?? ""}`.trim();
+    if (status?.from === "confirmed" && what === "cancelled") return `Rejected order ${orderNumber ?? ""}`.trim();
     return `${(ORDER_WORDS[what] ?? "updated").replace(/^./, (c) => c.toUpperCase())} order ${orderNumber ?? ""}`.trim();
   }
 

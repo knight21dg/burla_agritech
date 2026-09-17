@@ -11,9 +11,9 @@ Roles and sessions are in `ADMIN-ROLES-PERMISSIONS.md`. How the admin sits besid
 | Home | Greeting, four counts (products, orders, customers, new enquiries), big buttons for common jobs | `app/(app)/page.tsx`, `server/repositories/dashboardRepository.ts` |
 | Products | Search, pick a category, open a card, edit, save. Each card also has Available / Out of stock and Delete. Add Product is one form | `app/(app)/products/*`, `components/products/ProductEditor.tsx`, `server/products.ts` |
 | Categories | Category cards with product counts; edit name, photo, description, show on website, subcategories | `app/(app)/categories/*`, `components/categories/*`, `server/categories.ts` |
-| Orders | New / Preparing / Ready / On the way / Delivered / Cancelled, each with one big next-step button | `app/(app)/orders/*`, `lib/orderSteps.ts`, `server/orders.ts` |
+| Orders | New / Preparing / Ready / On the way / Delivered / Cancelled. A new order has Accept and Reject, in the list and on its page; later orders have one next-step button | `app/(app)/orders/*`, `lib/orderSteps.ts`, `server/orders.ts` |
 | Customers | List and detail: contact details, orders, amount spent | `app/(app)/customers/*`, `server/customers.ts` |
-| Enquiries | Inbox; reply by email, phone or WhatsApp; mark as contacted, done or not genuine | `app/(app)/enquiries/*`, `server/enquiries.ts` |
+| Enquiries | Inbox; reply by email, phone or WhatsApp; mark as contacted, done or not genuine. The WhatsApp taps tab lists taps on the website's WhatsApp buttons | `app/(app)/enquiries/*`, `server/enquiries.ts` |
 | Website | Homepage headings and text; which products appear on the homepage | `app/(app)/website/*`, `server/website.ts` |
 | Settings | Business details shown on the site, password, recent activity | `app/(app)/settings/*`, `server/website.ts`, `lib/activity.ts` |
 
@@ -47,13 +47,27 @@ Database words never reach the screen. The translation:
 
 Photos are checked and re-encoded with sharp (at most 1600 px, WebP, metadata removed, 10 MB upload limit). Locally they are stored in `MEDIA_DIR` and served by the shop at `/media/...`. Production needs object storage (R2) before launch.
 
-## 4. Stock
+## 4. WhatsApp taps
+
+The website's WhatsApp buttons open WhatsApp directly, so the chat never passes through this system. The website only records a tap: which button, which page, when (`POST /api/whatsapp-tap`, table `whatsapp_taps`). No name, number or message is stored or available.
+
+A tap is ignored when it comes from another website, has any unexpected field, repeats the same button on the same page from the same visitor within 10 minutes, or is one of more than 30 from one address in an hour. Addresses are stored only as a salted hash.
+
+## 5. Accepting and rejecting orders
+
+- Accept moves a new order to Preparing. Reject cancels it and notes "Rejected by the shop" in its history.
+- If the customer paid online, the Reject confirmation and the result both remind the owner to refund it from the payment dashboard. Nothing is refunded automatically.
+- Customers are not told automatically yet; there is no order email or SMS.
+
+## 6. Stock
 
 Stock is not counted by default (`track_inventory = false`). A pack is either available or out of stock, which the owner sets with one switch. Packs that do count stock still get it back when an order is cancelled.
 
-## 5. Verified by hand (16–17 Sept 2026, local database)
+## 7. Verified by hand (16–17 Sept 2026, local database)
 
 - Price change (Moringa Powder 100 g), photo change, hide and show again: the database and the shop page matched each time.
+- Accept and Reject from the order list, including the refund reminder for an order paid online; the order page for a new order.
+- WhatsApp taps from the floating button and the footer, shown under Enquiries with the product name.
 - From the product list: Out of stock, Available and Delete on a test product. The shop page said "Out of stock", then "not found" after Delete.
 - Add product with two pack sizes, then delete it. The shop page appeared, then returned 404.
 - Rename a category; add and delete a subcategory.
@@ -65,9 +79,10 @@ Stock is not counted by default (`track_inventory = false`). A pack is either av
 
 All test data has been removed and the edited values restored. The audit rows from testing remain, because the activity log is not edited.
 
-## 6. Known limits
+## 8. Known limits
 
-- A cash-on-delivery order starts as "New order"; there is no separate confirm step.
+- Accepting or rejecting an order does not notify the customer.
+- Rejecting a paid online order does not refund it automatically.
 - Uploaded photos are stored on local disk only (`MEDIA_DIR`). Production needs R2.
 - The WhatsApp number still comes from the environment, not from Settings.
 - The storefront has 8 lint warnings (`react-hooks/set-state-in-effect`) in older components. They work, but should move off effects later.

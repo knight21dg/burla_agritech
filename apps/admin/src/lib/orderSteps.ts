@@ -7,9 +7,9 @@ import type { OrderStatus, PaymentStatus } from "@burla/core/db/schema";
  * the shop ("Confirmed", "Being prepared"…). The owner sees what each state
  * means for them — what has come in and what they need to do next.
  *
- * A cash-on-delivery order is confirmed to the customer the moment it is
- * placed, so for the owner it starts life as a "New order" whose first step is
- * "Start preparing". There is no separate "confirm" step to forget.
+ * A new order is waiting for the owner's answer: Accept (it moves to
+ * Preparing) or Reject (it is cancelled). Later, while it has not left,
+ * "Cancel order" is still possible.
  *
  * Only the moves listed here are possible. An order cannot jump from New to
  * Delivered, or come back from Cancelled; the server refuses anything else,
@@ -48,7 +48,7 @@ export interface Step {
 }
 
 export const NEXT_STEPS: Partial<Record<OrderStatus, Step[]>> = {
-  confirmed: [{ to: "processing", label: "Start preparing" }],
+  confirmed: [{ to: "processing", label: "Accept order", explain: "It moves to Preparing." }],
   processing: [{ to: "packed", label: "Mark ready" }],
   packed: [
     {
@@ -68,6 +68,16 @@ export const NEXT_STEPS: Partial<Record<OrderStatus, Step[]>> = {
 };
 
 export const CAN_CANCEL: readonly OrderStatus[] = ["pending", "confirmed", "processing", "packed"];
+
+/** A new order is rejected; one already accepted is cancelled. */
+export function isRejection(from: OrderStatus): boolean {
+  return from === "confirmed";
+}
+
+/** Paid online: rejecting or cancelling does not send the money back by itself. */
+export function needsRefund(method: "upi" | "card" | "cod", status: PaymentStatus): boolean {
+  return method !== "cod" && status === "paid";
+}
 
 export function canMove(from: OrderStatus, to: OrderStatus): boolean {
   if (to === "cancelled") return CAN_CANCEL.includes(from);

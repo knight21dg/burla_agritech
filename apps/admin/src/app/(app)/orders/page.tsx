@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronRight, Search } from "lucide-react";
+import { can } from "@burla/core/auth/rbac";
 import { requirePermission } from "@/server/auth/session";
 import { ORDERS_PAGE_SIZE, listOrders } from "@/server/orders";
-import { ORDER_GROUPS, ORDER_LABEL, ORDER_TONE, type OrderGroup } from "@/lib/orderSteps";
+import { ORDER_GROUPS, ORDER_LABEL, ORDER_TONE, needsRefund, type OrderGroup } from "@/lib/orderSteps";
 import { money, when } from "@/lib/format";
 import { cn } from "@/lib/cn";
+import { OrderQuickAnswer } from "@/components/orders/OrderQuickAnswer";
 
 export const metadata: Metadata = { title: "Orders" };
 
@@ -19,7 +21,8 @@ export default async function OrdersPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  await requirePermission("order.read_all");
+  const actor = await requirePermission("order.read_all");
+  const canAnswer = can(actor, "order.transition");
   const params = await searchParams;
 
   const groupParam = one(params.show);
@@ -114,6 +117,12 @@ export default async function OrdersPage({
                 <span className="shrink-0 text-[1.0625rem] font-semibold tabular-nums">{money(order.totalMinor)}</span>
                 <ChevronRight className="size-5 shrink-0 text-ink-3" aria-hidden="true" />
               </Link>
+              {canAnswer && order.status === "confirmed" && (
+                <OrderQuickAnswer
+                  orderNumber={order.orderNumber}
+                  paidOnline={needsRefund(order.paymentMethod, order.paymentStatus) ? money(order.totalMinor) : undefined}
+                />
+              )}
             </li>
           ))}
         </ul>

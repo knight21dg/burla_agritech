@@ -12,7 +12,8 @@ import {
 } from "@burla/core/db/schema";
 import { requireCapability, type Actor } from "@burla/core/auth/rbac";
 import { writeAudit } from "@burla/core/repositories/audit";
-import { ORDER_GROUPS, ORDER_LABEL, canMove, type OrderGroup } from "@/lib/orderSteps";
+import { ORDER_GROUPS, ORDER_LABEL, canMove, isRejection, needsRefund, type OrderGroup } from "@/lib/orderSteps";
+import { money } from "@/lib/format";
 
 /**
  * Orders: what came in, and moving each one along.
@@ -181,6 +182,7 @@ export async function moveOrder(
         status: orders.status,
         paymentMethod: orders.paymentMethod,
         paymentStatus: orders.paymentStatus,
+        totalMinor: orders.totalMinor,
       })
       .from(orders)
       .where(eq(orders.orderNumber, orderNumber))
@@ -197,6 +199,7 @@ export async function moveOrder(
 
     const now = new Date();
     const cashReceived = to === "delivered" && order.paymentMethod === "cod" && order.paymentStatus !== "paid";
+    const rejected = to === "cancelled" && isRejection(order.status);
 
     await tx
       .update(orders)
@@ -243,7 +246,9 @@ export async function moveOrder(
       fromStatus: order.status,
       toStatus: to,
       actorId: actor.kind === "user" ? actor.userId : null,
-      note: note?.trim().slice(0, 500) || (cashReceived ? "Cash received on delivery" : null),
+      note:
+        note?.trim().slice(0, 500) ||
+        (cashReceived ? "Cash received on delivery" : rejected ? "Rejected by the shop" : null),
     });
 
     await writeAudit(tx, actor, {
@@ -258,12 +263,16 @@ export async function moveOrder(
     });
 
     const said: Partial<Record<OrderStatus, string>> = {
-      processing: "Marked as preparing.",
+      processing: order.status === "confirmed" ? "Order accepted. It is now in Preparing." : "Marked as preparing.",
       packed: "Marked as ready.",
       shipped: "Marked as on the way.",
       delivered: cashReceived ? "Marked as delivered, and the cash as received." : "Marked as delivered.",
-      cancelled: "Order cancelled.",
+      cancelled: rejected ? "Order rejected." : "Order cancelled.",
     };
-    return { ok: true as const, message: said[to] ?? "Updated." };
+    const refund =
+      to === "cancelled" && needsRefund(order.paymentMethod, order.paymentStatus)
+        ? ` The customer paid ${money(order.totalMinor)} online — refund it from your payment dashboard.`
+        : "";
+    return { ok: true as const, message: (said[to] ?? "Updated.") + refund };
   });
 }

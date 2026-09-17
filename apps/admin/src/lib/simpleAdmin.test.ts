@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parsePackSize } from "./packSize";
 import { productFormSchema, toPaise, webAddressFrom } from "./productForm";
-import { CAN_CANCEL, NEXT_STEPS, canMove, paymentLabel } from "./orderSteps";
+import { CAN_CANCEL, NEXT_STEPS, canMove, isRejection, needsRefund, paymentLabel } from "./orderSteps";
 import { describe as sentence } from "./activity";
 
 /**
@@ -127,6 +127,14 @@ describe("moving an order along", () => {
     expect(NEXT_STEPS.cancelled).toBeUndefined();
   });
 
+  it("reminds about a refund only when money was paid online", () => {
+    expect(needsRefund("upi", "paid")).toBe(true);
+    expect(needsRefund("card", "pending")).toBe(false);
+    expect(needsRefund("cod", "paid")).toBe(false);
+    expect(isRejection("confirmed")).toBe(true);
+    expect(isRejection("processing")).toBe(false);
+  });
+
   it("says plainly whether cash on delivery has been paid", () => {
     expect(paymentLabel("cod", "pending")).toBe("Cash on delivery — not paid yet");
     expect(paymentLabel("cod", "paid")).toBe("Cash on delivery — paid");
@@ -147,6 +155,14 @@ describe("the activity log in words", () => {
       expect(text, action).not.toMatch(/[a-z]+\.[a-z_]+/);
       expect(text.length).toBeGreaterThan(0);
     }
+  });
+
+  it("calls a new order's first answer accepted or rejected", () => {
+    const order = (action: string, from: string) =>
+      sentence({ action, changes: { orderNumber: "BGA-2026-00004", status: { from, to: action.split(".")[1] } } });
+    expect(order("order.processing", "confirmed")).toBe("Accepted order BGA-2026-00004");
+    expect(order("order.cancelled", "confirmed")).toBe("Rejected order BGA-2026-00004");
+    expect(order("order.cancelled", "processing")).toBe("Cancelled order BGA-2026-00004");
   });
 
   it("names renames", () => {

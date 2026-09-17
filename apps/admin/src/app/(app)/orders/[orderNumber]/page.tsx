@@ -5,7 +5,7 @@ import { ArrowLeft, MessageCircle, Phone } from "lucide-react";
 import { can } from "@burla/core/auth/rbac";
 import { requirePermission } from "@/server/auth/session";
 import { getOrder } from "@/server/orders";
-import { CAN_CANCEL, NEXT_STEPS, ORDER_LABEL, ORDER_TONE, paymentLabel } from "@/lib/orderSteps";
+import { CAN_CANCEL, NEXT_STEPS, ORDER_LABEL, ORDER_TONE, needsRefund, paymentLabel } from "@/lib/orderSteps";
 import { money, when } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { OrderActions } from "@/components/orders/OrderActions";
@@ -48,6 +48,8 @@ export default async function OrderPage({ params }: { params: Promise<{ orderNum
           orderNumber={order.orderNumber}
           steps={NEXT_STEPS[order.status] ?? []}
           canCancel={CAN_CANCEL.includes(order.status)}
+          isNew={order.status === "confirmed"}
+          paidOnline={needsRefund(order.paymentMethod, order.paymentStatus) ? money(order.totalMinor) : undefined}
         />
       ) : (
         <p className="panel px-4 py-3 font-medium text-ink-2 sm:px-5">
