@@ -26,9 +26,12 @@ import { SearchOverlay } from "./SearchOverlay";
  * Header, built to the client's mockup of 2026-09-17. Three bands:
  *
  *   ▌ Pure Products | Healthier People | A Better Tomorrow        About Us | Quality | Contact Us   f ig yt in ▐   dark green
- *     logo        BURLA GLOBAL AGRI PRODUCTS          [ Search products… ]   account   cart
+ *     logo*       BURLA GLOBAL AGRI PRODUCTS          [ Search products… ]   account   cart
  *                 ——  GOOD FOOD  •  BETTER LIVING  ——
  *            Home   Powders & Flakes   Dehydrated Fruits   Pickles   …   Spices
+ *
+ * *The logo is the sprout and BURLA only (the client's instruction,
+ * 2026-09-17), not the lockup with "GLOBAL AGRI PRODUCTS" beneath.
  *
  * The green top bar scrolls away; the logo row and the categories stay at
  * the top of the screen. The search box opens the same live search as
@@ -189,10 +192,10 @@ export function Header({ categories }: { categories: Category[] }) {
           <div className="flex items-center gap-4 py-2.5 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-8 lg:py-3">
             <Link href="/" className="shrink-0 justify-self-start" aria-label={`${site.name} — home`}>
               <span className="block lg:hidden">
-                <Logo variant="full" height={50} priority alt="" />
+                <Logo variant="mark" height={42} priority alt="" />
               </span>
               <span className="hidden lg:block">
-                <Logo variant="full" height={92} priority alt="" />
+                <Logo variant="mark" height={76} priority alt="" />
               </span>
             </Link>
 
@@ -303,7 +306,7 @@ export function Header({ categories }: { categories: Category[] }) {
             className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-white"
           >
             <div className="flex h-16 shrink-0 items-center justify-between border-b border-line px-4">
-              <Logo variant="full" height={40} alt="" />
+              <Logo variant="mark" height={32} alt="" />
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
