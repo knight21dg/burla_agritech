@@ -134,28 +134,28 @@ export default async function HomePage() {
         {/* Faint leaves in the bottom-right corner — the hero's own leaf
             cut-outs, washed out. Decoration only, and only where the panel
             is wide enough to keep them clear of the words. */}
-        <div aria-hidden="true" className="pointer-events-none absolute -bottom-16 -right-12 -z-10 hidden h-56 w-72 opacity-[0.1] min-[1800px]:block">
+        <div aria-hidden="true" className="pointer-events-none absolute -bottom-20 -right-14 -z-10 hidden h-56 w-72 opacity-[0.08] 2xl:block">
           {/* eslint-disable-next-line @next/next/no-img-element -- a small decorative sprite */}
           <img src="/images/home/leaves/leaf-c.webp" alt="" className="absolute bottom-0 right-16 w-48 rotate-[-28deg]" />
           {/* eslint-disable-next-line @next/next/no-img-element -- a small decorative sprite */}
           <img src="/images/home/leaves/leaf-f.webp" alt="" className="absolute bottom-16 right-0 w-28 rotate-[18deg]" />
         </div>
 
-        <div className="mx-auto grid max-w-[1920px] xl:grid-cols-2">
+        <div className="mx-auto grid max-w-[1920px] min-[1152px]:grid-cols-[minmax(0,42fr)_minmax(0,58fr)]">
           <AboutPhoto photo={about} />
 
-          <div className="flex items-center px-5 py-10 sm:px-8 sm:py-12 md:px-12 xl:px-12 xl:py-14 2xl:px-16">
+          <div className="flex items-center px-5 py-9 sm:px-8 sm:py-10 md:px-12 xl:px-14 xl:py-11 2xl:px-20">
             <Reveal className="w-full">
-              <div className="grid gap-9 min-[1800px]:grid-cols-[minmax(0,1.55fr)_auto_minmax(0,1fr)] min-[1800px]:gap-8 2xl:gap-10">
+              <div className="grid max-w-[46rem] gap-7">
                 <div className="max-w-xl">
                   <p className="font-brand text-[0.8125rem] font-bold uppercase tracking-[0.22em] text-green-700 sm:text-[0.875rem]">
                     About Burla
                   </p>
-                  <span aria-hidden="true" className="mt-2.5 block h-[3px] w-12 rounded-full bg-green-700" />
+                  <span aria-hidden="true" className="mt-2 block h-[3px] w-12 rounded-full bg-green-700" />
 
                   <h2
                     id="home-about"
-                    className="mt-5 font-serif text-[clamp(1.75rem,1rem+1.35vw,2.75rem)] font-semibold leading-[1.14] tracking-[-0.015em] text-forest"
+                    className="mt-4 font-serif text-[clamp(1.75rem,1rem+1.35vw,2.75rem)] font-semibold leading-[1.14] tracking-[-0.015em] text-forest"
                   >
                     {/* The owner's own heading (Website → Homepage in the
                         admin); the last line in olive, as in the mockup. */}
@@ -172,13 +172,13 @@ export default async function HomePage() {
                   {/* Written by the owner in the admin. The default is
                       deliberately general: the founding story and sourcing
                       detail are theirs to supply, not ours to invent. */}
-                  <p className="mt-4 max-w-[48ch] text-[0.9375rem] leading-[1.75] text-ink-2 2xl:text-[1rem]">
+                  <p className="mt-3 max-w-[52ch] text-[0.9375rem] leading-[1.7] text-ink-2 2xl:text-[1rem]">
                     {words.aboutText}
                   </p>
 
                   <Link
                     href="/about"
-                    className="group mt-6 inline-flex h-12 items-center gap-2.5 rounded-full bg-forest px-7 text-[0.9375rem] font-semibold text-white shadow-[0_10px_22px_-12px_rgba(15,74,44,0.6)] transition duration-300 hover:bg-green-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+                    className="group mt-5 inline-flex h-12 items-center gap-2.5 rounded-full bg-forest px-7 text-[0.9375rem] font-semibold text-white shadow-[0_10px_22px_-12px_rgba(15,74,44,0.6)] transition duration-300 hover:bg-green-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
                   >
                     Our Story
                     <ArrowRight
@@ -188,11 +188,8 @@ export default async function HomePage() {
                   </Link>
                 </div>
 
-                <span aria-hidden="true" className="hidden w-px bg-line min-[1800px]:block" />
-
-                {/* Below the words in two columns, until the panel is wide
-                    enough for its own column beside them. */}
-                <ul className="grid content-center gap-x-6 gap-y-5 border-t border-line pt-7 sm:max-[1799px]:grid-cols-2 min-[1800px]:gap-y-6 min-[1800px]:border-t-0 min-[1800px]:pt-0">
+                {/* A compact 2×2 under the words (one column on a phone). */}
+                <ul className="grid gap-x-8 gap-y-4 border-t border-line pt-6 sm:grid-cols-2">
                   {ABOUT_POINTS.map(({ Icon, title, note }) => (
                     <li key={title} className="flex items-center gap-3.5">
                       <span className="grid size-11 shrink-0 place-items-center rounded-full bg-green-50 2xl:size-12">
