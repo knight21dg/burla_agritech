@@ -57,6 +57,8 @@ export interface ProductCard {
   runningLow: boolean;
   /** Every pack on sale is counted and has none left: supply is what it needs. */
   noneLeft: boolean;
+  /** Each pack size, smallest first, with its packets (null when not counted). */
+  stock: { size: string; packets: number | null; lowLevel: number; onSale: boolean }[];
 }
 
 export interface ProductFilters {
@@ -115,6 +117,7 @@ export async function listProducts(
             counted: productVariants.trackInventory,
             quantity: productVariants.stockQuantity,
             lowLevel: productVariants.lowStockThreshold,
+            grams: productVariants.netWeightGrams,
           })
           .from(productVariants)
           .where(and(inArray(productVariants.productId, ids), ne(productVariants.status, "removed"))),
@@ -148,6 +151,14 @@ export async function listProducts(
       runningLow: available.some((pack) => pack.counted && pack.quantity <= pack.lowLevel),
       noneLeft:
         available.length === 0 && mine.some((pack) => pack.status === "active" && pack.counted && pack.quantity <= 0),
+      stock: [...mine]
+        .sort((a, b) => a.grams - b.grams)
+        .map((pack) => ({
+          size: pack.label,
+          packets: pack.counted ? pack.quantity : null,
+          lowLevel: pack.lowLevel,
+          onSale: pack.status === "active",
+        })),
     };
   });
 

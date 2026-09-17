@@ -61,6 +61,7 @@ export default async function ProductsPage({
   const categories = options.filter((option) => option.parentId === null);
   const canAdd = can(actor, "catalogue.write");
   const canDelete = can(actor, "catalogue.publish");
+  const canStock = can(actor, "inventory.adjust");
   const deleted = one(params.deleted) === "1";
 
   return (
@@ -207,6 +208,49 @@ export default async function ProductsPage({
                   </div>
                 </div>
               </div>
+
+              {card.stock.length > 0 && (
+                <div className="rounded-md bg-surface px-3 py-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-[0.8125rem] font-semibold uppercase tracking-wide text-ink-3">Stock</p>
+                    {canStock && (
+                      <Link
+                        href={`/stock?q=${encodeURIComponent(card.name)}`}
+                        className="text-[0.875rem] text-ink-2 underline underline-offset-2 hover:text-ink"
+                      >
+                        Change stock
+                      </Link>
+                    )}
+                  </div>
+                  <ul className="mt-1 space-y-0.5">
+                    {card.stock.map((pack, index) => (
+                      <li key={index} className="flex items-baseline justify-between gap-3 text-[0.9375rem]">
+                        <span className="text-ink-2">{pack.size}</span>
+                        {pack.packets === null ? (
+                          <span className={pack.onSale ? "text-ink-3" : "font-medium text-danger"}>
+                            {pack.onSale ? "Not counted" : "Out of stock"}
+                          </span>
+                        ) : (
+                          <span
+                            className={cn(
+                              "font-semibold tabular-nums",
+                              pack.packets <= 0 || !pack.onSale
+                                ? "text-danger"
+                                : pack.packets <= pack.lowLevel
+                                  ? "text-warning"
+                                  : "text-ink",
+                            )}
+                          >
+                            {pack.packets} {pack.packets === 1 ? "packet" : "packets"}
+                            {pack.packets > 0 && pack.packets <= pack.lowLevel && pack.onSale ? " · low" : ""}
+                            {!pack.onSale ? " · marked out of stock" : ""}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <ProductCardActions
                 productId={card.id}

@@ -9,7 +9,7 @@ Roles and sessions are in `ADMIN-ROLES-PERMISSIONS.md`. How the admin sits besid
 | Menu | What the owner does there | Files (`apps/admin/src`) |
 |---|---|---|
 | Home | Greeting, four counts (products, orders, customers, new enquiries), big buttons for common jobs | `app/(app)/page.tsx`, `server/repositories/dashboardRepository.ts` |
-| Products | Search, pick a category, open a card, edit, save. Each card also has Available / Out of stock and Delete. Add Product is one form | `app/(app)/products/*`, `components/products/ProductEditor.tsx`, `server/products.ts` |
+| Products | Search, pick a category, open a card, edit, save. Each card shows the stock of every pack size and has Available / Out of stock and Delete. Add Product is one form | `app/(app)/products/*`, `components/products/ProductEditor.tsx`, `server/products.ts` |
 | Stock | Packets of every pack size; Add supply, Set count, Start / Stop counting; recent stock changes. Home warns when stock runs low | `app/(app)/stock/*`, `components/stock/StockRow.tsx`, `server/stock.ts`, `lib/stock.ts` |
 | Categories | Category cards with product counts; edit name, photo, description, show on website, subcategories | `app/(app)/categories/*`, `components/categories/*`, `server/categories.ts` |
 | Orders | New / Preparing / Ready / On the way / Delivered / Cancelled. A new order has Accept and Reject, in the list and on its page; later orders have one next-step button | `app/(app)/orders/*`, `lib/orderSteps.ts`, `server/orders.ts` |
