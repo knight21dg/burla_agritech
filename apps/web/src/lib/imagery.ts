@@ -43,7 +43,7 @@ export const imagery: {
    * carries none of them (assets/hero/extract_products.py).
    */
   heroProducts: Photo | null;
-  /** Homepage "About Burla" band, left-hand side. Farm landscape, ~16:10. */
+  /** Homepage "About Burla" band: the photograph, 3:2. */
   about: Photo | null;
 } = {
   // Cut from the client's supplied hero (2026-09-10, a generated image; the
@@ -61,5 +61,18 @@ export const imagery: {
     width: 1243,
     height: 616,
   },
-  about: null,
+  // Supplied by the client on 2026-09-17 (a generated image: the farmer and
+  // the printed sack are illustrative, not a real person or real packaging).
+  // Master: assets/about/farmer-supplied.webp, 1536x1024. The farmer's face
+  // sits near 30% across, the sack between 48% and 80%, and the top right is
+  // open sky — the page's crops and the script overlay are set from that.
+  about: {
+    src: "/images/home/about-farmer.webp",
+    alt:
+      "A smiling farmer in a white turban kneeling in a green field, holding " +
+      "an armful of freshly picked leaves beside a jute sack printed with the " +
+      "Burla logo",
+    width: 1536,
+    height: 1024,
+  },
 };
