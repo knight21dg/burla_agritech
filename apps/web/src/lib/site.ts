@@ -21,6 +21,8 @@ export const site = {
   shortName: "Burla",
   tagline: "From Nature to Your Table",
   subTagline: "Pure Products · Healthy People · A Greener Tomorrow",
+  /** The line above the homepage headline, from the client's mockup of 2026-09-17. */
+  heroEyebrow: ["Natural", "Nutritious", "Sustainable"],
   /** The header's motto, from the client's mockup of 2026-09-17. */
   motto: ["Good Food", "Better Living"],
   description:

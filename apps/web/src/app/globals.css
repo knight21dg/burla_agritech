@@ -53,6 +53,7 @@
   --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-source-serif), ui-serif, Georgia, "Times New Roman", serif;
   --font-script: var(--font-caveat), ui-serif, cursive;
+  --color-olive: #5f8a2f; /* the mockup's "To Your Table" — 3.9:1 on the hero cream, large text only */
   --font-brand: var(--font-montserrat), var(--font-instrument), ui-sans-serif, sans-serif;
 
   /* The deep green of the mockup's pill buttons and hero wordmark.
