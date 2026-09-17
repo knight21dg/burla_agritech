@@ -64,6 +64,13 @@
       "when": 1789561558173,
       "tag": "0008_sync_track_inventory_default",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1789625639981,
+      "tag": "0009_whatsapp_taps",
+      "breakpoints": true
     }
   ]
 }

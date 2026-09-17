@@ -129,6 +129,41 @@ export const enquiries = pgTable(
   ],
 );
 
+// --- whatsapp_taps -----------------------------------------------------------
+
+/** The WhatsApp buttons on the website, as recorded by `place`. */
+export const WHATSAPP_PLACES = ["floating", "footer", "contact", "wholesale", "search", "page"] as const;
+export type WhatsappPlace = (typeof WHATSAPP_PLACES)[number];
+
+/**
+ * Someone tapped a WhatsApp button on the website.
+ *
+ * The chat itself goes from their phone to the business's WhatsApp and never
+ * passes through this system, so this is all that can be known: which button,
+ * on which page, when. No name, number or message — there is none to store.
+ */
+export const whatsappTaps = pgTable(
+  "whatsapp_taps",
+  {
+    id: primaryId(),
+    place: text("place").notNull(),
+    /** Path only, never a query string. */
+    pagePath: text("page_path").notNull(),
+    productId: uuid("product_id").references(() => products.id, { onDelete: "set null" }),
+    /** Hashed with a salt, only to ignore repeat taps. Raw IPs are never stored. */
+    ipHash: text("ip_hash"),
+    ...timestamps,
+  },
+  (table) => [
+    index("whatsapp_taps_created_idx").on(table.createdAt.desc()),
+    check(
+      "whatsapp_taps_place_check",
+      sql`${table.place} in ('floating', 'footer', 'contact', 'wholesale', 'search', 'page')`,
+    ),
+    check("whatsapp_taps_path_check", sql`left(${table.pagePath}, 1) = '/' and length(${table.pagePath}) <= 200`),
+  ],
+);
+
 // --- audit_log --------------------------------------------------------------
 
 /**

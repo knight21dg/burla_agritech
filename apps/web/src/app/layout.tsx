@@ -3,6 +3,7 @@ import { Caveat, Instrument_Sans, Source_Serif_4 } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
+import { WhatsAppTapTracker } from "@/components/layout/WhatsAppTapTracker";
 import { DemoNotice } from "@/components/layout/DemoNotice";
 import { ChromeMeasure } from "@/components/layout/ChromeMeasure";
 import { site } from "@/lib/site";
@@ -104,6 +105,7 @@ export default async function RootLayout({
         </main>
         <Footer />
         <WhatsAppFab />
+        <WhatsAppTapTracker />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}

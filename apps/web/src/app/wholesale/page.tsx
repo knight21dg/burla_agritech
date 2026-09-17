@@ -94,6 +94,7 @@ export default async function WholesalePage() {
                   href={whatsappLink(
                     "Hi Burla, I'd like to discuss bulk or wholesale supply.",
                   )}
+                  data-source="wholesale"
                   external
                   variant="whatsapp"
                   size="lg"

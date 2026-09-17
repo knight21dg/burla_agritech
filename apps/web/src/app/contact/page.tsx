@@ -97,6 +97,7 @@ export default async function ContactPage() {
                   href={whatsappLink(
                     "Hi Burla, I'd like to know more about your products.",
                   )}
+                  data-source="contact"
                   external
                   variant="whatsapp"
                   size="lg"

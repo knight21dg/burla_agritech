@@ -53,6 +53,7 @@ async function Results({ q }: { q: string }) {
         <div className="mt-6 flex flex-wrap gap-3">
           <ButtonLink
             href={whatsappLink(`Hi Burla, do you stock ${q}?`)}
+            data-source="search"
             external
             variant="whatsapp"
           >
