@@ -33,13 +33,13 @@ import { SearchOverlay } from "./SearchOverlay";
 function Motto({ className }: { className?: string }) {
   return (
     <p aria-hidden="true" className={cn("flex items-center justify-center gap-3 text-ink-3", className)}>
-      <span className="h-px w-8 bg-line-strong sm:w-12" />
-      <span className="whitespace-nowrap font-brand font-medium uppercase tracking-[0.42em]">
+      <span className="h-px w-6 bg-line-strong lg:w-12" />
+      <span className="whitespace-nowrap font-brand font-medium uppercase tracking-[0.3em] lg:tracking-[0.42em]">
         {site.motto[0]}
         <span className="mx-[0.6em] tracking-normal">•</span>
         {site.motto[1]}
       </span>
-      <span className="h-px w-8 bg-line-strong sm:w-12" />
+      <span className="h-px w-6 bg-line-strong lg:w-12" />
     </p>
   );
 }
@@ -113,7 +113,7 @@ export function Header({ categories }: { categories: Category[] }) {
             </Link>
 
             <div aria-hidden="true" className="hidden text-center md:block md:flex-1 lg:flex-none">
-              <p className="whitespace-nowrap font-brand text-[1.35rem] font-bold uppercase leading-tight text-green-700 lg:text-[2rem] xl:text-[2.25rem]">
+              <p className="whitespace-nowrap font-brand text-[1.1rem] font-bold uppercase leading-tight text-green-700 min-[880px]:text-[1.35rem] lg:text-[2rem] min-[1400px]:text-[2.25rem]">
                 {site.name}
               </p>
               <Motto className="mt-2 text-[0.75rem] lg:text-[0.95rem]" />
@@ -123,7 +123,7 @@ export function Header({ categories }: { categories: Category[] }) {
               <button
                 type="button"
                 onClick={() => setSearchOpen(true)}
-                className="hidden h-12 w-64 items-center gap-3 rounded-full bg-surface-2 px-4 text-left text-[0.9375rem] text-ink-3 transition-colors hover:bg-line xl:flex xl:w-72"
+                className="hidden h-12 w-64 items-center gap-3 rounded-full bg-surface-2 px-4 text-left text-[0.9375rem] text-ink-3 transition-colors hover:bg-line min-[1400px]:flex min-[1400px]:w-72"
                 aria-label="Search products"
               >
                 <Search className="size-5 text-ink" strokeWidth={1.75} aria-hidden="true" />
@@ -132,7 +132,7 @@ export function Header({ categories }: { categories: Category[] }) {
               <button
                 type="button"
                 onClick={() => setSearchOpen(true)}
-                className={cn(iconButton, "xl:hidden")}
+                className={cn(iconButton, "min-[1400px]:hidden")}
                 aria-label="Search products"
               >
                 <Search className="size-[1.35rem]" strokeWidth={1.75} aria-hidden="true" />
