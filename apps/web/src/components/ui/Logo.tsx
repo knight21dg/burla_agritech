@@ -23,6 +23,18 @@ import { cn } from "@/lib/utils";
  */
 
 const VARIANTS = {
+  /**
+   * Sprout + BURLA, nothing else — the header logo (client mockup,
+   * 2026-09-17). Cut from logo-full.jpg above the "GLOBAL AGRI PRODUCTS"
+   * line and trimmed to the artwork with an 8px margin, so it needs no
+   * cropping here.
+   */
+  mark: {
+    src: "/brand/logo-mark.png",
+    intrinsic: { w: 420, h: 197 },
+    aspect: 2.132,
+    scale: { w: 100, h: 100, left: 0, top: 0 },
+  },
   /** Sprout + BURLA + GLOBAL AGRI PRODUCTS. The primary lockup. */
   full: {
     src: "/brand/logo-full.jpg",

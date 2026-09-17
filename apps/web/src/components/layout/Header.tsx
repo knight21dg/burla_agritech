@@ -12,12 +12,17 @@ import { cn } from "@/lib/utils";
 import { SearchOverlay } from "./SearchOverlay";
 
 /**
- * Header, built to the client's final mockup (2026-09-10).
+ * Header, built to the client's mockups (2026-09-10, updated 2026-09-17).
  *
- * One band, two rows, with the stacked logo spanning both on the left:
+ * One band, two rows, with the logo (sprout + BURLA) spanning both on the left:
  *
- *   logo  |                    About Us  Quality  Contact Us   search  account  cart
+ *   logo  |  BURLA GLOBAL AGRI PRODUCTS    About Us  Quality  Contact Us   search  account  cart
+ *         |
  *         |  Home  Powders & Flakes  Dehydrated Fruits  Pickles  ...
+ *
+ * The company name sits at the top in the multicoloured lettering of the
+ * mockup, and the category row sits a little lower beneath it. Below laptop
+ * width the name gets its own centred line under the logo row.
  *
  * The category row is where a customer spends attention, so it gets the long
  * line; company links are small and quiet above it. Categories are never
@@ -25,6 +30,13 @@ import { SearchOverlay } from "./SearchOverlay";
  * native scroll-snap rather than collapsing, so every category stays one tap
  * away.
  */
+
+/**
+ * The company name in the mockup's lettering: warm yellow and orange through
+ * pink and purple to blue. Clipped to the text, so it is still real text.
+ */
+const BRAND_NAME =
+  "bg-[linear-gradient(90deg,#f5b700_0%,#f57c00_14%,#e53935_28%,#e91e63_42%,#9c27b0_58%,#3f51b5_74%,#1e88e5_86%,#00bcd4_100%)] bg-clip-text font-bold uppercase leading-none tracking-[0.04em] text-transparent whitespace-nowrap";
 
 /** The company links read as the mockup labels them. */
 const COMPANY_LABEL: Record<string, string> = {
@@ -99,16 +111,19 @@ export function Header({ categories }: { categories: Category[] }) {
               aria-label={`${site.name} — home`}
             >
               <span className="block lg:hidden">
-                <Logo variant="full" height={46} priority alt="" />
+                <Logo variant="mark" height={38} priority alt="" />
               </span>
               <span className="hidden lg:block">
-                <Logo variant="full" height={66} priority alt="" />
+                <Logo variant="mark" height={58} priority alt="" />
               </span>
             </Link>
 
             <div className="flex min-w-0 flex-1 flex-col">
-              {/* Row 1 — company links and the icons */}
+              {/* Row 1 — the company name, company links and the icons */}
               <div className="flex items-center justify-end gap-1">
+                <p aria-hidden="true" className={cn(BRAND_NAME, "mr-auto hidden flex-1 text-center lg:block lg:text-[1.6rem] xl:text-[1.85rem]")}>
+                  {site.name}
+                </p>
                 <nav
                   className="mr-3 hidden items-center md:flex"
                   aria-label="Company"
@@ -123,7 +138,7 @@ export function Header({ categories }: { categories: Category[] }) {
                           href={item.href}
                           aria-current={active ? "page" : undefined}
                           className={cn(
-                            "px-3 py-1.5 text-[0.75rem] transition-colors",
+                            "whitespace-nowrap px-3 py-1.5 text-[0.75rem] transition-colors",
                             active
                               ? "font-semibold text-green-700"
                               : "text-ink-2 hover:text-green-700",
@@ -175,7 +190,7 @@ export function Header({ categories }: { categories: Category[] }) {
 
               {/* Row 2 — Home and the ten categories */}
               <nav
-                className="hidden min-w-0 lg:block"
+                className="mt-2.5 hidden min-w-0 lg:block"
                 aria-label="Product categories"
               >
                 <ul className="rail -mx-2">
@@ -203,6 +218,10 @@ export function Header({ categories }: { categories: Category[] }) {
               </nav>
             </div>
           </div>
+          {/* Phones: the name on its own line, centred under the logo row. */}
+          <p aria-hidden="true" className={cn(BRAND_NAME, "pb-2 text-center text-[0.95rem] sm:text-[1.2rem] lg:hidden")}>
+            {site.name}
+          </p>
         </Container>
       </header>
 
