@@ -125,51 +125,76 @@ export default async function HomePage() {
       </section>
 
       {/* --------------------------------------------------------------- About */}
+      {/* Built to the client's mockup of 2026-09-17: the photograph on the
+          left half, full-bleed, with the script over it; on the right the
+          "ABOUT BURLA" line, the heading with its last line in olive, the
+          owner's text and "Our Story"; a rule; and the four points, each
+          icon in a pale green circle. Faint leaves in the bottom corner. */}
       <section
         aria-labelledby="home-about"
-        className="relative overflow-hidden border-y border-line/70 bg-white"
+        className="relative isolate overflow-hidden border-y border-line/70 bg-white"
       >
+        {/* The faint leaves in the mockup's bottom-right corner — the hero's
+            own leaf cut-outs, washed out. Decoration only. */}
+        <div aria-hidden="true" className="pointer-events-none absolute -bottom-16 -right-12 -z-10 hidden h-56 w-72 opacity-[0.1] 2xl:block">
+          {/* eslint-disable-next-line @next/next/no-img-element -- a small decorative sprite */}
+          <img src="/images/home/leaves/leaf-c.webp" alt="" className="absolute bottom-0 right-16 w-48 rotate-[-28deg]" />
+          {/* eslint-disable-next-line @next/next/no-img-element -- a small decorative sprite */}
+          <img src="/images/home/leaves/leaf-f.webp" alt="" className="absolute bottom-16 right-0 w-28 rotate-[18deg]" />
+        </div>
+
         {/* Full-bleed as in the mockup, but capped: past 1920px a band that
-            keeps widening turns a landscape into a stretched banner. */}
-        <div className="mx-auto grid max-w-[1920px] lg:grid-cols-[minmax(0,44%)_minmax(0,1fr)]">
-          {/* Full-bleed to the left edge of the viewport, as in the mockup */}
-          <div className="relative min-h-[16rem] lg:min-h-[21rem]">
+            keeps widening turns a photograph into a stretched banner. */}
+        <div className="mx-auto grid max-w-[1920px] lg:grid-cols-2 xl:grid-cols-[46%_54%]">
+          <div className="relative min-h-[18rem] sm:min-h-[24rem] lg:min-h-[clamp(30rem,40vw,42rem)]">
             {about ? (
               <Image
                 src={about.src}
                 alt={about.alt}
                 fill
-                sizes="(min-width: 1024px) 44vw, 100vw"
+                sizes="(min-width: 1280px) 46vw, (min-width: 1024px) 50vw, 100vw"
                 className="object-cover"
               />
             ) : (
               <FarmLandscape className="absolute inset-0 h-full w-full" />
             )}
-            <p
+            <div
               aria-hidden="true"
-              className="t-script pointer-events-none absolute right-[8%] top-[12%] rotate-[-10deg] text-[clamp(1.6rem,1.2rem+1.2vw,2.3rem)] leading-[1] text-forest"
+              className="pointer-events-none absolute right-[9%] top-[12%] rotate-[-10deg]"
             >
-              From
-              <br />
-              <span className="ml-5">Our Farms</span>
-              <br />
-              <span className="ml-10">To Your Family</span>
-            </p>
+              <p className="t-script text-[clamp(1.6rem,1.1rem+1.5vw,2.6rem)] leading-[1] text-forest">
+                From
+                <br />
+                <span className="ml-6">Our Farms</span>
+                <br />
+                <span className="ml-12">To Your Table</span>
+              </p>
+              <svg viewBox="0 0 200 24" className="ml-[45%] mt-2 h-auto w-[50%]" fill="none">
+                <path d="M4 18 C60 8 130 4 196 6" stroke="currentColor" className="text-forest" strokeWidth="4" strokeLinecap="round" />
+              </svg>
+            </div>
           </div>
 
-          <div className="px-4 py-10 md:px-10 lg:py-12 lg:pl-10 lg:pr-[max(2rem,calc((min(100vw,1920px)-var(--container-page))/2+2rem))]">
-            <Reveal>
-              <div className="grid gap-8 md:grid-cols-[minmax(0,1.25fr)_auto_minmax(0,1fr)] md:gap-8">
+          <div className="flex items-center px-4 py-12 sm:px-8 md:px-10 lg:py-16 xl:px-12 2xl:px-16">
+            <Reveal className="w-full">
+              <div className="grid gap-10 xl:grid-cols-[minmax(0,1.55fr)_auto_minmax(0,1fr)] xl:gap-7 2xl:gap-10">
                 <div>
-                  <p className="font-serif text-[1.0625rem] text-ink">About Burla</p>
-                  <span aria-hidden="true" className="mt-2 block h-0.5 w-10 rounded-full bg-green-700" />
+                  <p className="font-brand text-[0.875rem] font-bold uppercase tracking-[0.22em] text-green-700 xl:text-[1rem]">
+                    About Burla
+                  </p>
+                  <span aria-hidden="true" className="mt-3 block h-[3px] w-14 rounded-full bg-green-700" />
 
                   <h2
                     id="home-about"
-                    className="mt-5 font-serif text-[clamp(1.6rem,1.3rem+1vw,2rem)] font-medium leading-[1.18] tracking-[-0.015em] text-forest"
+                    className="mt-7 font-serif text-[clamp(1.9rem,0.6rem+1.55vw,3.1rem)] font-semibold leading-[1.12] tracking-[-0.015em] text-forest"
                   >
-                    {linesOf(words.aboutHeading).map((line, index) => (
-                      <span key={index} className="block">
+                    {/* The owner's own heading; the last line in olive, as in
+                        the mockup. */}
+                    {linesOf(words.aboutHeading).map((line, index, lines) => (
+                      <span
+                        key={index}
+                        className={index === lines.length - 1 && lines.length > 1 ? "block text-olive" : "block"}
+                      >
                         {line}
                       </span>
                     ))}
@@ -178,13 +203,13 @@ export default async function HomePage() {
                   {/* Written by the owner in the admin (Website → Homepage). The
                       default is deliberately general: the founding story and
                       sourcing detail are theirs to supply, not ours to invent. */}
-                  <p className="mt-4 max-w-[46ch] text-[0.875rem] leading-[1.75] text-ink-2">
+                  <p className="mt-6 max-w-[46ch] text-[clamp(0.9375rem,0.88rem+0.25vw,1.0625rem)] leading-[1.8] text-ink-2">
                     {words.aboutText}
                   </p>
 
                   <Link
                     href="/about"
-                    className="group mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-forest px-6 text-[0.8125rem] font-semibold text-white shadow-[0_10px_22px_-12px_rgba(15,74,44,0.7)] transition duration-300 hover:bg-green-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+                    className="group mt-8 inline-flex h-12 items-center gap-3 rounded-full bg-forest px-8 text-[0.9375rem] font-semibold text-white shadow-[0_12px_26px_-12px_rgba(15,74,44,0.7)] transition duration-300 hover:bg-green-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink sm:h-14 sm:px-10 sm:text-[1.0625rem]"
                   >
                     Our Story
                     <ArrowRight
@@ -194,21 +219,23 @@ export default async function HomePage() {
                   </Link>
                 </div>
 
-                <span aria-hidden="true" className="hidden w-px bg-line md:block" />
+                <span aria-hidden="true" className="hidden w-px bg-line xl:block" />
 
-                <ul className="grid content-center gap-6">
+                <ul className="grid content-center gap-7 sm:grid-cols-2 xl:grid-cols-1">
                   {ABOUT_POINTS.map(({ Icon, title, note }) => (
-                    <li key={title} className="flex items-start gap-3.5">
-                      <Icon
-                        className="mt-0.5 size-7 shrink-0 text-green-700"
-                        strokeWidth={1.25}
-                        aria-hidden="true"
-                      />
+                    <li key={title} className="flex items-center gap-4 xl:gap-5">
+                      <span className="grid size-14 shrink-0 place-items-center rounded-full bg-green-50 xl:size-[4.5rem]">
+                        <Icon
+                          className="size-6 text-green-700 xl:size-7"
+                          strokeWidth={1.75}
+                          aria-hidden="true"
+                        />
+                      </span>
                       <span>
-                        <span className="block text-[0.875rem] font-semibold text-green-700">
+                        <span className="block text-[1rem] font-semibold text-forest xl:text-[1.125rem]">
                           {title}
                         </span>
-                        <span className="block text-[0.75rem] text-ink-3">
+                        <span className="mt-0.5 block text-[0.875rem] text-ink-2 xl:text-[0.9375rem]">
                           {note}
                         </span>
                       </span>
