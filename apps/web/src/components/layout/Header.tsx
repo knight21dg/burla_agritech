@@ -1,20 +1,9 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Facebook,
-  Instagram,
-  Leaf,
-  Linkedin,
-  Menu,
-  Search,
-  ShoppingCart,
-  User,
-  X,
-  Youtube,
-} from "lucide-react";
+import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
 import { useCart } from "@/components/cart/cartStore";
 import { Logo } from "@/components/ui/Logo";
 import type { Category } from "@/types/catalog";
@@ -23,40 +12,22 @@ import { cn } from "@/lib/utils";
 import { SearchOverlay } from "./SearchOverlay";
 
 /**
- * Header, built to the client's mockup of 2026-09-17. Three bands:
+ * Header, built to the client's mockup of 2026-09-17, without the green top
+ * bar (removed at the client's request the same day). Two bands:
  *
- *   ▌ Pure Products | Healthier People | A Better Tomorrow        About Us | Quality | Contact Us   f ig yt in ▐   dark green
  *     logo*       BURLA GLOBAL AGRI PRODUCTS          [ Search products… ]   account   cart
  *                 ——  GOOD FOOD  •  BETTER LIVING  ——
  *            Home   Powders & Flakes   Dehydrated Fruits   Pickles   …   Spices
  *
- * *The logo is the sprout and BURLA only (the client's instruction,
- * 2026-09-17), not the lockup with "GLOBAL AGRI PRODUCTS" beneath.
+ * *The logo is the sprout and BURLA only (the client's instruction), not the
+ * lockup with "GLOBAL AGRI PRODUCTS" beneath.
  *
- * The green top bar scrolls away; the logo row and the categories stay at
- * the top of the screen. The search box opens the same live search as
- * before. Categories are never hidden behind a dropdown on a laptop; below
- * that they are in the menu, and the name and motto get their own line.
- *
- * Social icons link only once a real page address is set in `site.social`.
- * Until then they are shown, as in the mockup, but are not links — a link
- * to nowhere is worse than no link.
+ * The whole header stays at the top of the screen. The search box opens the
+ * live search. Categories are never hidden behind a dropdown on a laptop;
+ * below that they are in the menu, and the name and motto get their own line.
+ * About Us, Quality and Contact Us are in the footer, and in the menu on
+ * tablets and phones.
  */
-
-/** The company links read as the mockup labels them. */
-const COMPANY_LABEL: Record<string, string> = {
-  "/about": "About Us",
-  "/contact": "Contact Us",
-};
-
-const SOCIAL = [
-  { Icon: Facebook, href: site.social.facebook, label: "Facebook" },
-  { Icon: Instagram, href: site.social.instagram, label: "Instagram" },
-  { Icon: Youtube, href: site.social.youtube, label: "YouTube" },
-  { Icon: Linkedin, href: site.social.linkedin, label: "LinkedIn" },
-];
-
-const isRealLink = (href: string) => /^https?:\/\//.test(href);
 
 /** "——  GOOD FOOD  •  BETTER LIVING  ——" */
 function Motto({ className }: { className?: string }) {
@@ -127,64 +98,6 @@ export function Header({ categories }: { categories: Category[] }) {
       >
         Skip to content
       </a>
-
-      {/* Band 1 — the green top bar */}
-      <div data-site-chrome className="bg-green-900 text-white">
-        <Container>
-          <div className="flex min-h-10 items-center justify-center gap-4 py-2 text-[0.8125rem] md:justify-between xl:text-[0.875rem]">
-            {/* All three values on a phone and a laptop; on a tablet, where the
-                links share the bar, only the first. */}
-            <p className="flex items-center gap-2 whitespace-nowrap text-[0.75rem] min-[400px]:text-[0.8125rem] xl:text-[0.875rem]">
-              <Leaf className="size-4 shrink-0 fill-white" strokeWidth={1.5} aria-hidden="true" />
-              {site.headerValues.map((value, index) =>
-                index === 0 ? (
-                  <span key={value}>{value}</span>
-                ) : (
-                  <span key={value} className="inline-flex items-center gap-2 md:hidden lg:inline-flex">
-                    <span className="text-white/60" aria-hidden="true">|</span>
-                    {value}
-                  </span>
-                ),
-              )}
-            </p>
-
-            <div className="hidden items-center gap-6 md:flex">
-              <nav aria-label="Company" className="flex items-center gap-3">
-                {mainNav
-                  .filter((i) => i.href !== "/")
-                  .map((item, index) => {
-                    const active = pathname.startsWith(item.href);
-                    return (
-                      <Fragment key={item.href}>
-                        {index > 0 && <span className="text-white/60" aria-hidden="true">|</span>}
-                        <Link
-                          href={item.href}
-                          aria-current={active ? "page" : undefined}
-                          className={cn("whitespace-nowrap hover:underline", active && "font-semibold underline")}
-                        >
-                          {COMPANY_LABEL[item.href] ?? item.label}
-                        </Link>
-                      </Fragment>
-                    );
-                  })}
-              </nav>
-              <ul className="flex items-center gap-4" aria-label="Burla on social media">
-                {SOCIAL.map(({ Icon, href, label }) => (
-                  <li key={label}>
-                    {isRealLink(href) ? (
-                      <a href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="block hover:opacity-80">
-                        <Icon className="size-[1.125rem]" strokeWidth={1.75} aria-hidden="true" />
-                      </a>
-                    ) : (
-                      <Icon className="size-[1.125rem]" strokeWidth={1.75} aria-label={label} role="img" />
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </Container>
-      </div>
 
       <header data-site-chrome className="sticky top-0 z-50 border-b border-line bg-white">
         <Container>

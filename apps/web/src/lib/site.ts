@@ -21,8 +21,7 @@ export const site = {
   shortName: "Burla",
   tagline: "From Nature to Your Table",
   subTagline: "Pure Products · Healthy People · A Greener Tomorrow",
-  /** The header's top bar and motto, from the client's mockup of 2026-09-17. */
-  headerValues: ["Pure Products", "Healthier People", "A Better Tomorrow"],
+  /** The header's motto, from the client's mockup of 2026-09-17. */
   motto: ["Good Food", "Better Living"],
   description:
     "Indian agricultural produce carefully processed into everyday foods — dehydrated powders and flakes, dehydrated fruits, pickles, dal powders, crisps, dry fruits, millet powders, tea and coffee, masala powders and spices.",
@@ -72,7 +71,6 @@ export const site = {
     facebook: "#", // PLACEHOLDER — OQ-025
     instagram: "#",
     youtube: "#",
-    linkedin: "#",
   },
 } as const;
 
