@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { ExternalLink } from "lucide-react";
 import { env } from "@burla/core/env";
 import { requirePermission } from "@/server/auth/session";
-import { getHomepage, listHomepageProducts } from "@/server/website";
+import { getHomepage, getOfferStrip, listHomepageProducts } from "@/server/website";
 import { HomepageForm } from "@/components/website/HomepageForm";
 import { HomepageProducts } from "@/components/website/HomepageProducts";
+import { OfferStripForm } from "@/components/website/OfferStripForm";
 
 export const metadata: Metadata = { title: "Website" };
 
@@ -15,7 +16,7 @@ export const metadata: Metadata = { title: "Website" };
  */
 export default async function WebsitePage() {
   await requirePermission("content.write");
-  const [homepage, products] = await Promise.all([getHomepage(), listHomepageProducts()]);
+  const [homepage, products, offerStrip] = await Promise.all([getHomepage(), listHomepageProducts(), getOfferStrip()]);
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
@@ -31,6 +32,16 @@ export default async function WebsitePage() {
           </a>
         )}
       </div>
+
+      <section className="panel p-4 sm:p-5">
+        <h2 className="text-[1.0625rem] font-semibold">Offers strip</h2>
+        <p className="hint mt-0.5">
+          The slowly scrolling strip under the menu on every page — bulk orders, discounts, delivery and so on.
+        </p>
+        <div className="mt-4">
+          <OfferStripForm strip={offerStrip} />
+        </div>
+      </section>
 
       <section className="panel p-4 sm:p-5">
         <h2 className="text-[1.0625rem] font-semibold">Homepage words</h2>

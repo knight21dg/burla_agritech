@@ -3,6 +3,8 @@ import { Caveat, Instrument_Sans, Montserrat, Source_Serif_4 } from "next/font/g
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
+import { OfferStrip } from "@/components/layout/OfferStrip";
+import { getOfferStrip } from "@/server/siteContent";
 import { WhatsAppTapTracker } from "@/components/layout/WhatsAppTapTracker";
 import { DemoNotice } from "@/components/layout/DemoNotice";
 import { ChromeMeasure } from "@/components/layout/ChromeMeasure";
@@ -91,7 +93,7 @@ export default async function RootLayout({
   // The category bar and the footer's range list, read once for the whole
   // page. Cached and tagged, so an admin change appears without a build, and
   // the header does not query on every navigation.
-  const categories = await listCategories();
+  const [categories, offerStrip] = await Promise.all([listCategories(), getOfferStrip()]);
 
   const orgJsonLd = {
     "@context": "https://schema.org",
@@ -112,6 +114,7 @@ export default async function RootLayout({
         <ChromeMeasure />
         <DemoNotice />
         <Header categories={categories} />
+        {offerStrip.visible && <OfferStrip offers={offerStrip.offers} />}
         <main id="main" className="flex-1">
           {children}
         </main>

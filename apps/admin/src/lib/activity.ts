@@ -112,6 +112,8 @@ export function describe(entry: ActivityEntry): string {
       const to = field(entry.changes, "to");
       return `Marked the enquiry from ${name ?? "a customer"} as ${to?.toLowerCase() ?? "updated"}`;
     }
+    case "website.offers_saved":
+      return "Changed the offers strip on the website";
     case "website.homepage_saved":
       return "Changed the homepage words";
     case "settings.business_saved":

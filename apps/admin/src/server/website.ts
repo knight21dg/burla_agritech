@@ -1,12 +1,20 @@
 import "server-only";
-import { and, asc, eq, ne } from "drizzle-orm";
+import { and, asc, eq, ne, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@burla/core/db";
 import { passwordCredentials, products, sessions, siteSettings } from "@burla/core/db/schema";
 import { hashPassword, verifyPassword } from "@burla/core/auth";
 import { requireCapability, type Actor } from "@burla/core/auth/rbac";
 import { writeAudit } from "@burla/core/repositories/audit";
-import { HOMEPAGE_DEFAULTS, homepageSchema, readHomepage, type Homepage } from "@burla/core/content";
+import {
+  HOMEPAGE_DEFAULTS,
+  homepageSchema,
+  offerStripSchema,
+  readHomepage,
+  readOfferStrip,
+  type Homepage,
+  type OfferStrip,
+} from "@burla/core/content";
 import { revalidateStorefront } from "@/server/storefront";
 
 /**
@@ -41,7 +49,11 @@ export async function saveHomepage(actor: Actor, homepage: Homepage) {
 
   const before = await getHomepage();
   await db.transaction(async (tx) => {
-    await tx.update(siteSettings).set({ homepage }).where(eq(siteSettings.singleton, true));
+    // Merged into the stored object, so the offer strip kept beside the words survives.
+    await tx
+      .update(siteSettings)
+      .set({ homepage: sql`coalesce(${siteSettings.homepage}, '{}'::jsonb) || ${JSON.stringify(homepage)}::jsonb` })
+      .where(eq(siteSettings.singleton, true));
     await writeAudit(tx, actor, {
       action: "website.homepage_saved",
       entityType: "website",
@@ -55,6 +67,46 @@ export async function saveHomepage(actor: Actor, homepage: Homepage) {
 
   const told = await revalidateStorefront({ catalogue: false, site: true });
   return { ok: true as const, message: "Saved. The homepage now shows your words.", note: told.ok ? undefined : "The website may take up to five minutes to show the change." };
+}
+
+// --- offer strip -------------------------------------------------------------
+
+export { offerStripSchema };
+
+export async function getOfferStrip(): Promise<OfferStrip> {
+  const [row] = await db
+    .select({ homepage: siteSettings.homepage })
+    .from(siteSettings)
+    .where(eq(siteSettings.singleton, true))
+    .limit(1);
+  return readOfferStrip((row?.homepage as Record<string, unknown> | null | undefined)?.offerStrip);
+}
+
+/** The scrolling offers under the website's header. Written under its own key. */
+export async function saveOfferStrip(actor: Actor, strip: OfferStrip) {
+  requireCapability(actor, "content.write");
+  await ensureRow();
+
+  await db.transaction(async (tx) => {
+    await tx
+      .update(siteSettings)
+      .set({
+        homepage: sql`coalesce(${siteSettings.homepage}, '{}'::jsonb) || jsonb_build_object('offerStrip', ${JSON.stringify(strip)}::jsonb)`,
+      })
+      .where(eq(siteSettings.singleton, true));
+    await writeAudit(tx, actor, {
+      action: "website.offers_saved",
+      entityType: "website",
+      changes: { visible: strip.visible, offers: strip.offers.map((offer) => offer.title) },
+    });
+  });
+
+  const told = await revalidateStorefront({ catalogue: false, site: true });
+  return {
+    ok: true as const,
+    message: strip.visible ? "Saved. The offers on the website are updated." : "Saved. The offer strip is hidden from the website.",
+    note: told.ok ? undefined : "The website may take up to five minutes to show the change.",
+  };
 }
 
 // --- featured products -------------------------------------------------------

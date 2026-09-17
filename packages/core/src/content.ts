@@ -68,3 +68,73 @@ export function linesOf(text: string): string[] {
     .map((line) => line.trim())
     .filter(Boolean);
 }
+
+// --- offer strip ---------------------------------------------------------------
+
+/**
+ * The scrolling strip of offers under the website's header — bulk orders,
+ * discounts, delivery, partnerships, quotes — edited by the owner under
+ * Website in the admin.
+ *
+ * Kept in the same settings row as the homepage words, under its own key, and
+ * written on its own, so saving one never touches the other.
+ *
+ * Icons and destinations are chosen from fixed lists rather than typed: an
+ * icon name or a web address the owner types is one they can mistype, and a
+ * typed address could send customers anywhere.
+ */
+
+export const OFFER_ICONS = ["truck", "percent", "package", "handshake", "phone", "leaf", "gift", "star"] as const;
+export type OfferIcon = (typeof OFFER_ICONS)[number];
+
+/** Where an offer can lead: a page of this website, or nowhere. */
+export const OFFER_LINKS = {
+  none: { label: "Nowhere (just a message)", href: null },
+  wholesale: { label: "Bulk & Wholesale page", href: "/wholesale" },
+  contact: { label: "Contact page", href: "/contact" },
+  products: { label: "All products", href: "/products" },
+  delivery: { label: "Delivery Policy", href: "/policies/delivery" },
+  about: { label: "About Us", href: "/about" },
+  quality: { label: "Quality page", href: "/quality" },
+} as const;
+export type OfferLink = keyof typeof OFFER_LINKS;
+
+export const offerSchema = z
+  .object({
+    icon: z.enum(OFFER_ICONS),
+    title: z.string().trim().min(2, "Write a short title.").max(40, "Keep the title under 40 characters."),
+    text: z.string().trim().max(60, "Keep this line under 60 characters."),
+    link: z.enum(Object.keys(OFFER_LINKS) as [OfferLink, ...OfferLink[]]),
+  })
+  .strict();
+
+export const offerStripSchema = z
+  .object({
+    visible: z.boolean(),
+    offers: z.array(offerSchema).min(1, "Add at least one offer.").max(8, "Up to 8 offers."),
+  })
+  .strict();
+
+export type Offer = z.infer<typeof offerSchema>;
+export type OfferStrip = z.infer<typeof offerStripSchema>;
+
+/**
+ * The strip as the client supplied it in their mockup (2026-09-17). These are
+ * the business's own claims; the owner can change or remove any of them.
+ */
+export const OFFER_STRIP_DEFAULTS: OfferStrip = {
+  visible: true,
+  offers: [
+    { icon: "truck", title: "Bulk Orders Welcome", text: "For retailers, distributors & businesses", link: "wholesale" },
+    { icon: "percent", title: "Special Discounts on Bulk Supply", text: "Better prices for larger quantities", link: "wholesale" },
+    { icon: "package", title: "Pan India Delivery", text: "Safe, reliable and on time", link: "delivery" },
+    { icon: "handshake", title: "Partner With Us", text: "Let's grow together", link: "wholesale" },
+    { icon: "phone", title: "Get a Quote", text: "Contact us for bulk enquiries", link: "contact" },
+  ],
+};
+
+/** The stored strip, made safe to render; anything malformed gives the defaults. */
+export function readOfferStrip(stored: unknown): OfferStrip {
+  const parsed = offerStripSchema.safeParse(stored);
+  return parsed.success ? parsed.data : OFFER_STRIP_DEFAULTS;
+}

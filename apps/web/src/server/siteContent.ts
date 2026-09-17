@@ -3,7 +3,7 @@ import { unstable_cache } from "next/cache";
 import { eq } from "drizzle-orm";
 import { db } from "@burla/core/db";
 import { siteSettings } from "@burla/core/db/schema";
-import { readHomepage, type Homepage } from "@burla/core/content";
+import { readHomepage, readOfferStrip, type Homepage, type OfferStrip } from "@burla/core/content";
 import { getBusinessIdentity } from "@/server/services/settingsService";
 import { site } from "@/lib/site";
 
@@ -44,6 +44,17 @@ async function loadHomepage(): Promise<Homepage> {
   return readHomepage(row?.homepage);
 }
 
+/** Kept under its own key in the same settings row as the homepage words. */
+async function loadOfferStrip(): Promise<OfferStrip> {
+  const [row] = await db
+    .select({ homepage: siteSettings.homepage })
+    .from(siteSettings)
+    .where(eq(siteSettings.singleton, true))
+    .limit(1);
+  const stored = (row?.homepage as Record<string, unknown> | null | undefined)?.offerStrip;
+  return readOfferStrip(stored);
+}
+
 async function loadContact(): Promise<ContactDetails> {
   const identity = await getBusinessIdentity();
   const phone = identity.contactPhone ?? site.contact.phone;
@@ -62,6 +73,11 @@ async function loadContact(): Promise<ContactDetails> {
 }
 
 export const getHomepage = unstable_cache(loadHomepage, ["site-homepage"], {
+  tags: [SITE_TAG],
+  revalidate: 300,
+});
+
+export const getOfferStrip = unstable_cache(loadOfferStrip, ["site-offer-strip"], {
   tags: [SITE_TAG],
   revalidate: 300,
 });
