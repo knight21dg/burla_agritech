@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
    * one schema, one environment parser, shared with the admin application.
    */
   transpilePackages: ["@burla/core"],
+  // sharp reads uploaded photos for the /media route; never bundled.
+  serverExternalPackages: ["sharp"],
   poweredByHeader: false,
   images: { formats: ["image/avif", "image/webp"] },
   /**

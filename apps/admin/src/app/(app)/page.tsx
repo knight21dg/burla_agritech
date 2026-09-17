@@ -1,135 +1,130 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { FolderOpen, MessageSquare, Package, Pencil, Plus, ShoppingBag, Users } from "lucide-react";
 import { can } from "@burla/core/auth/rbac";
 import { requireStaff } from "@/server/auth/session";
 import {
-  catalogueCounts,
   customerCount,
-  enquiryCounts,
+  newEnquiryCount,
   orderCounts,
-  stockCounts,
+  productCount,
 } from "@/server/repositories/dashboardRepository";
 
-export const metadata: Metadata = { title: "Dashboard" };
+export const metadata: Metadata = { title: "Home" };
 
 /**
- * The dashboard.
+ * Home — what needs attention, and the things people come here to do.
  *
- * It shows what this actor is permitted to see and nothing else — a content
- * manager is not told how many orders came in, because content work never
- * needs it (docs/AUTHORIZATION.md §3). Each block is fetched only when the
- * capability holds, so an unauthorised number is never even read from the
- * database, let alone hidden with CSS.
- *
- * No charts. Five numbers a person can act on beat a graph of a business that
- * has taken four orders.
+ * Four numbers, each a link to the list behind it, and big buttons for the
+ * everyday jobs. No charts: a small business does not need a graph to know
+ * whether an order came in.
  */
 
-function Stat({
+function greeting(): string {
+  const hour = Number(
+    new Intl.DateTimeFormat("en-IN", { hour: "numeric", hour12: false, timeZone: "Asia/Kolkata" }).format(new Date()),
+  );
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+function Card({
+  href,
   label,
   value,
   note,
-  tone = "plain",
+  highlight = false,
 }: {
+  href: string;
   label: string;
-  value: number | string;
+  value: number;
   note?: string;
-  tone?: "plain" | "warn" | "ok";
+  highlight?: boolean;
 }) {
-  const toneClass =
-    tone === "warn" ? "text-warning" : tone === "ok" ? "text-ok" : "text-ink";
   return (
-    <div className="panel p-4">
-      <p className="label">{label}</p>
-      <p className={`mt-1 text-2xl font-semibold tabular-nums ${toneClass}`}>{value}</p>
-      {note && <p className="mt-1 text-[0.75rem] text-ink-3">{note}</p>}
-    </div>
+    <Link
+      href={href}
+      className={`panel block p-4 transition-colors hover:border-accent ${highlight ? "border-accent bg-accent-soft" : ""}`}
+    >
+      <p className="font-medium text-ink-2">{label}</p>
+      <p className="mt-1 text-[2rem] font-semibold leading-none tabular-nums">{value}</p>
+      {note && <p className={`mt-2 text-[0.875rem] ${highlight ? "font-semibold text-accent-dark" : "text-ink-3"}`}>{note}</p>}
+    </Link>
   );
 }
 
-export default async function DashboardPage() {
-  const actor = await requireStaff();
+function Action({ href, icon: Icon, label }: { href: string; icon: typeof Plus; label: string }) {
+  return (
+    <Link href={href} className="panel flex min-h-16 items-center gap-3 px-4 py-3 text-[1.0625rem] font-semibold hover:border-accent hover:text-accent-dark">
+      <span className="grid size-10 shrink-0 place-items-center rounded-full bg-accent-soft text-accent-dark">
+        <Icon className="size-5" aria-hidden="true" />
+      </span>
+      {label}
+    </Link>
+  );
+}
 
-  const [catalogue, stock, orders, enquiries, customers] = await Promise.all([
-    can(actor, "catalogue.read_draft") ? catalogueCounts() : undefined,
-    can(actor, "inventory.adjust") ? stockCounts() : undefined,
-    can(actor, "order.read_all") ? orderCounts() : undefined,
-    can(actor, "enquiry.read") ? enquiryCounts() : undefined,
-    can(actor, "customer.read_pii") ? customerCount() : undefined,
+export default async function HomePage() {
+  const actor = await requireStaff();
+  const name = actor.kind === "user" ? actor.name : null;
+
+  const seeCatalogue = can(actor, "catalogue.read_draft");
+  const seeOrders = can(actor, "order.read_all");
+  const seeCustomers = can(actor, "customer.read_pii");
+  const seeEnquiries = can(actor, "enquiry.read");
+
+  const [products, orders, customers, enquiries] = await Promise.all([
+    seeCatalogue ? productCount() : undefined,
+    seeOrders ? orderCounts() : undefined,
+    seeCustomers ? customerCount() : undefined,
+    seeEnquiries ? newEnquiryCount() : undefined,
   ]);
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-lg">Dashboard</h1>
-        <p className="mt-0.5 text-[0.8125rem] text-ink-2">
-          Signed in as {actor.kind === "user" ? actor.email : "—"}.
-        </p>
+        <h1 className="page-title">
+          {greeting()}
+          {name ? `, ${name}` : ""}
+        </h1>
+        <p className="mt-0.5 text-ink-2">Welcome to Burla. Here is what is happening today.</p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {catalogue && (
-          <>
-            <Stat
-              label="Products"
-              value={catalogue.total}
-              note={`${catalogue.published} published · ${catalogue.draft} draft`}
-            />
-            {catalogue.sample > 0 && (
-              <Stat
-                label="Sample data"
-                value={catalogue.sample}
-                note="Prices and pack sizes are ours, not the client's"
-                tone="warn"
-              />
-            )}
-          </>
-        )}
-
-        {stock && (
-          <Stat
-            label="Low stock"
-            value={stock.low}
-            note={stock.out > 0 ? `${stock.out} at zero` : "None at zero"}
-            tone={stock.low > 0 ? "warn" : "plain"}
-          />
-        )}
-
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {products !== undefined && <Card href="/products" label="Products" value={products} />}
         {orders && (
-          <>
-            <Stat
-              label="To pack"
-              value={orders.toPack}
-              note={`${orders.total} orders in total`}
-              tone={orders.toPack > 0 ? "warn" : "plain"}
-            />
-            <Stat label="Awaiting payment" value={orders.unpaid} />
-          </>
-        )}
-
-        {enquiries && (
-          <Stat
-            label="New enquiries"
-            value={enquiries.unanswered}
-            note={`${enquiries.total} received`}
-            tone={enquiries.unanswered > 0 ? "warn" : "plain"}
+          <Card
+            href={orders.new > 0 ? "/orders?show=new" : "/orders"}
+            label="Orders"
+            value={orders.total}
+            note={orders.new > 0 ? `${orders.new} new — needs attention` : "No new orders"}
+            highlight={orders.new > 0}
           />
         )}
-
-        {customers !== undefined && (
-          <Stat label="Customers" value={customers} note="Accounts on the shop, not staff" />
+        {customers !== undefined && <Card href="/customers" label="Customers" value={customers} />}
+        {enquiries !== undefined && (
+          <Card
+            href="/enquiries"
+            label="New Enquiries"
+            value={enquiries}
+            note={enquiries > 0 ? "Waiting for a reply" : "All caught up"}
+            highlight={enquiries > 0}
+          />
         )}
       </div>
 
-      <section className="panel p-4">
-        <h2 className="text-[0.9375rem] font-semibold">What you can do here</h2>
-        <p className="mt-1 text-[0.8125rem] text-ink-2">
-          Edit products, their pack sizes and prices, and the ranges and types
-          they sit in, and decide what is on the public site. Changes appear on
-          the site within a few seconds — nothing needs to be rebuilt.
-        </p>
-        <p className="mt-2 text-[0.8125rem] text-ink-2">
-          Sections marked <em>Soon</em> in the menu are not built yet.
-        </p>
+      <section>
+        <h2 className="text-[1.125rem] font-semibold">What would you like to do?</h2>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {can(actor, "catalogue.write") && <Action href="/products/new" icon={Plus} label="Add Product" />}
+          {seeCatalogue && <Action href="/products" icon={Pencil} label="Edit Products" />}
+          {can(actor, "catalogue.write") && <Action href="/categories" icon={FolderOpen} label="Manage Categories" />}
+          {seeOrders && <Action href="/orders" icon={Package} label="View Orders" />}
+          {seeEnquiries && <Action href="/enquiries" icon={MessageSquare} label="View Enquiries" />}
+          {seeCustomers && <Action href="/customers" icon={Users} label="View Customers" />}
+          {can(actor, "content.write") && <Action href="/website" icon={ShoppingBag} label="Change the Homepage" />}
+        </div>
       </section>
     </div>
   );

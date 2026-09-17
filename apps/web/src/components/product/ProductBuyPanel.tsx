@@ -114,8 +114,13 @@ export function ProductBuyPanel({
                     v.availability === "out_of_stock" &&
                       "cursor-not-allowed opacity-40",
                   )}
+                  title={v.availability === "out_of_stock" ? "Out of stock" : undefined}
                 >
                   {v.label}
+                  {/* Faded is not a reason. Said aloud, and on hover. */}
+                  {v.availability === "out_of_stock" && (
+                    <span className="sr-only"> — out of stock</span>
+                  )}
                 </button>
               ))}
             </div>

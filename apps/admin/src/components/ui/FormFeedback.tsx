@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertCircle, Check, Info } from "lucide-react";
-import type { FormState } from "@/app/(app)/products/actions";
+import type { FormState } from "@/lib/formState";
 
 /**
  * What happened after a save.
@@ -46,13 +46,6 @@ export function FormFeedback({ state }: { state: FormState }) {
         <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
         {state.message}
       </p>
-      {state.details && state.details.length > 0 && (
-        <ul className="ml-6 mt-1.5 list-disc space-y-0.5">
-          {state.details.map((detail) => (
-            <li key={detail}>{detail}</li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 }

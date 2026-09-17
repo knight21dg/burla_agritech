@@ -115,8 +115,7 @@ Written today: `session.signed_in`, `session.signed_out`, `session.sign_in_faile
 | A catalogue edit reaches the public site | Price changed in the editor → new price on the shop within the second, one `product.variants_replaced` audit row |
 | Publishing controls what customers see | Unpublish → the shop's product page 404s and it leaves the listing; publish → both return |
 | Two people cannot overwrite each other | With the form open, another save touched the row; the next save was refused and nothing was written |
-| A range's lifecycle reaches the site | Created as a draft (invisible), published (appears in the header, the products index and its own page), deleted (gone, 404) — each with one audit row |
-| A range holding products cannot be deleted | Pickles offers "Hide it instead"; only an empty one offers Delete |
+| A category change reaches the site | Renamed, then renamed back: the header and category page followed; adding and deleting a subcategory each wrote one audit row |
 | Staff can read the catalogue but not change it | A `staff` session sees the editor with no save or publish controls and both refusals in words |
 
 **Not yet verified end to end:** two things, named rather than assumed. The sign-in POST itself. Sign-out exercises the same action, session and audit machinery, but a full "type a password, get a session" pass belongs in the Playwright suite in the hardening phase, with a seeded test account. And a forbidden *action* post — the editor hides its controls from `staff` and both the action and the service call the permission check first, but nothing yet drives an HTTP post from an account that may not make it. Both belong in the Playwright suite in the hardening phase.

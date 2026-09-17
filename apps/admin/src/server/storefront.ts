@@ -25,6 +25,8 @@ export interface RevalidateTargets {
   productSlug?: string;
   /** A category or type page and its listings. */
   categorySlug?: string;
+  /** Homepage words, contact details and company information. */
+  site?: boolean;
 }
 
 export async function revalidateStorefront(
@@ -43,6 +45,7 @@ export async function revalidateStorefront(
     ...(targets.catalogue === false ? [] : ["catalogue"]),
     ...(targets.productSlug ? [`product:${targets.productSlug}`] : []),
     ...(targets.categorySlug ? [`category:${targets.categorySlug}`] : []),
+    ...(targets.site ? ["site"] : []),
   ];
   if (tags.length === 0) return { ok: true };
 

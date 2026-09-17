@@ -1,86 +1,40 @@
 import "server-only";
-import { and, count, countDistinct, eq, lte, sql } from "drizzle-orm";
+import { count, countDistinct, eq, ne } from "drizzle-orm";
 import { db } from "@burla/core/db";
-import {
-  enquiries,
-  orders,
-  productVariants,
-  products,
-  roles,
-  userRoles,
-} from "@burla/core/db/schema";
+import { enquiries, orders, products, roles, userRoles } from "@burla/core/db/schema";
 
 /**
- * The few numbers the dashboard shows.
- *
- * Counts only — no rows, no personal data. Each one is a separate small query
- * against an index rather than one clever join, because they are gated
- * separately: a content manager sees catalogue counts and never learns how
- * many orders the business has taken.
+ * The four numbers on the Home screen. Counts only — no names, no rows — and
+ * each fetched only when the person looking may see it.
  */
 
-export async function catalogueCounts() {
-  const [row] = await db
-    .select({
-      total: count(),
-      published: sql<number>`count(*) filter (where ${products.status} = 'published')::int`,
-      draft: sql<number>`count(*) filter (where ${products.status} = 'draft')::int`,
-      sample: sql<number>`count(*) filter (where ${products.isSample} = true)::int`,
-    })
-    .from(products);
-  return row ?? { total: 0, published: 0, draft: 0, sample: 0 };
+/** Products the owner has not deleted. */
+export async function productCount(): Promise<number> {
+  const [row] = await db.select({ n: count() }).from(products).where(ne(products.status, "archived"));
+  return row?.n ?? 0;
 }
 
-/** Variants at or below their own threshold, and those at zero. */
-export async function stockCounts() {
-  const [row] = await db
-    .select({
-      low: count(),
-      out: sql<number>`count(*) filter (where ${productVariants.stockQuantity} = 0)::int`,
-    })
-    .from(productVariants)
-    .where(
-      and(
-        eq(productVariants.trackInventory, true),
-        lte(productVariants.stockQuantity, productVariants.lowStockThreshold),
-      ),
-    );
-  return row ?? { low: 0, out: 0 };
+export async function orderCounts(): Promise<{ total: number; new: number }> {
+  const [total, fresh] = await Promise.all([
+    db.select({ n: count() }).from(orders),
+    // A new cash-on-delivery order arrives confirmed; it is "new" to the owner
+    // until they start preparing it.
+    db.select({ n: count() }).from(orders).where(eq(orders.status, "confirmed")),
+  ]);
+  return { total: total[0]?.n ?? 0, new: fresh[0]?.n ?? 0 };
 }
 
-export async function orderCounts() {
-  const [row] = await db
-    .select({
-      total: count(),
-      toPack: sql<number>`count(*) filter (where ${orders.status} in ('confirmed','processing'))::int`,
-      shipped: sql<number>`count(*) filter (where ${orders.status} = 'shipped')::int`,
-      unpaid: sql<number>`count(*) filter (where ${orders.paymentStatus} = 'pending' and ${orders.status} not in ('cancelled','failed'))::int`,
-    })
-    .from(orders);
-  return row ?? { total: 0, toPack: 0, shipped: 0, unpaid: 0 };
-}
-
-export async function enquiryCounts() {
-  const [row] = await db
-    .select({
-      total: count(),
-      unanswered: sql<number>`count(*) filter (where ${enquiries.status} = 'new')::int`,
-    })
-    .from(enquiries);
-  return row ?? { total: 0, unanswered: 0 };
-}
-
-/**
- * Customers — people holding the `customer` role.
- *
- * Not "rows in `users`": staff accounts live in the same table, so counting
- * the table would report every new member of staff as a new customer.
- */
+/** People with a customer account — never staff. */
 export async function customerCount(): Promise<number> {
   const [row] = await db
     .select({ n: countDistinct(userRoles.userId) })
     .from(userRoles)
     .innerJoin(roles, eq(roles.id, userRoles.roleId))
     .where(eq(roles.key, "customer"));
+  return row?.n ?? 0;
+}
+
+export async function newEnquiryCount(): Promise<number> {
+  const [row] = await db.select({ n: count() }).from(enquiries).where(eq(enquiries.status, "new"));
   return row?.n ?? 0;
 }

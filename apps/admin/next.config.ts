@@ -8,6 +8,18 @@ import type { NextConfig } from "next";
 const devScriptSrc = process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'";
 
 /**
+ * Product and category photos are served by the shop, so the admin must be
+ * allowed to show images from the shop's address — and from nowhere else.
+ */
+const storefrontOrigin = (() => {
+  try {
+    return process.env.STOREFRONT_URL ? new URL(process.env.STOREFRONT_URL).origin : "";
+  } catch {
+    return "";
+  }
+})();
+
+/**
  * The admin application — admin.burla.com.
  *
  * A separate origin from the customer site, which is what makes a customer
@@ -22,6 +34,14 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   /** One schema, one environment parser, shared with the customer site. */
   transpilePackages: ["@burla/core"],
+  // sharp decodes uploaded photos on the server; it must not be bundled.
+  serverExternalPackages: ["sharp"],
+
+  experimental: {
+    // A phone photo is several megabytes. The server shrinks it on arrival;
+    // it has to be allowed to arrive first.
+    serverActions: { bodySizeLimit: "12mb" },
+  },
 
   async headers() {
     return [
@@ -51,7 +71,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               `script-src 'self' 'unsafe-inline'${devScriptSrc}`,
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob:",
+              `img-src 'self' data: blob:${storefrontOrigin ? ` ${storefrontOrigin}` : ""}`,
               "font-src 'self'",
               "connect-src 'self'",
               "form-action 'self'",
