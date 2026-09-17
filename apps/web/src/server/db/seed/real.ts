@@ -31,7 +31,7 @@ export interface SeedResult {
 
 export async function seedReal(db: Database): Promise<SeedResult> {
   let inserted = 0;
-  let updated = 0;
+  const updated = 0;
 
   // The ten categories, in the order they appear in the catalogue.
   //

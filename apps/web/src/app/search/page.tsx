@@ -73,7 +73,7 @@ async function Results({ q }: { q: string }) {
         &ldquo;{q}&rdquo;
       </p>
       <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
-        {results.map((p, i) => (
+        {results.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
       </div>

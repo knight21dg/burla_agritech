@@ -5,7 +5,6 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Container, Section } from "@/components/ui/Section";
 import { PageHeader, PendingContent } from "@/components/sections/PageHeader";
 import { TrustStrip } from "@/components/sections/TrustStrip";
-import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Our Locations",

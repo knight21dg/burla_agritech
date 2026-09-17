@@ -11,7 +11,7 @@
     "build": "npm run build --workspace=@burla/web",
     "build:admin": "npm run build --workspace=@burla/admin",
     "start": "npm run start --workspace=@burla/web",
-    "lint": "npm run lint --workspace=@burla/web",
+    "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "admin:create": "npm run admin:create --workspace=@burla/admin --",

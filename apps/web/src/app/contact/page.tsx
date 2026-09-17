@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/sections/PageHeader";
 import { TrustStrip } from "@/components/sections/TrustStrip";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { listCategories } from "@/server/catalogue";
-import { site, whatsappLink } from "@/lib/site";
+import { whatsappLink } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact Us",
