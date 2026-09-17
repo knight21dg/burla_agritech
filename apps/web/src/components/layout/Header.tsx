@@ -178,7 +178,7 @@ export function Header({ categories }: { categories: Category[] }) {
 
           {/* Band 3 — Home and the ten categories, centred */}
           <nav className="hidden min-w-0 lg:block" aria-label="Product categories">
-            <ul className="flex items-end justify-center-safe gap-x-3 overflow-x-auto [scrollbar-width:none] xl:gap-x-5 2xl:gap-x-8">
+            <ul className="flex items-end justify-center-safe gap-x-2 overflow-x-auto [scrollbar-width:none] xl:gap-x-5 2xl:gap-x-8">
               <li>
                 <Link
                   href="/"
@@ -297,5 +297,5 @@ export function Header({ categories }: { categories: Category[] }) {
  * edge to edge on a large screen, while the page content below stays narrower.
  */
 function Container({ children }: { children: React.ReactNode }) {
-  return <div className="mx-auto w-full max-w-[1560px] px-4 sm:px-6 lg:px-10 xl:px-14">{children}</div>;
+  return <div className="mx-auto w-full max-w-[1560px] px-4 sm:px-6 xl:px-14">{children}</div>;
 }

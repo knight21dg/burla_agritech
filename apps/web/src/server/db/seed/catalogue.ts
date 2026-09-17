@@ -124,8 +124,8 @@ function category(
 }
 
 export const categories: Category[] = [
-  // "Powders & Flakes" in the header, where the full name does not fit.
-  category("dehydrated-powders-flakes", "Dehydrated Powders & Flakes", 1, "turmeric", "Powders & Flakes"),
+  // Shown in full in the header, as the client asked (2026-09-17).
+  category("dehydrated-powders-flakes", "Dehydrated Powders & Flakes", 1, "turmeric"),
   category("dehydrated-fruits", "Dehydrated Fruits", 2, "mango"),
   category("pickles", "Pickles", 3, "chilli"),
   category("dal-powders", "Dal Powders", 4, "earth"),
