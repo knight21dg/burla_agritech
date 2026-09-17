@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CardCartControl } from "@/components/cart/CardCartControl";
+import { ShopNowButton } from "@/components/cart/ShopNowButton";
 import { availabilityLabel, defaultVariant, productHref, stockText } from "@/lib/catalog";
 import type { Product } from "@/types/catalog";
 import { formatPrice } from "@/lib/utils";
@@ -69,7 +70,7 @@ export function ProductCard({ product }: { product: Product }) {
 
         {sizes && <p className="mt-0.5 text-[0.75rem] text-ink-3">{sizes}</p>}
 
-        <div className="mt-auto flex items-center justify-between gap-2 pt-1.5">
+        <div className="mt-auto pt-1.5">
           {variant ? (
             <p className="text-[1rem] font-bold tabular-nums text-ink">
               {formatPrice(variant.priceMinor)}
@@ -79,7 +80,12 @@ export function ProductCard({ product }: { product: Product }) {
               Price to be confirmed
             </p>
           )}
-          <CardCartControl product={product} />
+          {/* Shop now beside the cart control. On a narrow card with the
+              cart's − 1 + stepper showing, the two wrap rather than squeeze. */}
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5">
+            <ShopNowButton product={product} className="min-w-[6rem] flex-1" />
+            <CardCartControl product={product} />
+          </div>
         </div>
       </div>
     </article>
