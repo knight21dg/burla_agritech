@@ -14,6 +14,7 @@ import { requireCapability, type Actor } from "@burla/core/auth/rbac";
 import { writeAudit } from "@burla/core/repositories/audit";
 import { ORDER_GROUPS, ORDER_LABEL, canMove, isRejection, needsRefund, type OrderGroup } from "@/lib/orderSteps";
 import { money } from "@/lib/format";
+import { revalidateStorefront } from "@/server/storefront";
 
 /**
  * Orders: what came in, and moving each one along.
@@ -175,7 +176,8 @@ export async function moveOrder(
 ): Promise<MoveResult> {
   requireCapability(actor, "order.transition");
 
-  return db.transaction(async (tx) => {
+  let stockReturned = false;
+  const result = await db.transaction(async (tx) => {
     // Locked for the length of this change: the second of two simultaneous
     // presses sees the first one's result and is refused cleanly.
     const [order] = await tx
@@ -231,6 +233,7 @@ export async function moveOrder(
       const countedIds = new Set(counted.map((row) => row.id));
       const returns = items.filter((item) => item.variantId && countedIds.has(item.variantId));
       if (returns.length) {
+        stockReturned = true;
         await tx.insert(inventoryMovements).values(
           returns.map((item) => ({
             variantId: item.variantId!,
@@ -281,4 +284,8 @@ export async function moveOrder(
       accepted: to === "processing" && order.status === "confirmed",
     };
   });
+
+  // Returned stock changes what the shop says is left.
+  if (result.ok && stockReturned) await revalidateStorefront({ catalogue: true });
+  return result;
 }

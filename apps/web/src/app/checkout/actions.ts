@@ -122,7 +122,10 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
 
   try {
     const result = await placeCodOrder(user.id, request, address);
-    if (result.ok) return result;
+    if (result.ok) {
+      await refreshStock();
+      return result;
+    }
     if (result.code === "ADDRESS_NOT_FOUND") {
       return { ok: false, code: "INVALID", message: "Choose a delivery address.", fieldErrors: {} };
     }
@@ -148,6 +151,16 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
   }
 }
 
+/**
+ * An order takes stock and a cancellation gives it back, so the next visitor
+ * must see the new "Only 2 left" rather than a cached page from before.
+ */
+async function refreshStock() {
+  const { revalidateTag } = await import("next/cache");
+  const { CATALOGUE_TAG } = await import("@/server/catalogue");
+  revalidateTag(CATALOGUE_TAG, { expire: 0 });
+}
+
 function isUniqueViolation(error: unknown) {
   const cause = (error as { cause?: { code?: string } })?.cause;
   return (error as { code?: string })?.code === "23505" || cause?.code === "23505";
@@ -167,6 +180,7 @@ export async function cancelMyOrder(orderNumber: string): Promise<{ ok: boolean;
   if (result.ok) {
     const { revalidatePath } = await import("next/cache");
     revalidatePath(`/account/orders/${orderNumber}`);
+    await refreshStock();
     return { ok: true };
   }
   return {

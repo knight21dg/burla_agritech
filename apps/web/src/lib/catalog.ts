@@ -105,6 +105,24 @@ export function deriveAvailability(input: {
   return "in_stock";
 }
 
+/** "Only 2 left" — the count shown to customers when stock is low, else undefined. */
+export function lowStockLeft(input: {
+  status: "active" | "inactive" | "removed";
+  trackInventory: boolean;
+  stockQuantity: number;
+  lowStockThreshold: number;
+}): number | undefined {
+  return deriveAvailability(input) === "low_stock" ? input.stockQuantity : undefined;
+}
+
+/** What the shop says about a pack's stock: "Only 2 left", "In stock", "Out of stock". */
+export function stockText(variant: { availability: Availability; stockLeft?: number }): string {
+  if (variant.availability === "low_stock" && variant.stockLeft !== undefined) {
+    return `Only ${variant.stockLeft} left`;
+  }
+  return availabilityLabel[variant.availability];
+}
+
 /** True when at least one variant can actually be bought. */
 export function isPurchasable(product: Product): boolean {
   return product.variants.some(

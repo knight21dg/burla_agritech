@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  Boxes,
   FolderOpen,
   House,
   Menu,
@@ -19,7 +20,7 @@ import type { Capability } from "@burla/core/auth/rbac";
 import { cn } from "@/lib/cn";
 
 /**
- * The menu. Eight places, in the words a business owner uses, and nothing
+ * The menu. Nine places, in the words a business owner uses, and nothing
  * that is not finished — an unfinished section is hidden, never shown with a
  * "coming soon".
  *
@@ -40,6 +41,7 @@ interface Item {
 const ITEMS: Item[] = [
   { href: "/", label: "Home", icon: House },
   { href: "/products", label: "Products", icon: ShoppingBag, capability: "catalogue.read_draft" },
+  { href: "/stock", label: "Stock", icon: Boxes, capability: "inventory.adjust" },
   { href: "/categories", label: "Categories", icon: FolderOpen, capability: "catalogue.read_draft" },
   { href: "/orders", label: "Orders", icon: Package, capability: "order.read_all" },
   { href: "/customers", label: "Customers", icon: Users, capability: "customer.read_pii" },

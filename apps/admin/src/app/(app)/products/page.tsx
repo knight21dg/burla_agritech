@@ -196,6 +196,14 @@ export default async function ProductsPage({
                     {!canAdd && !card.available && card.packCount > 0 && (
                       <span className="pill pill-warn">Out of stock</span>
                     )}
+                    {(card.runningLow || card.noneLeft) && (
+                      <Link
+                        href={`/stock?q=${encodeURIComponent(card.name)}`}
+                        className={cn("pill hover:underline", card.noneLeft ? "pill-bad" : "pill-warn")}
+                      >
+                        {card.noneLeft ? "None left — add stock" : "Running low"}
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>

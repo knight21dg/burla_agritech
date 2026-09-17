@@ -7,7 +7,7 @@ import { QuantityStepper } from "@/components/cart/QuantityStepper";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { ProductImage } from "@/components/ui/ProductImage";
 import { ProductPhoto } from "./ProductPhoto";
-import { availabilityLabel, defaultVariant } from "@/lib/catalog";
+import { defaultVariant, stockText } from "@/lib/catalog";
 import type { Product } from "@/types/catalog";
 import { cn, formatPrice } from "@/lib/utils";
 
@@ -35,6 +35,8 @@ export function ProductBuyPanel({
   // the price, pack size and availability then read "to be confirmed", and
   // the product can still go in the cart.
   const soldOut = variant?.availability === "out_of_stock";
+  // Nobody can choose more than are left.
+  const maxQty = Math.max(1, Math.min(MAX_QTY, variant?.stockLeft ?? MAX_QTY));
   const inCart = useCart().qtyOf(product.slug, variant?.id);
   const images = Array.from({ length: Math.max(1, imageCount) });
 
@@ -136,7 +138,7 @@ export function ProductBuyPanel({
             aria-hidden="true"
           />
           <span className={soldOut || !variant ? "text-ink-2" : "text-ink"}>
-            {variant ? availabilityLabel[variant.availability] : "Availability to be confirmed"}
+            {variant ? stockText(variant) : "Availability to be confirmed"}
           </span>
         </p>
 
@@ -186,8 +188,8 @@ export function ProductBuyPanel({
               </span>
               <button
                 type="button"
-                onClick={() => setQty((q) => Math.min(MAX_QTY, q + 1))}
-                disabled={qty >= MAX_QTY}
+                onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
+                disabled={qty >= maxQty}
                 aria-label="Increase quantity"
                 className="grid h-full w-10 place-items-center text-ink disabled:opacity-35"
               >

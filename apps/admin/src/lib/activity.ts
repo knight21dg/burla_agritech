@@ -94,6 +94,16 @@ export function describe(entry: ActivityEntry): string {
       return `Edited the subcategory ${name ?? ""}`.trim();
     case "subcategory.deleted":
       return `Deleted the subcategory ${name ?? ""}`.trim();
+    case "stock.supply_added": {
+      const added = (entry.changes as { added?: unknown } | null)?.added;
+      return `Added ${typeof added === "number" ? added : "some"} packets of ${name ?? "a product"}`;
+    }
+    case "stock.count_set": {
+      const now = (entry.changes as { now?: unknown } | null)?.now;
+      return `Set the stock of ${name ?? "a product"} to ${typeof now === "number" ? now : "a new number"}`;
+    }
+    case "stock.counting_stopped":
+      return `Stopped counting the stock of ${name ?? "a product"}`;
     case "customer.deactivated":
       return `Deactivated ${name ?? "a customer"}'s account`;
     case "customer.activated":

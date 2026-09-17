@@ -10,6 +10,7 @@ Roles and sessions are in `ADMIN-ROLES-PERMISSIONS.md`. How the admin sits besid
 |---|---|---|
 | Home | Greeting, four counts (products, orders, customers, new enquiries), big buttons for common jobs | `app/(app)/page.tsx`, `server/repositories/dashboardRepository.ts` |
 | Products | Search, pick a category, open a card, edit, save. Each card also has Available / Out of stock and Delete. Add Product is one form | `app/(app)/products/*`, `components/products/ProductEditor.tsx`, `server/products.ts` |
+| Stock | Packets of every pack size; Add supply, Set count, Start / Stop counting; recent stock changes. Home warns when stock runs low | `app/(app)/stock/*`, `components/stock/StockRow.tsx`, `server/stock.ts`, `lib/stock.ts` |
 | Categories | Category cards with product counts; edit name, photo, description, show on website, subcategories | `app/(app)/categories/*`, `components/categories/*`, `server/categories.ts` |
 | Orders | New / Preparing / Ready / On the way / Delivered / Cancelled. A new order has Accept and Reject, in the list and on its page; later orders have one next-step button | `app/(app)/orders/*`, `lib/orderSteps.ts`, `server/orders.ts` |
 | Customers | List with Account details and Deactivate / Activate; detail with account details, orders, amount spent | `app/(app)/customers/*`, `server/customers.ts` |
@@ -73,13 +74,21 @@ Signing in with the right password to a deactivated account says it has been dea
 
 ## 7. Stock
 
-Stock is not counted by default (`track_inventory = false`). A pack is either available or out of stock, which the owner sets with one switch. Packs that do count stock still get it back when an order is cancelled.
+Each pack size is either **counted** or **not counted** (`track_inventory`). Nothing is counted until the owner starts; a pack not counted is simply on sale, or out of stock when marked so.
+
+- **Add supply** adds packets (ledger reason `restock`). **Set count** sets the number on the shelf (`correction`); if orders came in while the form was open, they still count. **Stop counting** clears the number. Starting to count begins from 0, never from an old leftover figure.
+- Every change is a row in `inventory_movements` (append-only); a database trigger keeps `stock_quantity` equal to the total. The pack row is locked during a change, so an order at the same moment is counted once.
+- An order takes packets and refuses more than are left; cancelling or rejecting an order puts them back.
+- The website shows "Only N left" when N is at or below the pack's low-stock level (5 by default), "Out of stock" at 0, and "In stock" otherwise. It never shows a larger number. The quantity picker stops at what is left.
+- Orders, cancellations and admin stock changes refresh the website's cached pages at once.
+- Supply added to a pack marked out of stock puts it back on sale.
 
 ## 8. Verified by hand (16–17 Sept 2026, local database)
 
 - Price change (Moringa Powder 100 g), photo change, hide and show again: the database and the shop page matched each time.
 - Accept and Reject from the order list, including the refund reminder for an order paid online; the order page for a new order.
 - WhatsApp taps from the floating button and the footer, shown under Enquiries with the product name.
+- Stock on Banana Powder 100 g: set to 3, and the website said "Only 3 left" and would not let anyone pick 4. A website order made it 2 ("Only 2 left" at once); rejecting that order made it 3; supply of 10 made it 13 ("In stock"). Then set back to not counted.
 - Deactivating a customer who was signed in: they were signed out; another account's order with the deactivated number was refused and nothing was saved; activating again lifted both.
 - From the product list: Out of stock, Available and Delete on a test product. The shop page said "Out of stock", then "not found" after Delete.
 - Add product with two pack sizes, then delete it. The shop page appeared, then returned 404.

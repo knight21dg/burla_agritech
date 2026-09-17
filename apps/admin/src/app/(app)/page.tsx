@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FolderOpen, MessageSquare, Package, Pencil, Plus, ShoppingBag, Users } from "lucide-react";
+import { AlertTriangle, Boxes, FolderOpen, MessageSquare, Package, Pencil, Plus, ShoppingBag, Users } from "lucide-react";
 import { can } from "@burla/core/auth/rbac";
 import { requireStaff } from "@/server/auth/session";
 import {
@@ -9,6 +9,7 @@ import {
   orderCounts,
   productCount,
 } from "@/server/repositories/dashboardRepository";
+import { lowStockCount } from "@/server/stock";
 
 export const metadata: Metadata = { title: "Home" };
 
@@ -74,11 +75,13 @@ export default async function HomePage() {
   const seeCustomers = can(actor, "customer.read_pii");
   const seeEnquiries = can(actor, "enquiry.read");
 
-  const [products, orders, customers, enquiries] = await Promise.all([
+  const seeStock = can(actor, "inventory.adjust");
+  const [products, orders, customers, enquiries, lowStock] = await Promise.all([
     seeCatalogue ? productCount() : undefined,
     seeOrders ? orderCounts() : undefined,
     seeCustomers ? customerCount() : undefined,
     seeEnquiries ? newEnquiryCount() : undefined,
+    seeStock ? lowStockCount() : 0,
   ]);
 
   return (
@@ -90,6 +93,19 @@ export default async function HomePage() {
         </h1>
         <p className="mt-0.5 text-ink-2">Welcome to Burla. Here is what is happening today.</p>
       </div>
+
+      {lowStock > 0 && (
+        <Link
+          href="/stock?show=low"
+          className="flex items-center gap-3 rounded-md border border-warning/30 bg-warning-soft px-4 py-3 font-medium text-warning hover:border-warning"
+        >
+          <AlertTriangle className="size-5 shrink-0" aria-hidden="true" />
+          <span className="flex-1">
+            {lowStock} {lowStock === 1 ? "pack size is" : "pack sizes are"} running low or out of stock.
+          </span>
+          <span className="underline underline-offset-2">Check stock</span>
+        </Link>
+      )}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {products !== undefined && <Card href="/products" label="Products" value={products} />}
@@ -119,6 +135,7 @@ export default async function HomePage() {
         <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {can(actor, "catalogue.write") && <Action href="/products/new" icon={Plus} label="Add Product" />}
           {seeCatalogue && <Action href="/products" icon={Pencil} label="Edit Products" />}
+          {seeStock && <Action href="/stock" icon={Boxes} label="Add Stock" />}
           {can(actor, "catalogue.write") && <Action href="/categories" icon={FolderOpen} label="Manage Categories" />}
           {seeOrders && <Action href="/orders" icon={Package} label="View Orders" />}
           {seeEnquiries && <Action href="/enquiries" icon={MessageSquare} label="View Enquiries" />}

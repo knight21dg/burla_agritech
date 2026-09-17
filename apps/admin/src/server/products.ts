@@ -53,6 +53,10 @@ export interface ProductCard {
   price: { rupees: number; size: string } | null;
   packCount: number;
   available: boolean;
+  /** Some pack size is counted and has 5 or fewer packets left (but not none). */
+  runningLow: boolean;
+  /** Every pack on sale is counted and has none left: supply is what it needs. */
+  noneLeft: boolean;
 }
 
 export interface ProductFilters {
@@ -108,6 +112,9 @@ export async function listProducts(
             label: productVariants.label,
             priceMinor: productVariants.priceMinor,
             status: productVariants.status,
+            counted: productVariants.trackInventory,
+            quantity: productVariants.stockQuantity,
+            lowLevel: productVariants.lowStockThreshold,
           })
           .from(productVariants)
           .where(and(inArray(productVariants.productId, ids), ne(productVariants.status, "removed"))),
@@ -121,7 +128,8 @@ export async function listProducts(
 
   const cards = rows.map((row): ProductCard => {
     const mine = packs.filter((pack) => pack.productId === row.id);
-    const available = mine.filter((pack) => pack.status === "active");
+    // On sale, and with packets left when they are counted.
+    const available = mine.filter((pack) => pack.status === "active" && (!pack.counted || pack.quantity > 0));
     const cheapest = [...(available.length ? available : mine)].sort(
       (a, b) => a.priceMinor - b.priceMinor,
     )[0];
@@ -137,6 +145,9 @@ export async function listProducts(
       price: cheapest ? { rupees: cheapest.priceMinor / 100, size: cheapest.label } : null,
       packCount: mine.length,
       available: available.length > 0,
+      runningLow: available.some((pack) => pack.counted && pack.quantity <= pack.lowLevel),
+      noneLeft:
+        available.length === 0 && mine.some((pack) => pack.status === "active" && pack.counted && pack.quantity <= 0),
     };
   });
 
@@ -151,7 +162,7 @@ export interface EditableProduct {
   description: string;
   visible: boolean;
   photoUrl: string | null;
-  packs: { id: string; size: string; price: number; available: boolean }[];
+  packs: { id: string; size: string; price: number; available: boolean; packets?: number | null }[];
   advanced: { shortLine: string; webAddress: string; onHomepage: boolean };
   updatedAt: string;
 }
@@ -191,6 +202,7 @@ export async function getProduct(id: string): Promise<EditableProduct | undefine
       size: pack.label,
       price: pack.priceMinor / 100,
       available: pack.status === "active",
+      packets: pack.trackInventory ? pack.stockQuantity : null,
     })),
     advanced: {
       shortLine: row.shortDescriptor,

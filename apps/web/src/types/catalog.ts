@@ -56,6 +56,12 @@ export interface Variant {
   mrpMinor?: number;
   netWeightGrams: number;
   availability: Availability;
+  /**
+   * How many are left, only when stock is counted and running low (at or
+   * below the pack's low-stock level). A large stock figure is never sent
+   * to the browser: "In stock" is all a customer needs to know.
+   */
+  stockLeft?: number;
   isDefault?: boolean;
 }
 

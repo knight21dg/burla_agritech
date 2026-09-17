@@ -13,7 +13,7 @@
 import "server-only";
 import { and, asc, desc, eq, inArray, ne, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
-import { deriveAvailability } from "@/lib/catalog";
+import { deriveAvailability, lowStockLeft } from "@/lib/catalog";
 import { db } from "@burla/core/db";
 import {
   categories,
@@ -103,6 +103,7 @@ function toVariant(row: VariantRow): Variant {
     ...(row.mrpMinor !== null ? { mrpMinor: row.mrpMinor } : {}),
     netWeightGrams: row.netWeightGrams,
     availability: deriveAvailability(row),
+    ...(lowStockLeft(row) !== undefined ? { stockLeft: lowStockLeft(row) } : {}),
     // Always emitted, never omitted when false. `isDefault` is a property
     // every variant has, and a key that appears only sometimes makes two
     // equivalent variants compare unequal.

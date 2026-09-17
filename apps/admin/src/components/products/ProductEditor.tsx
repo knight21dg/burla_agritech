@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
+import Link from "next/link";
 import { ImagePlus, Plus, Trash2, X } from "lucide-react";
 import { saveProductAction } from "@/app/(app)/products/actions";
 import type { FormState } from "@/lib/formState";
@@ -382,6 +383,21 @@ export function ProductEditor({
                 <Trash2 className="size-4" aria-hidden="true" />
                 <span className="sm:sr-only">Delete</span>
               </button>
+
+              {/* Stock is changed on its own screen, where supply and counts are recorded. */}
+              {pack.id !== "new" && product && (
+                <p className="text-[0.875rem] text-ink-3 sm:col-span-4">
+                  {(() => {
+                    const packets = product.packs.find((saved) => saved.id === pack.id)?.packets;
+                    return packets === null || packets === undefined
+                      ? "Stock: not counted. "
+                      : `Stock: ${packets} ${packets === 1 ? "packet" : "packets"}. `;
+                  })()}
+                  <Link href={`/stock?q=${encodeURIComponent(product.name)}`} className="underline underline-offset-2 hover:text-ink">
+                    Change stock
+                  </Link>
+                </p>
+              )}
             </li>
           ))}
         </ul>

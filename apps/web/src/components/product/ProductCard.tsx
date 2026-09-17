@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CardCartControl } from "@/components/cart/CardCartControl";
-import { availabilityLabel, defaultVariant, productHref } from "@/lib/catalog";
+import { availabilityLabel, defaultVariant, productHref, stockText } from "@/lib/catalog";
 import type { Product } from "@/types/catalog";
 import { formatPrice } from "@/lib/utils";
 import { ProductPhoto } from "./ProductPhoto";
@@ -48,6 +48,11 @@ export function ProductCard({ product }: { product: Product }) {
         {soldOut && (
           <span className="absolute inset-x-0 bottom-0 bg-white/90 py-1.5 text-center text-[0.75rem] font-semibold text-ink-2">
             {availabilityLabel.out_of_stock}
+          </span>
+        )}
+        {!soldOut && variant?.stockLeft !== undefined && (
+          <span className="absolute inset-x-0 bottom-0 bg-white/90 py-1.5 text-center text-[0.75rem] font-semibold text-[#9a3412]">
+            {stockText(variant)}
           </span>
         )}
       </div>
