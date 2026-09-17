@@ -13,9 +13,10 @@ import { HeroLeaves } from "./HeroLeaves";
  * "Good Food Better Living" script; leaves drifting through. No logo here —
  * the header carries it (the client's instruction, same day).
  *
- * The background is a warm cream turning pale green, as in the mockup. The
- * products photograph has a white ground, so it is blended with `multiply`:
- * white takes on the colour behind it and the products are unchanged.
+ * The background is white (the mockup's cream-to-green was removed at the
+ * client's request). The products photograph has a white ground, so it is
+ * blended with `multiply`: its white takes on the green circle behind it and
+ * the products are unchanged.
  *
  * ## Why it is composed rather than one picture
  *
@@ -27,7 +28,7 @@ import { HeroLeaves } from "./HeroLeaves";
  * (`assets/hero/extract_products.py`), so each part answers the screen it is
  * on:
  *
- *   Hero  ├── background   cream to pale green, with a green circle behind the products
+ *   Hero  ├── background   white, with a soft green circle behind the products
  *         ├── content      live text: eyebrow, headline, copy, action
  *         ├── products     one photograph, never stretched or cropped
  *         └── leaves       independent sprites (HeroLeaves)
@@ -51,7 +52,7 @@ export function Hero({ heading, text }: { heading: string; text: string }) {
     <section
       aria-labelledby="hero-title"
       // Full width, and the leaf layer clips here — never at the page.
-      className="relative isolate w-full overflow-hidden bg-[linear-gradient(100deg,#fbfaf3_0%,#f7f6ec_42%,#eef4e4_100%)]"
+      className="relative isolate w-full overflow-hidden bg-white"
     >
       <HeroLeaves className="z-0" />
 
