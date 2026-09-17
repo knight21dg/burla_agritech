@@ -53,6 +53,13 @@ export async function signIn(_prev: AuthFormState, form: FormData): Promise<Auth
 
   const account = await findCredentialsByEmail(email);
   const valid = await verifyPassword(password, account?.passwordHash ?? (await decoyHash()));
+  // Only someone who knows the password learns the account is deactivated.
+  if (account && valid && account.status === "suspended") {
+    return {
+      error: "This account has been deactivated. Please contact us if you think this is a mistake.",
+      values,
+    };
+  }
   if (!account || !valid || account.status !== "active") {
     recordFailure(email);
     return { error: "That email and password don't match an account.", values };

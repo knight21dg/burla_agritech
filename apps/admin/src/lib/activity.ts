@@ -94,6 +94,10 @@ export function describe(entry: ActivityEntry): string {
       return `Edited the subcategory ${name ?? ""}`.trim();
     case "subcategory.deleted":
       return `Deleted the subcategory ${name ?? ""}`.trim();
+    case "customer.deactivated":
+      return `Deactivated ${name ?? "a customer"}'s account`;
+    case "customer.activated":
+      return `Activated ${name ?? "a customer"}'s account again`;
     case "enquiry.marked": {
       const to = field(entry.changes, "to");
       return `Marked the enquiry from ${name ?? "a customer"} as ${to?.toLowerCase() ?? "updated"}`;

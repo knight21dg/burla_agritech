@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq, gt, inArray } from "drizzle-orm";
+import { and, eq, gt, inArray, sql } from "drizzle-orm";
 import { db } from "../db";
 import { passwordCredentials, roles, sessions, userRoles, users } from "../db/schema";
 import { isRoleKey, type RoleKey } from "../auth/rbac";
@@ -100,6 +100,47 @@ export async function findUserBySessionHash(tokenHash: string): Promise<AccountU
 
 export async function deleteSessionByHash(tokenHash: string) {
   await db.delete(sessions).where(eq(sessions.tokenHash, tokenHash));
+}
+
+// --- deactivated accounts ----------------------------------------------------
+
+/**
+ * Whether a phone number belongs to a deactivated customer account.
+ *
+ * Deactivating an account in the admin is meant to stop that person buying,
+ * not only that login — otherwise a new account with another email gets
+ * round it. So checkout also refuses a number that a deactivated account has
+ * used: on the account, on a saved address, or on a past order. Numbers are
+ * compared by their last ten digits, so "+91 98765 43210" and "9876543210"
+ * are the same number.
+ */
+export async function isPhoneOfDeactivatedAccount(phone: string): Promise<boolean> {
+  const digits = phone.replace(/\D/g, "").slice(-10);
+  if (digits.length < 10) return false;
+
+  // Written out with table aliases: the same test inside Drizzle's builder
+  // would name the outer "id" unqualified, and it would silently match the
+  // inner table's own id instead.
+  const rows = await db.execute(sql`
+    select 1
+    from users u
+    where u.status = 'suspended'
+      and (
+        right(regexp_replace(coalesce(u.phone, ''), '[^0-9]', '', 'g'), 10) = ${digits}
+        or exists (
+          select 1 from addresses a
+          where a.user_id = u.id
+            and right(regexp_replace(a.phone, '[^0-9]', '', 'g'), 10) = ${digits}
+        )
+        or exists (
+          select 1 from orders o
+          where o.user_id = u.id
+            and right(regexp_replace(o.contact_phone, '[^0-9]', '', 'g'), 10) = ${digits}
+        )
+      )
+    limit 1
+  `);
+  return rows.length > 0;
 }
 
 // --- staff -------------------------------------------------------------------

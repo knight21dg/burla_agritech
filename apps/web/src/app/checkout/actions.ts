@@ -23,7 +23,7 @@ export type PlaceOrderResult =
       message: string;
       items: string[];
     }
-  | { ok: false; code: "ONLINE_PAYMENT_SOON" | "ERROR"; message: string };
+  | { ok: false; code: "ONLINE_PAYMENT_SOON" | "BLOCKED" | "ERROR"; message: string };
 
 const MESSAGES = {
   UNAVAILABLE: "Some items in your cart are no longer available. Remove them to continue.",
@@ -107,6 +107,17 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
     address = { value, savedId: id };
   } else {
     address = { value: addressInput.data };
+  }
+
+  // A deactivated customer's phone number cannot be used to order again,
+  // from this account or a new one.
+  const { isPhoneOfDeactivatedAccount } = await import("@burla/core/repositories/users");
+  if (await isPhoneOfDeactivatedAccount(address.value.mobile)) {
+    return {
+      ok: false,
+      code: "BLOCKED",
+      message: "We can't take online orders for this phone number. Please contact us.",
+    };
   }
 
   try {
