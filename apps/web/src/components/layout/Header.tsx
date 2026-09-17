@@ -1,9 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
+import {
+  Facebook,
+  Instagram,
+  Leaf,
+  Linkedin,
+  Menu,
+  Search,
+  ShoppingCart,
+  User,
+  X,
+  Youtube,
+} from "lucide-react";
 import { useCart } from "@/components/cart/cartStore";
 import { Logo } from "@/components/ui/Logo";
 import type { Category } from "@/types/catalog";
@@ -12,37 +23,52 @@ import { cn } from "@/lib/utils";
 import { SearchOverlay } from "./SearchOverlay";
 
 /**
- * Header, built to the client's mockups (2026-09-10, updated 2026-09-17).
+ * Header, built to the client's mockup of 2026-09-17. Three bands:
  *
- * One band, two rows, with the logo (sprout + BURLA) spanning both on the left:
+ *   ▌ Pure Products | Healthier People | A Better Tomorrow        About Us | Quality | Contact Us   f ig yt in ▐   dark green
+ *     logo        BURLA GLOBAL AGRI PRODUCTS          [ Search products… ]   account   cart
+ *                 ——  GOOD FOOD  •  BETTER LIVING  ——
+ *            Home   Powders & Flakes   Dehydrated Fruits   Pickles   …   Spices
  *
- *   logo  |  BURLA GLOBAL AGRI PRODUCTS    About Us  Quality  Contact Us   search  account  cart
- *         |
- *         |  Home  Powders & Flakes  Dehydrated Fruits  Pickles  ...
+ * The green top bar scrolls away; the logo row and the categories stay at
+ * the top of the screen. The search box opens the same live search as
+ * before. Categories are never hidden behind a dropdown on a laptop; below
+ * that they are in the menu, and the name and motto get their own line.
  *
- * The company name sits at the top in the multicoloured lettering of the
- * mockup, and the category row sits a little lower beneath it. Below laptop
- * width the name gets its own centred line under the logo row.
- *
- * The category row is where a customer spends attention, so it gets the long
- * line; company links are small and quiet above it. Categories are never
- * hidden behind a dropdown — below `lg` the row scrolls horizontally on
- * native scroll-snap rather than collapsing, so every category stays one tap
- * away.
+ * Social icons link only once a real page address is set in `site.social`.
+ * Until then they are shown, as in the mockup, but are not links — a link
+ * to nowhere is worse than no link.
  */
-
-/**
- * The company name in the mockup's lettering: warm yellow and orange through
- * pink and purple to blue. Clipped to the text, so it is still real text.
- */
-const BRAND_NAME =
-  "bg-[linear-gradient(90deg,#f5b700_0%,#f57c00_14%,#e53935_28%,#e91e63_42%,#9c27b0_58%,#3f51b5_74%,#1e88e5_86%,#00bcd4_100%)] bg-clip-text font-bold uppercase leading-none tracking-[0.04em] text-transparent whitespace-nowrap";
 
 /** The company links read as the mockup labels them. */
 const COMPANY_LABEL: Record<string, string> = {
   "/about": "About Us",
   "/contact": "Contact Us",
 };
+
+const SOCIAL = [
+  { Icon: Facebook, href: site.social.facebook, label: "Facebook" },
+  { Icon: Instagram, href: site.social.instagram, label: "Instagram" },
+  { Icon: Youtube, href: site.social.youtube, label: "YouTube" },
+  { Icon: Linkedin, href: site.social.linkedin, label: "LinkedIn" },
+];
+
+const isRealLink = (href: string) => /^https?:\/\//.test(href);
+
+/** "——  GOOD FOOD  •  BETTER LIVING  ——" */
+function Motto({ className }: { className?: string }) {
+  return (
+    <p aria-hidden="true" className={cn("flex items-center justify-center gap-3 text-ink-3", className)}>
+      <span className="h-px w-8 bg-line-strong sm:w-12" />
+      <span className="whitespace-nowrap font-brand font-medium uppercase tracking-[0.42em]">
+        {site.motto[0]}
+        <span className="mx-[0.6em] tracking-normal">•</span>
+        {site.motto[1]}
+      </span>
+      <span className="h-px w-8 bg-line-strong sm:w-12" />
+    </p>
+  );
+}
 
 export function Header({ categories }: { categories: Category[] }) {
   const pathname = usePathname();
@@ -79,15 +105,15 @@ export function Header({ categories }: { categories: Category[] }) {
   const cartCount = useCart().count;
 
   const iconButton =
-    "relative grid size-10 place-items-center rounded-full text-ink transition-colors hover:bg-surface hover:text-green-700";
+    "relative grid size-11 place-items-center rounded-full text-ink transition-colors hover:bg-surface hover:text-green-700";
 
   const navLink = (active: boolean) =>
     cn(
-      "relative block whitespace-nowrap px-2 py-2 text-[0.78rem] transition-colors",
-      "after:absolute after:inset-x-2 after:bottom-0.5 after:h-0.5 after:rounded-full after:transition-colors",
+      "relative block whitespace-nowrap px-0.5 pb-3.5 pt-2 text-[0.8125rem] transition-colors xl:text-[0.875rem] min-[1440px]:text-[0.9375rem] 2xl:text-[1rem]",
+      "after:absolute after:inset-x-0 after:bottom-0 after:h-[3px] after:rounded-full after:transition-colors",
       active
-        ? "font-semibold text-green-700 after:bg-green-700"
-        : "text-ink after:bg-transparent hover:text-green-700 hover:after:bg-green-700/30",
+        ? "font-medium text-green-700 after:bg-green-700"
+        : "text-ink after:bg-transparent hover:text-green-700",
     );
 
   return (
@@ -99,129 +125,166 @@ export function Header({ categories }: { categories: Category[] }) {
         Skip to content
       </a>
 
-      <header
-        data-site-chrome
-        className="sticky top-0 z-50 border-b border-line/70 bg-white"
-      >
+      {/* Band 1 — the green top bar */}
+      <div data-site-chrome className="bg-green-900 text-white">
         <Container>
-          <div className="flex items-center gap-6 py-2 lg:gap-10 lg:py-2.5">
-            <Link
-              href="/"
-              className="shrink-0"
-              aria-label={`${site.name} — home`}
-            >
-              <span className="block lg:hidden">
-                <Logo variant="mark" height={38} priority alt="" />
-              </span>
-              <span className="hidden lg:block">
-                <Logo variant="mark" height={58} priority alt="" />
-              </span>
-            </Link>
+          <div className="flex min-h-10 items-center justify-center gap-4 py-2 text-[0.8125rem] md:justify-between xl:text-[0.875rem]">
+            {/* All three values on a phone and a laptop; on a tablet, where the
+                links share the bar, only the first. */}
+            <p className="flex items-center gap-2 whitespace-nowrap text-[0.75rem] min-[400px]:text-[0.8125rem] xl:text-[0.875rem]">
+              <Leaf className="size-4 shrink-0 fill-white" strokeWidth={1.5} aria-hidden="true" />
+              {site.headerValues.map((value, index) =>
+                index === 0 ? (
+                  <span key={value}>{value}</span>
+                ) : (
+                  <span key={value} className="inline-flex items-center gap-2 md:hidden lg:inline-flex">
+                    <span className="text-white/60" aria-hidden="true">|</span>
+                    {value}
+                  </span>
+                ),
+              )}
+            </p>
 
-            <div className="flex min-w-0 flex-1 flex-col">
-              {/* Row 1 — the company name, company links and the icons */}
-              <div className="flex items-center justify-end gap-1">
-                <p aria-hidden="true" className={cn(BRAND_NAME, "mr-auto hidden flex-1 text-center lg:block lg:text-[1.6rem] xl:text-[1.85rem]")}>
-                  {site.name}
-                </p>
-                <nav
-                  className="mr-3 hidden items-center md:flex"
-                  aria-label="Company"
-                >
-                  {mainNav
-                    .filter((i) => i.href !== "/")
-                    .map((item) => {
-                      const active = pathname.startsWith(item.href);
-                      return (
+            <div className="hidden items-center gap-6 md:flex">
+              <nav aria-label="Company" className="flex items-center gap-3">
+                {mainNav
+                  .filter((i) => i.href !== "/")
+                  .map((item, index) => {
+                    const active = pathname.startsWith(item.href);
+                    return (
+                      <Fragment key={item.href}>
+                        {index > 0 && <span className="text-white/60" aria-hidden="true">|</span>}
                         <Link
-                          key={item.href}
                           href={item.href}
                           aria-current={active ? "page" : undefined}
-                          className={cn(
-                            "whitespace-nowrap px-3 py-1.5 text-[0.75rem] transition-colors",
-                            active
-                              ? "font-semibold text-green-700"
-                              : "text-ink-2 hover:text-green-700",
-                          )}
+                          className={cn("whitespace-nowrap hover:underline", active && "font-semibold underline")}
                         >
                           {COMPANY_LABEL[item.href] ?? item.label}
                         </Link>
-                      );
-                    })}
-                </nav>
-
-                <button
-                  type="button"
-                  onClick={() => setSearchOpen(true)}
-                  className={iconButton}
-                  aria-label="Search products"
-                >
-                  <Search className="size-[1.2rem]" strokeWidth={1.75} aria-hidden="true" />
-                </button>
-                <Link href="/account" className={iconButton} aria-label="Your account">
-                  <User className="size-[1.2rem]" strokeWidth={1.75} aria-hidden="true" />
-                </Link>
-                <Link
-                  href="/cart"
-                  className={iconButton}
-                  aria-label={`Your cart, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}
-                >
-                  <ShoppingCart className="size-[1.2rem]" strokeWidth={1.75} aria-hidden="true" />
-                  <span
-                    // Keyed on the count, so each change replays the bump.
-                    key={cartCount}
-                    aria-hidden="true"
-                    className="animate-cart-bump absolute right-0.5 top-0.5 grid h-[1.05rem] min-w-[1.05rem] place-items-center rounded-full bg-green-700 px-1 text-[0.625rem] font-semibold leading-none text-white tabular-nums"
-                  >
-                    {cartCount}
-                  </span>
-                </Link>
-
-                <button
-                  type="button"
-                  onClick={() => setMobileOpen(true)}
-                  className={cn(iconButton, "lg:hidden")}
-                  aria-label="Open menu"
-                  aria-expanded={mobileOpen}
-                >
-                  <Menu className="size-[1.35rem]" aria-hidden="true" />
-                </button>
-              </div>
-
-              {/* Row 2 — Home and the ten categories */}
-              <nav
-                className="mt-2.5 hidden min-w-0 lg:block"
-                aria-label="Product categories"
-              >
-                <ul className="rail -mx-2">
-                  <li className="rail-item">
-                    <Link
-                      href="/"
-                      aria-current={pathname === "/" ? "page" : undefined}
-                      className={navLink(pathname === "/")}
-                    >
-                      Home
-                    </Link>
-                  </li>
-                  {categories.map((c) => (
-                    <li key={c.slug} className="rail-item">
-                      <Link
-                        href={`/products/${c.slug}`}
-                        aria-current={catActive(c.slug) ? "page" : undefined}
-                        className={navLink(catActive(c.slug))}
-                      >
-                        {c.shortName}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                      </Fragment>
+                    );
+                  })}
               </nav>
+              <ul className="flex items-center gap-4" aria-label="Burla on social media">
+                {SOCIAL.map(({ Icon, href, label }) => (
+                  <li key={label}>
+                    {isRealLink(href) ? (
+                      <a href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="block hover:opacity-80">
+                        <Icon className="size-[1.125rem]" strokeWidth={1.75} aria-hidden="true" />
+                      </a>
+                    ) : (
+                      <Icon className="size-[1.125rem]" strokeWidth={1.75} aria-label={label} role="img" />
+                    )}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
-          {/* Phones: the name on its own line, centred under the logo row. */}
-          <p aria-hidden="true" className={cn(BRAND_NAME, "pb-2 text-center text-[0.95rem] sm:text-[1.2rem] lg:hidden")}>
-            {site.name}
-          </p>
+        </Container>
+      </div>
+
+      <header data-site-chrome className="sticky top-0 z-50 border-b border-line bg-white">
+        <Container>
+          {/* Band 2 — logo, name and motto, search, account, cart */}
+          <div className="flex items-center gap-4 py-2.5 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-8 lg:py-3">
+            <Link href="/" className="shrink-0 justify-self-start" aria-label={`${site.name} — home`}>
+              <span className="block lg:hidden">
+                <Logo variant="full" height={50} priority alt="" />
+              </span>
+              <span className="hidden lg:block">
+                <Logo variant="full" height={92} priority alt="" />
+              </span>
+            </Link>
+
+            <div aria-hidden="true" className="hidden text-center md:block md:flex-1 lg:flex-none">
+              <p className="whitespace-nowrap font-brand text-[1.35rem] font-bold uppercase leading-tight text-green-700 lg:text-[2rem] xl:text-[2.25rem]">
+                {site.name}
+              </p>
+              <Motto className="mt-2 text-[0.75rem] lg:text-[0.95rem]" />
+            </div>
+
+            <div className="ml-auto flex items-center justify-self-end gap-1 lg:ml-0 lg:gap-2">
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                className="hidden h-12 w-64 items-center gap-3 rounded-full bg-surface-2 px-4 text-left text-[0.9375rem] text-ink-3 transition-colors hover:bg-line xl:flex xl:w-72"
+                aria-label="Search products"
+              >
+                <Search className="size-5 text-ink" strokeWidth={1.75} aria-hidden="true" />
+                Search products…
+              </button>
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                className={cn(iconButton, "xl:hidden")}
+                aria-label="Search products"
+              >
+                <Search className="size-[1.35rem]" strokeWidth={1.75} aria-hidden="true" />
+              </button>
+              <Link href="/account" className={iconButton} aria-label="Your account">
+                <User className="size-[1.5rem]" strokeWidth={1.5} aria-hidden="true" />
+              </Link>
+              <Link
+                href="/cart"
+                className={iconButton}
+                aria-label={`Your cart, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}
+              >
+                <ShoppingCart className="size-[1.6rem]" strokeWidth={1.5} aria-hidden="true" />
+                <span
+                  // Keyed on the count, so each change replays the bump.
+                  key={cartCount}
+                  aria-hidden="true"
+                  className="animate-cart-bump absolute -right-0.5 -top-0.5 grid h-[1.35rem] min-w-[1.35rem] place-items-center rounded-full bg-green-700 px-1 text-[0.75rem] font-semibold leading-none text-white tabular-nums"
+                >
+                  {cartCount}
+                </span>
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => setMobileOpen(true)}
+                className={cn(iconButton, "lg:hidden")}
+                aria-label="Open menu"
+                aria-expanded={mobileOpen}
+              >
+                <Menu className="size-[1.35rem]" aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+
+          {/* Phones: the name and motto on their own lines under the logo row. */}
+          <div aria-hidden="true" className="pb-2.5 text-center md:hidden">
+            <p className="font-brand text-[1.05rem] font-bold uppercase leading-tight text-green-700 min-[400px]:text-[1.15rem]">
+              {site.name}
+            </p>
+            <Motto className="mt-1 text-[0.625rem]" />
+          </div>
+
+          {/* Band 3 — Home and the ten categories, centred */}
+          <nav className="hidden min-w-0 lg:block" aria-label="Product categories">
+            <ul className="flex items-end justify-center-safe gap-x-3 overflow-x-auto [scrollbar-width:none] xl:gap-x-5 2xl:gap-x-8">
+              <li>
+                <Link
+                  href="/"
+                  aria-current={pathname === "/" ? "page" : undefined}
+                  className={navLink(pathname === "/")}
+                >
+                  Home
+                </Link>
+              </li>
+              {categories.map((c) => (
+                <li key={c.slug}>
+                  <Link
+                    href={`/products/${c.slug}`}
+                    aria-current={catActive(c.slug) ? "page" : undefined}
+                    className={navLink(catActive(c.slug))}
+                  >
+                    {c.shortName}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </Container>
       </header>
 
@@ -240,7 +303,7 @@ export function Header({ categories }: { categories: Category[] }) {
             className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-white"
           >
             <div className="flex h-16 shrink-0 items-center justify-between border-b border-line px-4">
-              <Logo variant="wordmark" height={28} alt="" />
+              <Logo variant="full" height={40} alt="" />
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
@@ -313,6 +376,10 @@ export function Header({ categories }: { categories: Category[] }) {
   );
 }
 
+/**
+ * Wider than the page column: in the mockup the header's bands run nearly
+ * edge to edge on a large screen, while the page content below stays narrower.
+ */
 function Container({ children }: { children: React.ReactNode }) {
-  return <div className="container-page">{children}</div>;
+  return <div className="mx-auto w-full max-w-[1560px] px-4 sm:px-6 lg:px-10 xl:px-14">{children}</div>;
 }

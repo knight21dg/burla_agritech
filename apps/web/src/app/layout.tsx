@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Caveat, Instrument_Sans, Source_Serif_4 } from "next/font/google";
+import { Caveat, Instrument_Sans, Montserrat, Source_Serif_4 } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
@@ -50,6 +50,18 @@ const serif = Source_Serif_4({
   axes: ["opsz"],
 });
 
+/**
+ * The brand lettering: the header's "BURLA GLOBAL AGRI PRODUCTS" and its
+ * "GOOD FOOD • BETTER LIVING" line, in the geometric sans of the logo's own
+ * "GLOBAL AGRI PRODUCTS" (client mockup, 2026-09-17). Nothing else uses it.
+ */
+const brand = Montserrat({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  variable: "--font-montserrat",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
@@ -94,7 +106,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en-IN"
-      className={`${instrument.variable} ${caveat.variable} ${serif.variable}`}
+      className={`${instrument.variable} ${caveat.variable} ${serif.variable} ${brand.variable}`}
     >
       <body className="flex min-h-screen flex-col antialiased">
         <ChromeMeasure />
