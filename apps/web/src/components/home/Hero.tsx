@@ -9,14 +9,12 @@ import { HeroLeaves } from "./HeroLeaves";
  * Homepage hero, to the client's approved composition, restyled to the mockup
  * of 2026-09-17: a small "Natural • Nutritious • Sustainable" line, the
  * headline (its last line in olive green), a line of copy and one action on
- * the left; the products on the right, on a soft green circle, under the
- * "Good Food Better Living" script; leaves drifting through. No logo here —
+ * the left; the products on the right under the "Good Food Better Living"
+ * script; leaves drifting through. No logo here —
  * the header carries it (the client's instruction, same day).
  *
- * The background is white (the mockup's cream-to-green was removed at the
- * client's request). The products photograph has a white ground, so it is
- * blended with `multiply`: its white takes on the green circle behind it and
- * the products are unchanged.
+ * The background is plain white: the mockup's cream-to-green and the green
+ * circle behind the products were both removed at the client's request.
  *
  * ## Why it is composed rather than one picture
  *
@@ -28,7 +26,7 @@ import { HeroLeaves } from "./HeroLeaves";
  * (`assets/hero/extract_products.py`), so each part answers the screen it is
  * on:
  *
- *   Hero  ├── background   white, with a soft green circle behind the products
+ *   Hero  ├── background   the page's own white
  *         ├── content      live text: eyebrow, headline, copy, action
  *         ├── products     one photograph, never stretched or cropped
  *         └── leaves       independent sprites (HeroLeaves)
@@ -56,10 +54,7 @@ export function Hero({ heading, text }: { heading: string; text: string }) {
     >
       <HeroLeaves className="z-0" />
 
-      {/* No z-index here: that would make its own layer, and the products'
-          multiply blend would then have nothing behind it to take colour
-          from. Coming after the leaves in the page already keeps it in front. */}
-      <div className="container-page relative">
+      <div className="container-page relative z-10">
         <div className="grid items-center gap-8 pb-10 pt-8 sm:pb-12 lg:min-h-[min(calc(100dvh-var(--site-chrome)),48rem)] lg:grid-cols-12 lg:gap-10 lg:py-10">
           {/* The words. `data-hero-content` is what the leaves keep clear of. */}
           <div data-hero-content className="lg:col-span-6">
@@ -129,15 +124,7 @@ export function Hero({ heading, text }: { heading: string; text: string }) {
             </div>
 
             {products && (
-              <div className="relative mt-2 sm:mt-4">
-                {/* The soft green circle the products stand on in the mockup.
-                    The entrance animation is on the photo itself, not this
-                    wrapper: a transform here would cut the photo off from the
-                    background its multiply blend needs. */}
-                <span
-                  aria-hidden="true"
-                  className="absolute left-1/2 top-[4%] -z-10 aspect-square w-[78%] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_50%_45%,#cfe4bd_0%,#d9eacb_50%,rgba(226,238,214,0.6)_66%,rgba(236,243,227,0)_72%)]"
-                />
+              <div className="enter-art mt-2 sm:mt-4">
                 {/* eslint-disable-next-line @next/next/no-img-element -- the
                     page's largest paint, served pre-encoded at its own size;
                     an on-the-fly encode is a first-visit delay for no gain */}
@@ -148,7 +135,7 @@ export function Hero({ heading, text }: { heading: string; text: string }) {
                   height={products.height}
                   fetchPriority="high"
                   decoding="async"
-                  className="enter-art mx-auto h-auto w-full max-w-[min(100%,46rem)] object-contain mix-blend-multiply lg:max-w-none"
+                  className="mx-auto h-auto w-full max-w-[min(100%,46rem)] object-contain lg:max-w-none"
                 />
               </div>
             )}
