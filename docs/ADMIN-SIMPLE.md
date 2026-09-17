@@ -57,7 +57,9 @@ A tap is ignored when it comes from another website, has any unexpected field, r
 
 - Accept moves a new order to Preparing. Reject cancels it and notes "Rejected by the shop" in its history.
 - If the customer paid online, the Reject confirmation and the result both remind the owner to refund it from the payment dashboard. Nothing is refunded automatically.
-- Customers are not told automatically yet; there is no order email or SMS.
+- After Accept, the order page offers **Send confirmation on WhatsApp**. It opens WhatsApp with the message already written to the customer's number (`lib/orderMessages.ts`), and the owner presses send. The same button stays on the order while it is Preparing.
+- The message lists only what the order says: items, total, how it is paid, city and PIN code. It promises no delivery date.
+- Nothing is sent automatically. That would need Meta's WhatsApp Business Platform (a verified business account, an approved message template and an access token).
 
 ## 6. Stock
 
@@ -81,7 +83,7 @@ All test data has been removed and the edited values restored. The audit rows fr
 
 ## 8. Known limits
 
-- Accepting or rejecting an order does not notify the customer.
+- The WhatsApp confirmation is sent by the owner from their phone, not automatically; a rejection is not sent at all.
 - Rejecting a paid online order does not refund it automatically.
 - Uploaded photos are stored on local disk only (`MEDIA_DIR`). Production needs R2.
 - The WhatsApp number still comes from the environment, not from Settings.

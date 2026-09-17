@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import type { FormState } from "@/lib/formState";
 import { requirePermission } from "@/server/auth/session";
@@ -27,5 +28,8 @@ export async function moveOrderAction(_previous: FormState, form: FormData): Pro
   revalidatePath(`/orders/${parsed.data.orderNumber}`);
   revalidatePath("/orders");
   revalidatePath("/");
+
+  // Accepted: straight to the order, where the WhatsApp confirmation is one tap away.
+  if (result.ok && result.accepted) redirect(`/orders/${parsed.data.orderNumber}?accepted=1`);
   return { ok: result.ok, message: result.message };
 }

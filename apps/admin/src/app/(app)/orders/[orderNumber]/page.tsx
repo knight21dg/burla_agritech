@@ -1,26 +1,28 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, MessageCircle, Phone } from "lucide-react";
+import { ArrowLeft, CheckCircle2, MessageCircle, Phone } from "lucide-react";
 import { can } from "@burla/core/auth/rbac";
 import { requirePermission } from "@/server/auth/session";
 import { getOrder } from "@/server/orders";
 import { CAN_CANCEL, NEXT_STEPS, ORDER_LABEL, ORDER_TONE, needsRefund, paymentLabel } from "@/lib/orderSteps";
 import { money, when } from "@/lib/format";
 import { cn } from "@/lib/cn";
+import { confirmationLink, whatsappNumber } from "@/lib/orderMessages";
 import { OrderActions } from "@/components/orders/OrderActions";
 
 export const metadata: Metadata = { title: "Order" };
 
-/** Digits for a WhatsApp link, assuming an Indian number when no code is given. */
-function whatsappNumber(phone: string): string {
-  const digits = phone.replace(/\D/g, "");
-  return digits.length === 10 ? `91${digits}` : digits;
-}
-
-export default async function OrderPage({ params }: { params: Promise<{ orderNumber: string }> }) {
+export default async function OrderPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ orderNumber: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const actor = await requirePermission("order.read_all");
   const { orderNumber } = await params;
+  const justAccepted = (await searchParams).accepted === "1";
   if (!/^BGA-\d{4}-\d{5,}$/.test(orderNumber)) notFound();
 
   const order = await getOrder(orderNumber);
@@ -28,6 +30,9 @@ export default async function OrderPage({ params }: { params: Promise<{ orderNum
 
   const address = order.shippingAddress;
   const canAct = can(actor, "order.transition");
+  // Offered while the order is being prepared: the moment the customer should hear it is confirmed.
+  const confirmation = order.status === "processing" ? confirmationLink(order) : null;
+  const chatNumber = whatsappNumber(order.contactPhone);
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
@@ -42,6 +47,42 @@ export default async function OrderPage({ params }: { params: Promise<{ orderNum
         </div>
         <p className="mt-0.5 text-ink-2">Placed {when(order.placedAt)}</p>
       </div>
+
+      {order.status === "processing" && (justAccepted || confirmation) && (
+        <section
+          className={cn(
+            "panel space-y-3 p-4 sm:p-5",
+            justAccepted && "border-accent/40 bg-accent-soft",
+          )}
+        >
+          {justAccepted && (
+            <p role="status" className="flex items-center gap-2 text-[1.0625rem] font-semibold text-accent-dark">
+              <CheckCircle2 className="size-5" aria-hidden="true" />
+              Order accepted.
+            </p>
+          )}
+          {confirmation ? (
+            <>
+              <p className="font-medium">Let {order.contactName} know their order is confirmed.</p>
+              <a
+                href={confirmation}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="btn btn-primary min-h-12 w-full text-base sm:w-auto"
+              >
+                <MessageCircle className="size-5" aria-hidden="true" />
+                Send confirmation on WhatsApp
+              </a>
+              <p className="hint">WhatsApp opens with the message already written. Check it, then press send.</p>
+            </>
+          ) : (
+            <p className="text-warning">
+              The phone number on this order ({order.contactPhone}) does not look complete, so WhatsApp cannot be
+              opened. Please call the customer instead.
+            </p>
+          )}
+        </section>
+      )}
 
       {canAct && (NEXT_STEPS[order.status] || CAN_CANCEL.includes(order.status)) ? (
         <OrderActions
@@ -70,15 +111,17 @@ export default async function OrderPage({ params }: { params: Promise<{ orderNum
             <Phone className="size-4" aria-hidden="true" />
             Call {order.contactPhone}
           </a>
-          <a
-            href={`https://wa.me/${whatsappNumber(order.contactPhone)}?text=${encodeURIComponent(`Hello ${order.contactName}, this is Burla about your order ${order.orderNumber}.`)}`}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="btn btn-quiet"
-          >
-            <MessageCircle className="size-4" aria-hidden="true" />
-            WhatsApp
-          </a>
+          {chatNumber && (
+            <a
+              href={`https://wa.me/${chatNumber}?text=${encodeURIComponent(`Hello ${order.contactName}, this is Burla Global Agri Products about your order ${order.orderNumber}.`)}`}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="btn btn-quiet"
+            >
+              <MessageCircle className="size-4" aria-hidden="true" />
+              WhatsApp
+            </a>
+          )}
         </div>
 
         <h3 className="mt-4 text-[0.9375rem] font-semibold">Deliver to</h3>

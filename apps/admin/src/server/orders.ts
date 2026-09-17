@@ -163,7 +163,9 @@ export async function getOrder(orderNumber: string) {
   return { ...order, items, events };
 }
 
-export type MoveResult = { ok: true; message: string } | { ok: false; message: string };
+export type MoveResult =
+  | { ok: true; message: string; accepted?: boolean }
+  | { ok: false; message: string };
 
 export async function moveOrder(
   actor: Actor,
@@ -273,6 +275,10 @@ export async function moveOrder(
       to === "cancelled" && needsRefund(order.paymentMethod, order.paymentStatus)
         ? ` The customer paid ${money(order.totalMinor)} online — refund it from your payment dashboard.`
         : "";
-    return { ok: true as const, message: (said[to] ?? "Updated.") + refund };
+    return {
+      ok: true as const,
+      message: (said[to] ?? "Updated.") + refund,
+      accepted: to === "processing" && order.status === "confirmed",
+    };
   });
 }
