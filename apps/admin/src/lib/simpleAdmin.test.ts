@@ -52,12 +52,17 @@ describe("the product form", () => {
     }
   });
 
-  it("will not show a product on the website that nobody can buy", () => {
+  it("will not show a product on the website that has no pack size", () => {
+    const result = productFormSchema.safeParse({ ...product, packs: [] });
+    expect(result.success).toBe(false);
+  });
+
+  it("lets an out-of-stock product stay on the website", () => {
     const result = productFormSchema.safeParse({
       ...product,
       packs: [{ id: "new", size: "500 g", price: 250, available: false }],
     });
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
   });
 
   it("lets a hidden product have no available pack", () => {

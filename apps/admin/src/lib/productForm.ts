@@ -85,12 +85,13 @@ export const productFormSchema = z
   })
   .strict()
   .superRefine((form, ctx) => {
-    if (form.visible && !form.packs.some((pack) => pack.available)) {
+    // Out of stock is fine on the website (it says so and cannot be bought);
+    // a product with no pack size at all has nothing to show.
+    if (form.visible && form.packs.length === 0) {
       ctx.addIssue({
         code: "custom",
         path: ["visible"],
-        message:
-          "To show this product on the website, add a pack size with a price and mark it available.",
+        message: "To show this product on the website, add a pack size with a price.",
       });
     }
   });

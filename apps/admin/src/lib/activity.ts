@@ -61,6 +61,10 @@ export function describe(entry: ActivityEntry): string {
       return `Hid${product} from the website`;
     case "product.archived":
       return `Deleted${product}`;
+    case "product.available":
+      return `Marked${product} available`;
+    case "product.out_of_stock":
+      return `Marked${product} out of stock`;
     case "product.on_homepage":
     case "product.featured":
       return `Put${product} on the homepage`;

@@ -9,7 +9,7 @@ Roles and sessions are in `ADMIN-ROLES-PERMISSIONS.md`. How the admin sits besid
 | Menu | What the owner does there | Files (`apps/admin/src`) |
 |---|---|---|
 | Home | Greeting, four counts (products, orders, customers, new enquiries), big buttons for common jobs | `app/(app)/page.tsx`, `server/repositories/dashboardRepository.ts` |
-| Products | Search, pick a category, open a card, edit, save. Add Product is one form | `app/(app)/products/*`, `components/products/ProductEditor.tsx`, `server/products.ts` |
+| Products | Search, pick a category, open a card, edit, save. Each card also has Available / Out of stock and Delete. Add Product is one form | `app/(app)/products/*`, `components/products/ProductEditor.tsx`, `server/products.ts` |
 | Categories | Category cards with product counts; edit name, photo, description, show on website, subcategories | `app/(app)/categories/*`, `components/categories/*`, `server/categories.ts` |
 | Orders | New / Preparing / Ready / On the way / Delivered / Cancelled, each with one big next-step button | `app/(app)/orders/*`, `lib/orderSteps.ts`, `server/orders.ts` |
 | Customers | List and detail: contact details, orders, amount spent | `app/(app)/customers/*`, `server/customers.ts` |
@@ -54,6 +54,7 @@ Stock is not counted by default (`track_inventory = false`). A pack is either av
 ## 5. Verified by hand (16–17 Sept 2026, local database)
 
 - Price change (Moringa Powder 100 g), photo change, hide and show again: the database and the shop page matched each time.
+- From the product list: Out of stock, Available and Delete on a test product. The shop page said "Out of stock", then "not found" after Delete.
 - Add product with two pack sizes, then delete it. The shop page appeared, then returned 404.
 - Rename a category; add and delete a subcategory.
 - Move an order from New to Delivered. Cash-on-delivery payment was marked received.

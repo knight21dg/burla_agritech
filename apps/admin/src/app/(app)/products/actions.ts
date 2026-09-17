@@ -8,7 +8,7 @@ import { isUuid } from "@/lib/ids";
 import { errorsOf, productFormSchema } from "@/lib/productForm";
 import { requirePermission } from "@/server/auth/session";
 import { fileFrom } from "@/server/photos";
-import { deleteProduct, saveProduct, setOnWebsite } from "@/server/products";
+import { deleteProduct, saveProduct, setAvailable, setOnWebsite } from "@/server/products";
 
 /**
  * The product screen's actions.
@@ -93,6 +93,35 @@ export async function toggleOnWebsiteAction(
   if (!parsed.success) return { ok: false, message: "Something went wrong. Please try again." };
 
   const result = await setOnWebsite(actor, parsed.data.productId, parsed.data.visible === "true");
+  revalidatePath("/products");
+  return { ok: result.ok, message: result.message };
+}
+
+const productIdSchema = z.object({ productId: z.string().uuid() }).strict();
+
+/** Delete from the product list: stays on the list, with its search and category. */
+export async function deleteFromListAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const actor = await requirePermission("catalogue.publish");
+  const parsed = productIdSchema.safeParse({ productId: form.get("productId") });
+  if (!parsed.success) return { ok: false, message: "Something went wrong. Please try again." };
+
+  const result = await deleteProduct(actor, parsed.data.productId);
+  revalidatePath("/products");
+  revalidatePath("/");
+  return { ok: result.ok, message: result.message };
+}
+
+const availableSchema = z.object({ productId: z.string().uuid(), available: z.enum(["true", "false"]) }).strict();
+
+export async function setAvailableAction(_previous: FormState, form: FormData): Promise<FormState> {
+  const actor = await requirePermission("catalogue.write");
+  const parsed = availableSchema.safeParse({
+    productId: form.get("productId"),
+    available: form.get("available"),
+  });
+  if (!parsed.success) return { ok: false, message: "Something went wrong. Please try again." };
+
+  const result = await setAvailable(actor, parsed.data.productId, parsed.data.available === "true");
   revalidatePath("/products");
   return { ok: result.ok, message: result.message };
 }

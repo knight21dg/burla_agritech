@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Pencil, Plus, Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { can } from "@burla/core/auth/rbac";
 import { requirePermission } from "@/server/auth/session";
 import { PAGE_SIZE, categoryOptions, listProducts } from "@/server/products";
 import { isUuid } from "@/lib/ids";
 import { cn } from "@/lib/cn";
+import { ProductCardActions } from "@/components/products/ProductCardActions";
 
 export const metadata: Metadata = { title: "Products" };
 
@@ -15,8 +16,8 @@ export const metadata: Metadata = { title: "Products" };
  *
  * A search box, the categories as buttons, and a card per product showing
  * exactly what matters: its photo, name, category, price and pack size,
- * whether it is available, and whether it is on the website. One button:
- * Edit.
+ * whether it is available, and whether it is on the website. Under each card:
+ * Available / Out of stock, Edit and Delete.
  */
 
 function one(value: string | string[] | undefined): string | undefined {
@@ -59,6 +60,7 @@ export default async function ProductsPage({
 
   const categories = options.filter((option) => option.parentId === null);
   const canAdd = can(actor, "catalogue.write");
+  const canDelete = can(actor, "catalogue.publish");
   const deleted = one(params.deleted) === "1";
 
   return (
@@ -152,60 +154,60 @@ export default async function ProductsPage({
       ) : (
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {cards.map((card) => (
-            <li key={card.id} className="panel flex gap-3 p-3">
-              <div className="grid size-24 shrink-0 place-items-center overflow-hidden rounded-md border border-line bg-surface">
-                {card.photoUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- the shop's own photo, already sized
-                  <img src={card.photoUrl} alt="" className="h-full w-full object-contain" loading="lazy" />
-                ) : (
-                  <span className="px-2 text-center text-[0.75rem] text-ink-3">No photo</span>
-                )}
-              </div>
-
-              <div className="flex min-w-0 flex-1 flex-col">
-                <h2 className="truncate text-[1.0625rem] font-semibold" title={card.name}>
-                  {card.name}
-                </h2>
-                <p className="truncate text-[0.875rem] text-ink-3">
-                  {card.subcategoryName
-                    ? `${card.categoryName} · ${card.subcategoryName}`
-                    : card.categoryName}
-                </p>
-
-                <p className="mt-1 text-[0.9375rem]">
-                  {card.price ? (
-                    <>
-                      <span className="font-semibold">{rupees(card.price.rupees)}</span>
-                      <span className="text-ink-2"> · {card.price.size}</span>
-                      {card.packCount > 1 && (
-                        <span className="text-ink-3"> · {card.packCount} sizes</span>
-                      )}
-                    </>
+            <li key={card.id} className="panel flex flex-col gap-3 p-3">
+              <div className="flex min-w-0 flex-1 gap-3">
+                <div className="grid size-24 shrink-0 place-items-center overflow-hidden rounded-md border border-line bg-surface">
+                  {card.photoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- the shop's own photo, already sized
+                    <img src={card.photoUrl} alt="" className="h-full w-full object-contain" loading="lazy" />
                   ) : (
-                    <span className="text-warning">No price yet</span>
-                  )}
-                </p>
-
-                <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                  <span className={cn("pill", card.onWebsite ? "pill-on" : "pill-off")}>
-                    {card.onWebsite ? "On website" : "Hidden"}
-                  </span>
-                  {!card.available && card.packCount > 0 && (
-                    <span className="pill pill-warn">Out of stock</span>
+                    <span className="px-2 text-center text-[0.75rem] text-ink-3">No photo</span>
                   )}
                 </div>
-
-                <div className="mt-auto flex justify-end pt-2">
-                  <Link
-                    href={`/products/${card.id}`}
-                    className="btn btn-quiet"
-                    aria-label={`Edit ${card.name}`}
-                  >
-                    <Pencil className="size-4" aria-hidden="true" />
-                    Edit
-                  </Link>
+  
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <h2 className="truncate text-[1.0625rem] font-semibold" title={card.name}>
+                    {card.name}
+                  </h2>
+                  <p className="truncate text-[0.875rem] text-ink-3">
+                    {card.subcategoryName
+                      ? `${card.categoryName} · ${card.subcategoryName}`
+                      : card.categoryName}
+                  </p>
+  
+                  <p className="mt-1 text-[0.9375rem]">
+                    {card.price ? (
+                      <>
+                        <span className="font-semibold">{rupees(card.price.rupees)}</span>
+                        <span className="text-ink-2"> · {card.price.size}</span>
+                        {card.packCount > 1 && (
+                          <span className="text-ink-3"> · {card.packCount} sizes</span>
+                        )}
+                      </>
+                    ) : (
+                      <span className="text-warning">No price yet</span>
+                    )}
+                  </p>
+  
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    <span className={cn("pill", card.onWebsite ? "pill-on" : "pill-off")}>
+                      {card.onWebsite ? "On website" : "Hidden"}
+                    </span>
+                    {!canAdd && !card.available && card.packCount > 0 && (
+                      <span className="pill pill-warn">Out of stock</span>
+                    )}
+                  </div>
                 </div>
               </div>
+
+              <ProductCardActions
+                productId={card.id}
+                name={card.name}
+                available={card.available}
+                hasPacks={card.packCount > 0}
+                canChangeStock={canAdd}
+                canDelete={canDelete}
+              />
             </li>
           ))}
         </ul>

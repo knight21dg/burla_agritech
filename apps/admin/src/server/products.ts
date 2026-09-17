@@ -509,10 +509,10 @@ export async function setOnWebsite(
 
   const product = await getProduct(productId);
   if (!product) return { ok: false, message: "This product no longer exists." };
-  if (visible && !product.packs.some((pack) => pack.available)) {
+  if (visible && product.packs.length === 0) {
     return {
       ok: false,
-      message: `${product.name} has no available pack size yet. Open it, add a price, then show it on the website.`,
+      message: `${product.name} has no pack size yet. Open it, add a price, then show it on the website.`,
     };
   }
 
@@ -542,6 +542,46 @@ export async function setOnWebsite(
     ok: true,
     id: productId,
     message: visible ? `${product.name} is on the website.` : `${product.name} is hidden from the website.`,
+  };
+}
+
+/**
+ * Quick "Available" / "Out of stock" from the product list: every pack size of
+ * the product at once. For one pack size only, the owner opens the editor.
+ */
+export async function setAvailable(
+  actor: Actor,
+  productId: string,
+  available: boolean,
+): Promise<SaveResult> {
+  requireCapability(actor, "catalogue.write");
+
+  const product = await getProduct(productId);
+  if (!product) return { ok: false, message: "This product no longer exists." };
+  if (product.packs.length === 0) {
+    return { ok: false, message: `${product.name} has no pack size yet. Open it and add a price first.` };
+  }
+
+  await db.transaction(async (tx) => {
+    await tx
+      .update(productVariants)
+      .set({ status: available ? "active" : "inactive", updatedAt: new Date() })
+      .where(and(eq(productVariants.productId, productId), ne(productVariants.status, "removed")));
+    // An editor left open on this product must not quietly undo this.
+    await tx.update(products).set({ updatedAt: new Date() }).where(eq(products.id, productId));
+    await writeAudit(tx, actor, {
+      action: available ? "product.available" : "product.out_of_stock",
+      entityType: "product",
+      entityId: productId,
+      changes: { name: product.name },
+    });
+  });
+
+  await revalidateStorefront({ catalogue: true, productSlug: product.advanced.webAddress });
+  return {
+    ok: true,
+    id: productId,
+    message: available ? `${product.name} is available.` : `${product.name} is marked out of stock.`,
   };
 }
 
