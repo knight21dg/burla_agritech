@@ -72,7 +72,7 @@ export const imagery: {
       "A smiling farmer in a white turban kneeling in a green field, holding " +
       "an armful of freshly picked leaves beside a jute sack printed with the " +
       "Burla logo",
-    width: 1536,
-    height: 1024,
+    width: 1400,
+    height: 933,
   },
 };

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { FarmLandscape } from "@/components/art/FarmLandscape";
 import type { Photo } from "@/lib/imagery";
 
@@ -39,12 +38,17 @@ export function AboutPhoto({ photo }: { photo: Photo | null }) {
   return (
     <div className="@container relative aspect-[3/2] w-full overflow-hidden bg-green-50 md:aspect-[19/10] min-[1152px]:aspect-auto min-[1152px]:h-full min-[1152px]:min-h-[30rem]">
       {photo ? (
-        <Image
+        // Served as it is, at the size it is stored, like the hero's own
+        // photograph: no on-the-fly resizing, which in development stalls on
+        // this file and leaves the band blank.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
           src={photo.src}
           alt={photo.alt}
-          fill
-          sizes="(min-width: 1920px) 806px, (min-width: 1152px) 42vw, 100vw"
-          className="object-cover object-[50%_45%] md:object-[50%_55%] min-[1152px]:object-[54%_50%]"
+          width={photo.width}
+          height={photo.height}
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover object-[50%_45%] md:object-[50%_55%] min-[1152px]:object-[54%_50%]"
         />
       ) : (
         <FarmLandscape className="absolute inset-0 h-full w-full" />
