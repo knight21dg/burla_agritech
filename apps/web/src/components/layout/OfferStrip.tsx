@@ -28,10 +28,12 @@ import { OFFER_LINKS, type Offer, type OfferIcon } from "@burla/core/content";
  * times side by side and the whole row is moved by one list's width at a
  * time, so it never runs out and never jumps, even on a very wide screen.
  * Only the first copy is read out or reachable by keyboard; the others are
- * decoration.
+ * decoration to the screen reader but still open their offer when clicked,
+ * because as the strip moves it is usually a copy under the pointer.
  *
- * It stops while the pointer is over it or something in it has focus, so an
- * offer can be read and clicked; and while the tab is hidden. The arrows move
+ * It stops while the pointer is over it, while it is being pressed, while
+ * something in it has focus, and while the tab is hidden — so an offer can be
+ * read and clicked. The arrows move
  * it one offer at a time and hold it still for a few seconds after.
  *
  * Someone who has asked their device for reduced motion gets no gliding at
@@ -55,6 +57,8 @@ const ICONS: Record<OfferIcon, LucideIcon> = {
 /** Pixels per second. Slow enough to read a line as it passes. */
 const SPEED = 36;
 const HOLD_AFTER_ARROW_MS = 4000;
+/** Long enough for a press and release to land on the same offer. */
+const HOLD_AFTER_PRESS_MS = 1200;
 
 function OfferItem({ offer, hidden }: { offer: Offer; hidden: boolean }) {
   const Icon = ICONS[offer.icon];
@@ -154,6 +158,15 @@ export function OfferStrip({ offers }: { offers: Offer[] }) {
       className="relative overflow-hidden border-b border-green-700/10 bg-[#e9f4ec]"
       onPointerEnter={() => (paused.current = true)}
       onPointerLeave={() => (paused.current = false)}
+      // A press freezes it too. A browser only counts a click when the press
+      // and the release land on the same thing, and a strip still gliding
+      // under the finger moves out from under it — which swallowed the click
+      // on a touchscreen and wherever the pointer arrived with the press.
+      onPointerDown={() => {
+        paused.current = true;
+        heldUntil.current = performance.now() + HOLD_AFTER_PRESS_MS;
+      }}
+      onPointerCancel={() => (paused.current = false)}
       onFocusCapture={() => (paused.current = true)}
       onBlurCapture={() => (paused.current = false)}
     >
@@ -171,8 +184,9 @@ export function OfferStrip({ offers }: { offers: Offer[] }) {
             key={copy}
             ref={copy === 0 ? setRef : undefined}
             aria-hidden={copy === 0 ? undefined : true}
-            // The copies are decoration: not read out and not in the tab order.
-            inert={copy === 0 ? undefined : true}
+            // The copies are not read out and not in the tab order, but they
+            // are still clickable: as the strip moves, the offer under the
+            // pointer is usually one of them, and `inert` swallowed the click.
             className="flex"
           >
             {offers.map((offer, index) => (
