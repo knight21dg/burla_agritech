@@ -141,7 +141,7 @@ export default async function HomePage() {
           <img src="/images/home/leaves/leaf-f.webp" alt="" className="absolute bottom-16 right-0 w-28 rotate-[18deg]" />
         </div>
 
-        <div className="mx-auto grid max-w-[1920px] min-[1152px]:grid-cols-[minmax(0,42fr)_minmax(0,58fr)]">
+        <div className="mx-auto grid max-w-[1920px] min-[1152px]:grid-cols-[minmax(0,48fr)_minmax(0,52fr)]">
           <AboutPhoto photo={about} />
 
           <div className="flex items-center px-5 py-9 sm:px-8 sm:py-10 md:px-12 xl:px-14 xl:py-11 2xl:px-20">
