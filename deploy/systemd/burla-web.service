@@ -1,0 +1,38 @@
+# The customer site. Copy to /etc/systemd/system/burla-web.service.
+#
+# Secrets are not here: they live in /etc/burla/web.env, owned by root and
+# readable only by root, so a copy of this repository never carries them.
+
+[Unit]
+Description=Burla storefront (Next.js)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=burla
+Group=burla
+WorkingDirectory=/srv/burla
+EnvironmentFile=/etc/burla/web.env
+ExecStart=/usr/bin/npm run start --workspace=@burla/web
+
+# A crash restarts; a crash loop gives up rather than hammering the database.
+Restart=always
+RestartSec=3
+StartLimitBurst=5
+StartLimitIntervalSec=60
+
+# Two places it may write: the photo folder, and its own checkout, because
+# Next keeps the rendered-page cache under .next/cache while it runs.
+ReadWritePaths=/var/lib/burla/media /srv/burla
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=burla-web
+
+[Install]
+WantedBy=multi-user.target

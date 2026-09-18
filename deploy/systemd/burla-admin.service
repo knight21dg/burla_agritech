@@ -1,0 +1,36 @@
+# The admin. Copy to /etc/systemd/system/burla-admin.service.
+#
+# Same machine, same checkout, same database — a second port and its own
+# environment file. Secrets live in /etc/burla/admin.env, root-owned.
+
+[Unit]
+Description=Burla admin (Next.js)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=burla
+Group=burla
+WorkingDirectory=/srv/burla
+EnvironmentFile=/etc/burla/admin.env
+ExecStart=/usr/bin/npm run start --workspace=@burla/admin
+
+Restart=always
+RestartSec=3
+StartLimitBurst=5
+StartLimitIntervalSec=60
+
+# The admin is the one that saves uploaded photographs.
+ReadWritePaths=/var/lib/burla/media /srv/burla
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=burla-admin
+
+[Install]
+WantedBy=multi-user.target
