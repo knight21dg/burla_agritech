@@ -129,7 +129,7 @@ export const OFFER_STRIP_DEFAULTS: OfferStrip = {
     { icon: "percent", title: "Special Discounts on Bulk Supply", text: "Better prices for larger quantities", link: "wholesale" },
     { icon: "package", title: "Pan India Delivery", text: "Safe, reliable and on time", link: "delivery" },
     { icon: "handshake", title: "Partner With Us", text: "Let's grow together", link: "wholesale" },
-    { icon: "phone", title: "Get a Quote", text: "Contact us for bulk enquiries", link: "contact" },
+    { icon: "phone", title: "Get a Quote", text: "Contact us for bulk enquiries", link: "wholesale" },
   ],
 };
 

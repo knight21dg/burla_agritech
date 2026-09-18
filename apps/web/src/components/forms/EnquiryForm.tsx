@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import type { Category } from "@/types/catalog";
 import { cn } from "@/lib/utils";
 import { submitEnquiry } from "@/app/contact/actions";
+import { BulkQuantity } from "./BulkQuantity";
 
 type Kind = "contact" | "wholesale";
 type Status = "idle" | "submitting" | "success" | "error";
@@ -164,23 +165,12 @@ export function EnquiryForm({
       </div>
 
       {wholesale && (
-        <div className="grid gap-5 sm:grid-cols-2">
+        <>
           <Field id={`${id}-country`} name="country" label="Country" />
-          <div>
-            <label
-              htmlFor={`${id}-quantity`}
-              className="block text-[0.875rem] font-medium text-ink"
-            >
-              Estimated quantity
-            </label>
-            <input
-              id={`${id}-quantity`}
-              name="quantity"
-              placeholder="e.g. 500 kg per month"
-              className="mt-1.5 h-11 w-full rounded-sm border border-line bg-white px-3 text-ink outline-none focus:border-green-700"
-            />
-          </div>
-        </div>
+          {/* Bulk buyers think in tonnes: a number with - and + and a few
+              common amounts, rather than a box to write a sentence in. */}
+          <BulkQuantity />
+        </>
       )}
 
       {wholesale && (
