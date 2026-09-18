@@ -101,8 +101,12 @@ export default async function RootLayout({
     name: site.name,
     url: site.url,
     description: site.description,
-    // Address, logo, certifications and contact points are deliberately
-    // omitted until client-verified (OQ-002, OQ-008, OQ-019, OQ-021).
+    // The permanent line, so a search result offers the number the business
+    // actually answers rather than one someone else has published.
+    telephone: site.contact.phoneRaw,
+    email: site.contact.email,
+    // Address, logo and certifications are deliberately omitted until
+    // client-verified (OQ-008, OQ-019, OQ-021).
   };
 
   return (

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlertTriangle, Boxes, FolderOpen, MessageSquare, Package, Pencil, Plus, ShoppingBag, Users } from "lucide-react";
+import { AlertTriangle, Boxes, FolderOpen, MessageSquare, Package, Pencil, Plus, ShoppingBag, Truck, Users } from "lucide-react";
 import { can } from "@burla/core/auth/rbac";
 import { requireStaff } from "@/server/auth/session";
 import {
   customerCount,
+  newBulkEnquiryCount,
   newEnquiryCount,
   orderCounts,
   productCount,
@@ -76,11 +77,12 @@ export default async function HomePage() {
   const seeEnquiries = can(actor, "enquiry.read");
 
   const seeStock = can(actor, "inventory.adjust");
-  const [products, orders, customers, enquiries, lowStock] = await Promise.all([
+  const [products, orders, customers, enquiries, bulk, lowStock] = await Promise.all([
     seeCatalogue ? productCount() : undefined,
     seeOrders ? orderCounts() : undefined,
     seeCustomers ? customerCount() : undefined,
     seeEnquiries ? newEnquiryCount() : undefined,
+    seeEnquiries ? newBulkEnquiryCount() : undefined,
     seeStock ? lowStockCount() : 0,
   ]);
 
@@ -124,7 +126,13 @@ export default async function HomePage() {
             href="/enquiries"
             label="New Enquiries"
             value={enquiries}
-            note={enquiries > 0 ? "Waiting for a reply" : "All caught up"}
+            note={
+              bulk
+                ? `${bulk} ${bulk === 1 ? "is a bulk order" : "are bulk orders"}`
+                : enquiries > 0
+                  ? "Waiting for a reply"
+                  : "All caught up"
+            }
             highlight={enquiries > 0}
           />
         )}
@@ -138,6 +146,7 @@ export default async function HomePage() {
           {seeStock && <Action href="/stock" icon={Boxes} label="Add Stock" />}
           {can(actor, "catalogue.write") && <Action href="/categories" icon={FolderOpen} label="Manage Categories" />}
           {seeOrders && <Action href="/orders" icon={Package} label="View Orders" />}
+          {seeEnquiries && <Action href="/bulk-orders" icon={Truck} label="View Bulk Orders" />}
           {seeEnquiries && <Action href="/enquiries" icon={MessageSquare} label="View Enquiries" />}
           {seeCustomers && <Action href="/customers" icon={Users} label="View Customers" />}
           {can(actor, "content.write") && <Action href="/website" icon={ShoppingBag} label="Change the Homepage" />}

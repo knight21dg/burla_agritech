@@ -38,7 +38,14 @@ export default async function EnquiriesPage({
     <div className="space-y-5">
       <div>
         <h1 className="page-title">Enquiries</h1>
-        <p className="mt-0.5 text-ink-2">Messages from the website&rsquo;s forms, and taps on its WhatsApp buttons.</p>
+        <p className="mt-0.5 text-ink-2">
+          Messages from the website&rsquo;s forms, and taps on its WhatsApp buttons. Requests for a bulk quote are
+          here too, and on their own under{" "}
+          <Link href="/bulk-orders" className="underline underline-offset-2 hover:text-ink">
+            Bulk orders
+          </Link>
+          .
+        </p>
       </div>
 
       <nav aria-label="Show enquiries" className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible">
@@ -119,13 +126,16 @@ export default async function EnquiriesPage({
         <ul className="panel divide-y divide-line">
           {rows.map((enquiry) => (
             <li key={enquiry.id}>
-              <Link href={`/enquiries/${enquiry.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-surface">
+              <Link
+                href={enquiry.type === "wholesale" ? `/bulk-orders/${enquiry.id}` : `/enquiries/${enquiry.id}`}
+                className="flex items-center gap-3 px-4 py-3 hover:bg-surface"
+              >
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-x-2">
                     <span className="font-semibold">{enquiry.name}</span>
                     {enquiry.company && <span className="text-ink-3">· {enquiry.company}</span>}
                     <span className={cn("pill", enquiry.type === "wholesale" ? "pill-warn" : "pill-off")}>
-                      {enquiry.type === "wholesale" ? "Wholesale" : "Contact"}
+                      {enquiry.type === "wholesale" ? "Bulk order" : "Contact"}
                     </span>
                   </div>
                   <p className="mt-0.5 truncate text-[0.9375rem] text-ink-2">{enquiry.message}</p>

@@ -13,6 +13,7 @@ import {
   Package,
   Settings,
   ShoppingBag,
+  Truck,
   Users,
   X,
 } from "lucide-react";
@@ -20,7 +21,7 @@ import type { Capability } from "@burla/core/auth/rbac";
 import { cn } from "@/lib/cn";
 
 /**
- * The menu. Nine places, in the words a business owner uses, and nothing
+ * The menu. Ten places, in the words a business owner uses, and nothing
  * that is not finished — an unfinished section is hidden, never shown with a
  * "coming soon".
  *
@@ -45,6 +46,7 @@ const ITEMS: Item[] = [
   { href: "/categories", label: "Categories", icon: FolderOpen, capability: "catalogue.read_draft" },
   { href: "/orders", label: "Orders", icon: Package, capability: "order.read_all" },
   { href: "/customers", label: "Customers", icon: Users, capability: "customer.read_pii" },
+  { href: "/bulk-orders", label: "Bulk orders", icon: Truck, capability: "enquiry.read" },
   { href: "/enquiries", label: "Enquiries", icon: MessageSquare, capability: "enquiry.read" },
   { href: "/website", label: "Website", icon: Monitor, capability: "content.write" },
   { href: "/settings", label: "Settings", icon: Settings },

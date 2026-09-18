@@ -30,15 +30,16 @@ export const site = {
   url: clientEnv.NEXT_PUBLIC_SITE_URL,
 
   /**
-   * From the client's business card, 2026-09-09.
-   * The same number as the published phone line — CONFIRM this is the number
-   * that actually receives WhatsApp before launch (OQ-004).
+   * The business's permanent number, given by the client on 2026-09-18: the
+   * same line that is published for calls and the one that receives WhatsApp
+   * (OQ-004, settled). Overridable per environment so a staging site can
+   * point somewhere harmless.
    */
   whatsapp: clientEnv.NEXT_PUBLIC_WHATSAPP_NUMBER,
 
   contact: {
-    phone: "+91 97040 32555",
-    phoneRaw: "+919704032555",
+    phone: "+91 90328 87292",
+    phoneRaw: "+919032887292",
     email: "burlaglobalagriproducts@gmail.com",
     hours: "[Business hours to be confirmed]", // OQ-024
   },
@@ -49,11 +50,17 @@ export const site = {
    * Still outstanding and legally required before a food business can trade
    * online in India:
    *   - FSSAI licence number (OQ-003) — blocking
-   *   - The registered firm name as it appears on the GST certificate (OQ-002)
    *   - A named grievance officer (OQ-005)
+   * and worth checking once: that the registered firm name below is exactly
+   * what the GST certificate says (OQ-002).
    */
   legal: {
-    entityName: "[Registered firm name to be confirmed]",
+    /**
+     * The name the client gave for the business (2026-09-18). If the GST
+     * certificate reads differently, the registered name there is the one
+     * that must appear; it is editable under Settings in the admin.
+     */
+    entityName: "Burla Global Agri Products",
     address:
       "Nellore, Iskoncity, SPSR Nellore District, Andhra Pradesh 524003, India",
     city: "Nellore",

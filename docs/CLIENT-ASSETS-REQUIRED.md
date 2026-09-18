@@ -55,14 +55,14 @@ Received on the business card, 2026-09-09, and now live in the site config.
 |---|---|---|
 | Registered address | ✅ | Nellore, Iskoncity, SPSR Nellore District, AP 524003 |
 | GSTIN | ✅ | 37ABHFB2458F1ZH |
-| Public phone | ✅ | +91 97040 32555 |
+| Public phone | ✅ | +91 90328 87292 — the permanent number, given 2026-09-18 |
 | Public email | ✅ | burlaglobalagriproducts@gmail.com |
 | Domain name | ✅ | www.burla.co.in |
 | Partners | ✅ | Burla Krishna Reddy (Managing Partner), Burla Jeevan Reddy (Partner) |
 | **FSSAI licence number and type** | 🔴 ⬜ | **Blocking — legally required** |
-| Registered firm name, as on the GST certificate | 🟠 ⬜ | The card shows the trading name, not necessarily the registered one |
+| Registered firm name, as on the GST certificate | 🟠 ⬜ | Set to Burla Global Agri Products (given 2026-09-18); confirm the certificate says the same |
 | Grievance officer — name, email, phone, response time | 🟠 ⬜ | Required by the E-Commerce Rules |
-| **Is +91 97040 32555 the WhatsApp number?** | 🟠 ⬜ | Currently assumed; it is the main conversion channel |
+| Is the phone number also the WhatsApp number? | ✅ | Yes — +91 90328 87292, confirmed 2026-09-18 |
 | Business hours | 🟡 ⬜ | |
 | Registrar access for burla.co.in | 🟡 ⬜ | |
 

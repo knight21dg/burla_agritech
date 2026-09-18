@@ -21,6 +21,9 @@ export async function markEnquiryAction(_previous: FormState, form: FormData): P
   const result = await markEnquiry(actor, parsed.data.enquiryId, parsed.data.as);
   revalidatePath(`/enquiries/${parsed.data.enquiryId}`);
   revalidatePath("/enquiries");
+  // The same enquiry is read under Bulk orders when it is a wholesale one.
+  revalidatePath(`/bulk-orders/${parsed.data.enquiryId}`);
+  revalidatePath("/bulk-orders");
   revalidatePath("/");
   return result;
 }

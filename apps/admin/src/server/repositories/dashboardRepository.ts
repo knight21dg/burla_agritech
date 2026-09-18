@@ -1,5 +1,5 @@
 import "server-only";
-import { count, countDistinct, eq, ne } from "drizzle-orm";
+import { and, count, countDistinct, eq, ne } from "drizzle-orm";
 import { db } from "@burla/core/db";
 import { enquiries, orders, products, roles, userRoles } from "@burla/core/db/schema";
 
@@ -36,5 +36,14 @@ export async function customerCount(): Promise<number> {
 
 export async function newEnquiryCount(): Promise<number> {
   const [row] = await db.select({ n: count() }).from(enquiries).where(eq(enquiries.status, "new"));
+  return row?.n ?? 0;
+}
+
+/** New bulk and wholesale enquiries — the ones on the Bulk orders page. */
+export async function newBulkEnquiryCount(): Promise<number> {
+  const [row] = await db
+    .select({ n: count() })
+    .from(enquiries)
+    .where(and(eq(enquiries.status, "new"), eq(enquiries.type, "wholesale")));
   return row?.n ?? 0;
 }

@@ -5,19 +5,19 @@ import { getEnquiry, interestNames, readInterest } from "@/server/enquiries";
 import { isUuid } from "@/lib/ids";
 import { EnquiryDetail } from "@/components/enquiries/EnquiryDetail";
 
-export const metadata: Metadata = { title: "Enquiry" };
+export const metadata: Metadata = { title: "Bulk order" };
 
-export default async function EnquiryPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function BulkOrderPage({ params }: { params: Promise<{ id: string }> }) {
   const actor = await requirePermission("enquiry.read");
   const { id } = await params;
   if (!isUuid(id)) notFound();
 
   const enquiry = await getEnquiry(id);
   if (!enquiry) notFound();
-  // A bulk order belongs under Bulk orders, so the way back leads there.
-  if (enquiry.type === "wholesale") redirect(`/bulk-orders/${id}`);
+  // An ordinary message is not a bulk order; it is read in the inbox.
+  if (enquiry.type !== "wholesale") redirect(`/enquiries/${id}`);
 
   const interest = readInterest(enquiry.productInterest, await interestNames(enquiry.productInterest ?? []));
 
-  return <EnquiryDetail actor={actor} interest={interest} enquiry={enquiry} back={{ href: "/enquiries", label: "Enquiries" }} />;
+  return <EnquiryDetail actor={actor} interest={interest} enquiry={enquiry} back={{ href: "/bulk-orders", label: "Bulk orders" }} />;
 }

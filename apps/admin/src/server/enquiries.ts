@@ -1,7 +1,7 @@
 import "server-only";
-import { count, desc, eq, inArray, type SQL } from "drizzle-orm";
+import { and, count, desc, eq, inArray, type SQL } from "drizzle-orm";
 import { db } from "@burla/core/db";
-import { enquiries, type EnquiryStatus } from "@burla/core/db/schema";
+import { categories, enquiries, type EnquiryStatus } from "@burla/core/db/schema";
 import { requireCapability, type Actor } from "@burla/core/auth/rbac";
 import { writeAudit } from "@burla/core/repositories/audit";
 
@@ -33,9 +33,19 @@ export function enquiryLabel(status: EnquiryStatus): string {
 
 export const ENQUIRIES_PAGE_SIZE = 25;
 
-export async function listEnquiries(options: { view?: EnquiryView; page?: number }) {
+/**
+ * One list, used twice: the whole inbox, and — with `type: "wholesale"` —
+ * the bulk orders page, which is the same messages with the trade details
+ * (how much, what, which country) brought to the front.
+ */
+export async function listEnquiries(options: {
+  view?: EnquiryView;
+  page?: number;
+  type?: "contact" | "wholesale";
+}) {
   const view = options.view ?? "new";
-  const where: SQL = inArray(enquiries.status, ENQUIRY_VIEWS[view].statuses);
+  const kind = options.type ? eq(enquiries.type, options.type) : undefined;
+  const where = and(inArray(enquiries.status, ENQUIRY_VIEWS[view].statuses), kind) as SQL;
   const page = Math.max(1, options.page ?? 1);
 
   const [rows, totals, byStatus] = await Promise.all([
@@ -45,6 +55,9 @@ export async function listEnquiries(options: { view?: EnquiryView; page?: number
         type: enquiries.type,
         name: enquiries.name,
         company: enquiries.company,
+        country: enquiries.country,
+        estimatedQuantity: enquiries.estimatedQuantity,
+        productInterest: enquiries.productInterest,
         message: enquiries.message,
         status: enquiries.status,
         createdAt: enquiries.createdAt,
@@ -55,7 +68,7 @@ export async function listEnquiries(options: { view?: EnquiryView; page?: number
       .limit(ENQUIRIES_PAGE_SIZE)
       .offset((page - 1) * ENQUIRIES_PAGE_SIZE),
     db.select({ n: count() }).from(enquiries).where(where),
-    db.select({ status: enquiries.status, n: count() }).from(enquiries).groupBy(enquiries.status),
+    db.select({ status: enquiries.status, n: count() }).from(enquiries).where(kind).groupBy(enquiries.status),
   ]);
 
   const counts = Object.fromEntries(
@@ -68,6 +81,30 @@ export async function listEnquiries(options: { view?: EnquiryView; page?: number
   ) as Record<EnquiryView, number>;
 
   return { rows, total: totals[0]?.n ?? 0, counts, view };
+}
+
+/**
+ * "millet-powders" is what the form stores; "Millet Powders" is what the
+ * owner calls it. One lookup for a whole page of enquiries. A slug with no
+ * category left is shown as it is rather than dropped — a renamed category
+ * should not make an enquiry look empty.
+ */
+export async function interestNames(slugs: string[]): Promise<Map<string, string>> {
+  const wanted = [...new Set(slugs.filter((slug) => slug !== "multiple"))];
+  const rows = wanted.length
+    ? await db
+        .select({ slug: categories.slug, name: categories.name })
+        .from(categories)
+        .where(inArray(categories.slug, wanted))
+    : [];
+  const names = new Map(rows.map((row) => [row.slug, row.name]));
+  names.set("multiple", "Several ranges");
+  return names;
+}
+
+/** The readable ranges on one enquiry, in the order they were chosen. */
+export function readInterest(slugs: string[] | null, names: Map<string, string>): string[] {
+  return (slugs ?? []).map((slug) => names.get(slug) ?? slug);
 }
 
 export async function getEnquiry(id: string) {
