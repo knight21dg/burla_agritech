@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
+import { ChevronRight, Headset, Info, Menu, Package, Search, ShoppingCart, User, X } from "lucide-react";
 import { useCart } from "@/components/cart/cartStore";
 import { Logo } from "@/components/ui/Logo";
 import type { Category } from "@/types/catalog";
-import { mainNav, site } from "@/lib/site";
+import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { SearchOverlay } from "./SearchOverlay";
 
@@ -28,6 +28,14 @@ import { SearchOverlay } from "./SearchOverlay";
  * About Us, Quality and Contact Us are in the footer, and in the menu on
  * tablets and phones.
  */
+
+/** The drawer's own list, from the client's sketch (2026-09-18). */
+const MENU = [
+  { href: "/account", label: "Account", note: "Sign in, addresses, details", Icon: User },
+  { href: "/account/orders", label: "Orders", note: "What you have ordered", Icon: Package },
+  { href: "/contact", label: "Customer Care", note: "Call, WhatsApp or write to us", Icon: Headset },
+  { href: "/about", label: "About Us", note: "Who Burla is", Icon: Info },
+];
 
 /** "——  GOOD FOOD  •  BETTER LIVING  ——" */
 function Motto({ className }: { className?: string }) {
@@ -62,6 +70,8 @@ export function Header({ categories }: { categories: Category[] }) {
         e.preventDefault();
         setSearchOpen(true);
       }
+      // Escape closes the menu drawer, as it closes the search.
+      if (e.key === "Escape") setMobileOpen(false);
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
@@ -103,14 +113,27 @@ export function Header({ categories }: { categories: Category[] }) {
         <Container>
           {/* Band 2 — logo, name and motto, search, account, cart */}
           <div className="flex items-center gap-4 py-2.5 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-8 lg:py-3">
-            <Link href="/" className="shrink-0 justify-self-start" aria-label={`${site.name} — home`}>
-              <span className="block lg:hidden">
-                <Logo variant="mark" height={42} priority alt="" />
-              </span>
-              <span className="hidden lg:block">
-                <Logo variant="mark" height={76} priority alt="" />
-              </span>
-            </Link>
+            <div className="flex shrink-0 items-center gap-2 justify-self-start lg:gap-4">
+              <button
+                type="button"
+                onClick={() => setMobileOpen(true)}
+                className={iconButton}
+                aria-label="Open menu"
+                aria-expanded={mobileOpen}
+                aria-controls="site-menu"
+              >
+                <Menu className="size-6" strokeWidth={1.75} aria-hidden="true" />
+              </button>
+
+              <Link href="/" className="shrink-0" aria-label={`${site.name} — home`}>
+                <span className="block lg:hidden">
+                  <Logo variant="mark" height={42} priority alt="" />
+                </span>
+                <span className="hidden lg:block">
+                  <Logo variant="mark" height={76} priority alt="" />
+                </span>
+              </Link>
+            </div>
 
             <div aria-hidden="true" className="hidden text-center md:block md:flex-1 lg:flex-none">
               <p className="whitespace-nowrap font-brand text-[1.1rem] font-bold uppercase leading-tight text-green-700 min-[880px]:text-[1.35rem] lg:text-[2rem] min-[1400px]:text-[2.25rem]">
@@ -155,16 +178,6 @@ export function Header({ categories }: { categories: Category[] }) {
                   {cartCount}
                 </span>
               </Link>
-
-              <button
-                type="button"
-                onClick={() => setMobileOpen(true)}
-                className={cn(iconButton, "lg:hidden")}
-                aria-label="Open menu"
-                aria-expanded={mobileOpen}
-              >
-                <Menu className="size-[1.35rem]" aria-hidden="true" />
-              </button>
             </div>
           </div>
 
@@ -204,26 +217,32 @@ export function Header({ categories }: { categories: Category[] }) {
         </Container>
       </header>
 
-      {/* Mobile drawer — products first, flat, no accordion */}
+      {/* The menu drawer, to the client's sketch (2026-09-18): Account,
+          Orders, Customer Care and About Us, each with its own picture. The
+          product categories join it below laptop width, where the category
+          row is not shown and this is the way around the shop. */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-[70] lg:hidden">
+        <div className="fixed inset-0 z-[70]">
           <div
             className="absolute inset-0 bg-ink/40"
             onClick={() => setMobileOpen(false)}
             aria-hidden="true"
           />
           <div
+            id="site-menu"
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-white"
+            className="absolute inset-y-0 left-0 flex w-[min(20rem,88vw)] flex-col bg-white shadow-[0_0_40px_-10px_rgba(15,74,44,0.35)]"
           >
             <div className="flex h-16 shrink-0 items-center justify-between border-b border-line px-4">
-              <Logo variant="mark" height={32} alt="" />
+              <Link href="/" aria-label={`${site.name} — home`}>
+                <Logo variant="mark" height={30} alt="" />
+              </Link>
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="rounded-md p-2.5 text-ink hover:bg-surface"
+                className="grid size-10 place-items-center rounded-full text-ink transition-colors hover:bg-surface hover:text-green-700"
                 aria-label="Close menu"
                 autoFocus
               >
@@ -231,54 +250,68 @@ export function Header({ categories }: { categories: Category[] }) {
               </button>
             </div>
 
-            <nav className="flex-1 overflow-y-auto px-4 py-5" aria-label="Mobile">
-              <p className="t-label px-1 text-ink-3">Products</p>
-              <ul className="mt-2">
-                {categories.map((c) => (
-                  <li key={c.slug}>
+            <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Menu">
+              <ul>
+                {MENU.map(({ href, label, note, Icon }) => (
+                  <li key={href}>
                     <Link
-                      href={`/products/${c.slug}`}
-                      className="block border-b border-line px-1 py-3 text-[0.9375rem] text-ink"
+                      href={href}
+                      className="flex items-center gap-3.5 rounded-lg px-2.5 py-3 transition-colors hover:bg-green-50"
                     >
-                      {c.name}
+                      <Icon className="size-[1.375rem] shrink-0 text-green-700" strokeWidth={1.75} aria-hidden="true" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[0.9375rem] font-semibold text-ink">{label}</span>
+                        <span className="block text-[0.75rem] text-ink-3">{note}</span>
+                      </span>
+                      <ChevronRight className="size-4 shrink-0 text-ink-3" aria-hidden="true" />
                     </Link>
                   </li>
                 ))}
-                <li>
-                  <Link
-                    href="/products"
-                    className="block border-b border-line px-1 py-3 text-[0.9375rem] font-semibold text-green-700"
-                  >
-                    View all products →
-                  </Link>
-                </li>
               </ul>
 
-              <ul className="mt-6">
-                {[
-                  { label: "Home", href: "/" },
-                  ...mainNav.filter((i) => i.href !== "/"),
-                  { label: "Locations", href: "/locations" },
-                ].map((item) => (
-                  <li key={item.href}>
+              {/* Below laptop width the categories live here too. */}
+              <div className="mt-4 border-t border-line pt-4 lg:hidden">
+                <p className="t-label px-2.5 text-ink-3">Products</p>
+                <ul className="mt-1">
+                  {categories.map((c) => (
+                    <li key={c.slug}>
+                      <Link
+                        href={`/products/${c.slug}`}
+                        aria-current={catActive(c.slug) ? "page" : undefined}
+                        className={cn(
+                          "block rounded-lg px-2.5 py-2.5 text-[0.9375rem] transition-colors hover:bg-green-50",
+                          catActive(c.slug) ? "font-semibold text-green-700" : "text-ink",
+                        )}
+                      >
+                        {c.name}
+                      </Link>
+                    </li>
+                  ))}
+                  <li>
                     <Link
-                      href={item.href}
-                      className="block border-b border-line px-1 py-3 text-[0.9375rem] text-ink"
+                      href="/products"
+                      className="block rounded-lg px-2.5 py-2.5 text-[0.9375rem] font-semibold text-green-700 hover:bg-green-50"
                     >
-                      {item.label}
+                      View all products →
                     </Link>
                   </li>
-                ))}
-                <li>
-                  <Link
-                    href="/account"
-                    className="block px-1 py-3 text-[0.9375rem] text-ink"
-                  >
-                    Sign in / Sign up
-                  </Link>
-                </li>
-              </ul>
+                </ul>
+              </div>
             </nav>
+
+            {/* The brand's own line, as in the sketch. */}
+            <div aria-hidden="true" className="shrink-0 border-t border-line bg-green-50/60 px-5 py-4">
+              <p className="t-script text-[1.35rem] leading-[1.05] text-forest">
+                Good Food
+                <br />
+                <span className="ml-5">Better Living</span>
+              </p>
+              <p className="mt-1.5 text-[0.75rem] leading-snug text-ink-3">
+                From Our Farms
+                <br />
+                To Your Table
+              </p>
+            </div>
           </div>
         </div>
       )}
